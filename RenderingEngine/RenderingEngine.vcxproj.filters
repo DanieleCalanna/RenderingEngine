@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Core">
+      <UniqueIdentifier>{07d6b92f-0e95-466b-b68d-74714d36c85f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utils">
+      <UniqueIdentifier>{fb16433f-9a45-48a5-83cf-6b130afe9055}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Components">
+      <UniqueIdentifier>{ae45796e-406d-4a4d-8101-4c6ca27aa4fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Entities">
+      <UniqueIdentifier>{eac63784-1aea-4faf-8f39-dfa852edcc97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Lights">
+      <UniqueIdentifier>{3af64de4-5693-4e20-8bad-2dc34f6d9ac5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Mesh">
+      <UniqueIdentifier>{29656e14-c18a-46f1-9efe-238cc6b73bf8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Shaders">
+      <UniqueIdentifier>{0ccc998a-4451-457a-a33b-cef5f4b6c997}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{ec95118a-b6f7-4d2a-b238-d7f2428b48fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Components">
+      <UniqueIdentifier>{1db467f2-fb43-4380-b2ec-7e0d6c6a20c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Entities">
+      <UniqueIdentifier>{c8a2e20a-fea6-4ce3-a954-c76439aa3f59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Lights">
+      <UniqueIdentifier>{cc713ea6-2aea-4398-af27-0fb28d280f70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Mesh">
+      <UniqueIdentifier>{282442e4-c9a0-4034-9191-d7296296e7e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Shaders">
+      <UniqueIdentifier>{ffa4cd59-4adc-4502-8a7d-777d93ca634a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utils\Math">
+      <UniqueIdentifier>{e18da77b-bc31-4b83-bbc3-5e1a25e1b638}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utils">
+      <UniqueIdentifier>{29363837-6778-4451-b77a-e169193abdab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CL">
+      <UniqueIdentifier>{d5269be3-6b9f-4885-9b40-95c5676e9fb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CL">
+      <UniqueIdentifier>{3df449c1-e235-44d0-bd9e-ca676a56e4b3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Transform.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Window.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Shaders\StandardShader.cpp">
+      <Filter>Source Files\Core\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Mesh\IndexedMesh.cpp">
+      <Filter>Source Files\Core\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Mesh\Mesh.cpp">
+      <Filter>Source Files\Core\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Mesh\MeshRenderer.cpp">
+      <Filter>Source Files\Core\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Mesh\MeshSmoothing.cpp">
+      <Filter>Source Files\Core\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Lights\DirectionalLight.cpp">
+      <Filter>Source Files\Core\Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Entities\GameObject.cpp">
+      <Filter>Source Files\Core\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Components\CameraComponent.cpp">
+      <Filter>Source Files\Core\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Components\CameraController.cpp">
+      <Filter>Source Files\Core\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Utils\Axes.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CL\ocl_boiler.cpp">
+      <Filter>Source Files\CL</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Header\Core\Transform.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Core\Window.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Core\Shaders\StandardShader.hpp">
+      <Filter>Header Files\Core\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Core\Mesh\IndexedMesh.hpp">
+      <Filter>Header Files\Core\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Core\Mesh\Mesh.hpp">
+      <Filter>Header Files\Core\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Core\Mesh\MeshRenderer.hpp">
+      <Filter>Header Files\Core\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Core\Mesh\MeshSmoothing.hpp">
+      <Filter>Header Files\Core\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Core\Lights\DirectionalLight.hpp">
+      <Filter>Header Files\Core\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Core\Entities\GameObject.hpp">
+      <Filter>Header Files\Core\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Core\Components\CameraComponent.hpp">
+      <Filter>Header Files\Core\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Core\Components\CameraController.hpp">
+      <Filter>Header Files\Core\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Core\Components\Component.hpp">
+      <Filter>Header Files\Core\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Utils\Axes.hpp">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\CL\ocl_boiler.h">
+      <Filter>Header Files\CL</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
