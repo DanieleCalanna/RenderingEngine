@@ -133,9 +133,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\CL\ocl_boiler.cpp" />
-    <ClCompile Include="Source\Core\Components\CameraComponent.cpp" />
-    <ClCompile Include="Source\Core\Components\CameraController.cpp" />
-    <ClCompile Include="Source\Core\Entities\GameObject.cpp" />
+    <ClCompile Include="Source\Core\Camera\Camera.cpp" />
+    <ClCompile Include="Source\Core\Camera\CameraComponent.cpp" />
+    <ClCompile Include="Source\Core\Camera\CameraController.cpp" />
+    <ClCompile Include="Source\Core\Components\Component.cpp" />
+    <ClCompile Include="Source\Core\Entities\Actor.cpp" />
     <ClCompile Include="Source\Core\Lights\DirectionalLight.cpp" />
     <ClCompile Include="Source\Core\Mesh\IndexedMesh.cpp" />
     <ClCompile Include="Source\Core\Mesh\Mesh.cpp" />
@@ -149,10 +151,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\CL\ocl_boiler.h" />
-    <ClInclude Include="Header\Core\Components\CameraComponent.hpp" />
-    <ClInclude Include="Header\Core\Components\CameraController.hpp" />
+    <ClInclude Include="Header\Core\Camera\Camera.hpp" />
+    <ClInclude Include="Header\Core\Camera\CameraComponent.hpp" />
+    <ClInclude Include="Header\Core\Camera\CameraController.hpp" />
     <ClInclude Include="Header\Core\Components\Component.hpp" />
-    <ClInclude Include="Header\Core\Entities\GameObject.hpp" />
+    <ClInclude Include="Header\Core\Entities\Actor.hpp" />
     <ClInclude Include="Header\Core\Lights\DirectionalLight.hpp" />
     <ClInclude Include="Header\Core\Mesh\IndexedMesh.hpp" />
     <ClInclude Include="Header\Core\Mesh\Mesh.hpp" />
@@ -162,6 +165,11 @@
     <ClInclude Include="Header\Core\Transform.hpp" />
     <ClInclude Include="Header\Core\Window.hpp" />
     <ClInclude Include="Header\Utils\Axes.hpp" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Resources\Shaders\StandardShader\FragmentStandardShader.frag" />
+    <Text Include="Resources\Shaders\StandardShader\VertexStandardShader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -22,7 +22,8 @@ class Transform {
 
 	mat4x4 GetTransformationMatrix();
 	
-	static Transform Combine(Transform const &transform1, Transform const &transform2);
+	static Transform Combine(Transform const &Transform1, Transform const &Transform2);
+	static Transform Negate(Transform const &TransformToNegate);
 
 	std::string toString();
 };

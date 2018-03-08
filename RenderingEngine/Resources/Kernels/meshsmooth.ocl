@@ -1,0 +1,89 @@
+#define INDEX_BITS 26
+#define COUNT_BITS 6
+
+kernel void smooth(global float4 * restrict vertex4Array, global unsigned int* restrict adjArray, global float4 * restrict result, int nels, float factor)
+{	
+	int i = get_global_id(0);
+	if(i >= nels) return;
+
+	
+	float4 vertex = vertex4Array[i];
+	float lastComponent = vertex.w;
+	
+	unsigned int adjInfo = *(unsigned int *)&lastComponent;
+	unsigned int adjIndexOffset = adjInfo>>COUNT_BITS;
+	unsigned int adjCount = ((adjInfo)<<INDEX_BITS)>>INDEX_BITS;
+	//printf("vertex %d -> %f / %f / %f   #offset -> %d  #adj -> %d \n", i, vertex.x, vertex.y, vertex.z, adjIndexOffset, adjCount);
+	
+	float4 umbrellaOperator = (float4)(0.0f, 0.0f, 0.0f, 0.0f);
+	for(int adjIndex=0; adjIndex<adjCount; adjIndex++)
+	{
+		float4 adj = vertex4Array[adjArray[adjIndexOffset+adjIndex]];
+		umbrellaOperator += ( adj-vertex );
+		//printf("Adj %d of %d -> %f / %f / %f\n", adjIndex, i, adj.x, adj.y, adj.z);
+	}
+	umbrellaOperator /= adjCount;
+	float4 res = vertex + factor*umbrellaOperator;
+	res.w = lastComponent;
+	result[i] = res;
+	//printf("result vertex %d -> %f / %f / %f   #offset -> %d  #adj -> %d \n", i, res.x, res.y, res.z, adjIndexOffset, adjCount);
+}
+
+/*
+**	This kernel is executed per face.
+**	It calculates the normal of a face based on the position of the vertices that build the face.
+*/
+kernel void normals_per_face_k (
+	global const float4 * restrict vertex4Array,
+	global const int4 * restrict faces,
+	global float4 * restrict normals_per_face,
+	const int nels )
+{
+	const int local_id = get_global_id(0);
+	if(local_id >= nels) return;
+
+	const int4 face = faces[local_id];
+
+	const float4 a = vertex4Array[face.x];
+	const float4 b = vertex4Array[face.y];
+	const float4 c = vertex4Array[face.z];
+
+	const float4 U = (float4)(b.x-a.x, b.y-a.y, b.z-a.z, 0);
+	const float4 V = (float4)(c.x-a.x, c.y-a.y, c.z-a.z, 0);
+	const float4 normal = normalize(cross(U,V));
+
+	normals_per_face[local_id] = normal;
+}
+
+/*
+**	This kernel is executed per vertex.
+**	It calculates the normal of a vertex as the mean of the normals of each face where it belongs to.
+*/
+kernel void normals_per_vertex_k (
+	global const float4 * restrict normals_per_face,
+	global const int2 * restrict facesInfo_array,
+	global unsigned int * restrict faces_array,
+	global float4 * restrict gl_normals,
+	const int nels )
+{	
+	const int local_id = get_global_id(0);
+	if(local_id >= nels) return;
+
+	const int2 faceInfo = facesInfo_array[local_id];
+	const unsigned int faceIndexOffset = faceInfo.x;
+	const unsigned int faceCount = faceInfo.y;
+
+	float4 mean_normals = (float4)(0.0f, 0.0f, 0.0f, 0.0f);
+	for(int faceIndex=0; faceIndex<faceCount; faceIndex++)
+	{
+		mean_normals += normals_per_face[faces_array[faceIndexOffset+faceIndex]];
+	}
+
+	mean_normals /= faceCount;
+	gl_normals[local_id] = mean_normals;
+
+}
+
+
+//if(local_id == 1) printf("face %d -> %d / %d / %d\n", local_id, face.x, face.y, face.z);
+//printf("normal %d -> %f / %f / %f\n", local_id, normal.x, normal.y, normal.z);

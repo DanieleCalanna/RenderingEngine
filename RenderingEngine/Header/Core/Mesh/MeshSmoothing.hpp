@@ -6,18 +6,16 @@
 #include <CL/cl_gl_ext.h>
 #include <windows.h>
 
-
-class MeshSmoothing;
-
 #include <Core/Components/Component.hpp>
-#include <Core/Mesh/IndexedMesh.hpp>
 
+class IndexedMesh;
 
-class MeshSmoothing : public Component {
+class MeshSmoothing : public Component 
+{
 private:
 	
 public:
-	IndexedMesh* mesh;
+	IndexedMesh* Mesh;
 
 	int iterations;
 	float lambda;
@@ -46,7 +44,7 @@ public:
 	cl_event lock, unlock;
 
 
-	MeshSmoothing();
+	MeshSmoothing(Actor* Owner);
 
 	void Start();
 	

@@ -64,6 +64,18 @@
     <Filter Include="Source Files\CL">
       <UniqueIdentifier>{3df449c1-e235-44d0-bd9e-ca676a56e4b3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Core\Camera">
+      <UniqueIdentifier>{92fb9cc5-4444-4ab1-9d7b-283d6740efd1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Camera">
+      <UniqueIdentifier>{14468390-91b9-4fb3-bf7f-b2f53434f57c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders">
+      <UniqueIdentifier>{e87d493f-188d-4716-9b94-81ac9c53a5ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\StandardShader">
+      <UniqueIdentifier>{ff85cc63-dc0c-42bf-8956-36aa1b960b7d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -93,20 +105,26 @@
     <ClCompile Include="Source\Core\Lights\DirectionalLight.cpp">
       <Filter>Source Files\Core\Lights</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Core\Entities\GameObject.cpp">
-      <Filter>Source Files\Core\Entities</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Core\Components\CameraComponent.cpp">
-      <Filter>Source Files\Core\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Core\Components\CameraController.cpp">
-      <Filter>Source Files\Core\Components</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Utils\Axes.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
     <ClCompile Include="Source\CL\ocl_boiler.cpp">
       <Filter>Source Files\CL</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Entities\Actor.cpp">
+      <Filter>Source Files\Core\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Components\Component.cpp">
+      <Filter>Source Files\Core\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Camera\CameraComponent.cpp">
+      <Filter>Source Files\Core\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Camera\CameraController.cpp">
+      <Filter>Source Files\Core\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Camera\Camera.cpp">
+      <Filter>Source Files\Core\Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -134,15 +152,6 @@
     <ClInclude Include="Header\Core\Lights\DirectionalLight.hpp">
       <Filter>Header Files\Core\Lights</Filter>
     </ClInclude>
-    <ClInclude Include="Header\Core\Entities\GameObject.hpp">
-      <Filter>Header Files\Core\Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\Core\Components\CameraComponent.hpp">
-      <Filter>Header Files\Core\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\Core\Components\CameraController.hpp">
-      <Filter>Header Files\Core\Components</Filter>
-    </ClInclude>
     <ClInclude Include="Header\Core\Components\Component.hpp">
       <Filter>Header Files\Core\Components</Filter>
     </ClInclude>
@@ -152,5 +161,28 @@
     <ClInclude Include="Header\CL\ocl_boiler.h">
       <Filter>Header Files\CL</Filter>
     </ClInclude>
+    <ClInclude Include="Header\Core\Entities\Actor.hpp">
+      <Filter>Header Files\Core\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Core\Camera\CameraComponent.hpp">
+      <Filter>Header Files\Core\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Core\Camera\CameraController.hpp">
+      <Filter>Header Files\Core\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Core\Camera\Camera.hpp">
+      <Filter>Header Files\Core\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Resources\Shaders\StandardShader\FragmentStandardShader.frag">
+      <Filter>Resource Files\Shaders\StandardShader</Filter>
+    </Text>
+    <Text Include="Resources\Shaders\StandardShader\VertexStandardShader.vert">
+      <Filter>Resource Files\Shaders\StandardShader</Filter>
+    </Text>
   </ItemGroup>
 </Project>

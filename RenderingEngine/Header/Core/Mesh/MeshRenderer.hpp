@@ -4,30 +4,24 @@
 #include <Core/Mesh/Mesh.hpp>
 #include <Core/Shaders/StandardShader.hpp>
 
-class MeshRenderer : public Component {
-private:
-	
-public:
-	Mesh* mesh;
-	
-	bool castShadow = false;
-	bool receiveShadow = false;
-	
-	MeshRenderer(){}
-	MeshRenderer(Mesh* mesh){
-		this->mesh = mesh;
-	}
+class Mesh;
 
-	void SetMesh(Mesh* mesh){
-		this->mesh = mesh;
-	}
+class MeshRenderer : public Component 
+{
+private:
+
+	Mesh* MeshToRender = nullptr;
+
+	bool bCastShadow = false;
+	bool bReceiveShadow = false;
+
+public:
+
+	void SetMesh(Mesh* Mesh); 
 	
 	void Start(){}
 	
 	void Update();
 
-	void Clear(){
-		mesh->Clear();
-		delete mesh;
-	}
+	void Clear();
 };

@@ -33,23 +33,44 @@ mat4x4 Transform::GetTransformationMatrix()
 }
 
 
-Transform Transform::Combine(Transform const &transform1, Transform const &transform2)
+Transform Transform::Combine(Transform const &Transform1, Transform const &Transform2)
 {
-	vec3 location(
-			transform1.Location.x + transform2.Location.x,
-			transform1.Location.y + transform2.Location.y,
-			transform1.Location.z + transform2.Location.z);
-		
-	vec3 rotation(
-			transform1.Rotation.x + transform2.Rotation.x,
-			transform1.Rotation.y + transform2.Rotation.y,
-			transform1.Rotation.z + transform2.Rotation.z);
+	vec3 ResultLocation(
+			Transform1.Location.x + Transform2.Location.x,
+			Transform1.Location.y + Transform2.Location.y,
+			Transform1.Location.z + Transform2.Location.z
+	);
+	vec3 ResultRotation(
+			Transform1.Rotation.x + Transform2.Rotation.x,
+			Transform1.Rotation.y + Transform2.Rotation.y,
+			Transform1.Rotation.z + Transform2.Rotation.z
+	);
+	vec3 ResultScale(
+			Transform1.Scale.x * Transform2.Scale.x,
+			Transform1.Scale.y * Transform2.Scale.y,
+			Transform1.Scale.z * Transform2.Scale.z
+	);
+	return Transform(ResultLocation, ResultRotation, ResultScale);
+}
 
-	vec3 scale(
-			transform1.Scale.x * transform2.Scale.x,
-			transform1.Scale.y * transform2.Scale.y,
-			transform1.Scale.z * transform2.Scale.z);
-	return Transform(location, rotation, scale);
+Transform Transform::Negate(Transform const & TransformToNegate)
+{
+	vec3 ResultLocation(
+		-TransformToNegate.Location.x,
+		-TransformToNegate.Location.y,
+		-TransformToNegate.Location.z
+	);
+	vec3 ResultRotation(
+		-TransformToNegate.Rotation.x,
+		-TransformToNegate.Rotation.y,
+		-TransformToNegate.Rotation.z
+	);
+	vec3 ResultScale(
+		1 / TransformToNegate.Scale.x,
+		1 / TransformToNegate.Scale.y,
+		1 / TransformToNegate.Scale.z
+	);
+	return Transform(ResultLocation, ResultRotation, ResultScale);
 }
 
 std::string Transform::toString()

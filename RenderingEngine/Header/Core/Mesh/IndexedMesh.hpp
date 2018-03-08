@@ -13,8 +13,8 @@ class IndexedMesh : public Mesh{
 
 public:
 
-	int nels, nadjs;
-	int minAdjNum, maxAdjNum;
+	unsigned int nels, nadjs;
+	unsigned int minAdjNum, maxAdjNum;
 	float meanAdjNum;
 	float *result_vertex4Array;
 	unsigned int* adjArray;

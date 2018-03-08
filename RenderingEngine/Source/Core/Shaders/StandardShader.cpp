@@ -1,124 +1,142 @@
 #include <Core/Shaders/StandardShader.hpp>
 
-StandardShader::StandardShader(){
-	vertexShaderID = createShaderFromFile("res/Shaders/StandardShader/vertexShader.vert", GL_VERTEX_SHADER);
-	fragmentShaderID = createShaderFromFile("res/Shaders/StandardShader/fragmentShader.frag", GL_FRAGMENT_SHADER);
-	programID = createProgram(vertexShaderID, fragmentShaderID);
-	glValidateProgram(programID);
-	
-	start();
+#include <iostream>
+#include <fstream>
+#include <streambuf>
 
-	/*Temp TO-DO*/
+StandardShader::StandardShader()
+{
+	VertexShaderID = CreateShaderFromFile("Resources/Shaders/StandardShader/VertexStandardShader.vert", GL_VERTEX_SHADER);
+	FragmentShaderID = CreateShaderFromFile("Resources/Shaders/StandardShader/FragmentStandardShader.frag", GL_FRAGMENT_SHADER);
+	ProgramID = CreateProgram(VertexShaderID, FragmentShaderID);
+	glValidateProgram(ProgramID);
+	
+	Start();
+
+	/*TO-DO */
 	glm::vec3 tempColor(0.2578f, 0.5117f, 0.95312f);
-	loadColor(tempColor);
+	LoadColor(tempColor);
 	//glUniform3fv(glGetUniformLocation(programID, "color"), 1, &tempColor[0]);
-	glUniform1f(glGetUniformLocation(programID, "shineDamper"), 1.0f);
-	glUniform1f(glGetUniformLocation(programID, "reflectivity"), 0.4f);
-	stop();
-	/*Temp TO-DO End*/
+	glUniform1f(glGetUniformLocation(ProgramID, "shineDamper"), 1.0f);
+	glUniform1f(glGetUniformLocation(ProgramID, "reflectivity"), 0.4f);
+	/*TO-DO End*/
+
+	Stop();
 }
 
-void StandardShader::start(){
-	glUseProgram(programID);
-}
-void StandardShader::stop(){
-	glUseProgram(0);
-}
-
-void StandardShader::loadColor(const glm::vec3 &color){
-	glUniform3fv(glGetUniformLocation(programID, "color"), 1, &color[0]);
-}
-
-GLuint StandardShader::createShaderFromFile(std::string path, GLenum shaderType){
-	std::string shaderSource = loadFile(path);
+GLuint StandardShader::CreateShaderFromFile(std::string FilePath, GLenum ShaderType)
+{
+	std::string ShaderSource = LoadFile(FilePath);
 	//std::cout<<"Shader loaded: "<<path<<std::endl<<shaderSource<<std::endl;
-	const GLuint shaderID = glCreateShader(shaderType);
-	const GLchar *source = (const GLchar *)shaderSource.c_str();
-	glShaderSource(shaderID, 1, &source, 0);
-	glCompileShader(shaderID);
+	const GLuint ShaderID = glCreateShader(ShaderType);
+	const GLchar* Source = (const GLchar *)ShaderSource.c_str();
+	glShaderSource(ShaderID, 1, &Source, 0);
+	glCompileShader(ShaderID);
 
-	GLint isCompiled = 0;
-	glGetShaderiv(shaderID, GL_COMPILE_STATUS, &isCompiled);
-	
-	if(isCompiled == GL_FALSE) {
-		GLint maxLength = 0;
-		glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &maxLength); //Get Log Length
-		
-		char *infoLog = new char[maxLength];
-		glGetShaderInfoLog(shaderID, maxLength, &maxLength, infoLog);
-		glDeleteShader(shaderID);
-		std::cout<<"COMPILING SHADER ERROR: "<<path<<std::endl<<infoLog<<std::endl;
-		exit(1);
+	GLint IsCompiled = GL_FALSE;
+	glGetShaderiv(ShaderID, GL_COMPILE_STATUS, &IsCompiled);
+
+	if (IsCompiled == GL_FALSE)
+	{
+		GLint MaxLength = 0;
+		glGetShaderiv(ShaderID, GL_INFO_LOG_LENGTH, &MaxLength); //Get Log Length
+
+		char* InfoLog = new char[MaxLength];
+		glGetShaderInfoLog(ShaderID, MaxLength, &MaxLength, InfoLog);
+		glDeleteShader(ShaderID);
+		std::cout << "COMPILING SHADER ERROR: " << FilePath << std::endl << InfoLog << std::endl;
+		exit(1); //TO-DO
 	}
-	return shaderID;
+	return ShaderID;
 }
 
-GLuint StandardShader::createProgram(GLuint vertexShaderID, GLuint fragmentShaderID){
-	GLuint programID = glCreateProgram();
-	glAttachShader(programID, vertexShaderID);
-	glAttachShader(programID, fragmentShaderID);
-	glBindAttribLocation(programID, 0, "position");
-	glBindAttribLocation(programID, 1, "normal");
-	glLinkProgram(programID);
+GLuint StandardShader::CreateProgram(GLuint VertexShaderID, GLuint FragmentShaderID)
+{
+	GLuint ProgramID = glCreateProgram();
+	glAttachShader(ProgramID, VertexShaderID);
+	glAttachShader(ProgramID, FragmentShaderID);
+	glBindAttribLocation(ProgramID, 0, "position");
+	glBindAttribLocation(ProgramID, 1, "normal");
+	glLinkProgram(ProgramID);
 
 	//Note the different functions here: glGetProgram* instead of glGetShader*.
 	GLint isLinked = 0;
-	glGetProgramiv(programID, GL_LINK_STATUS, (int *)&isLinked);
-	if(isLinked == GL_FALSE) {
+	glGetProgramiv(ProgramID, GL_LINK_STATUS, (int *)&isLinked);
+	if (isLinked == GL_FALSE)
+	{
 		GLint maxLength = 0;
-		glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &maxLength);
+		glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &maxLength);
 
 		//The maxLength includes the NULL character
 		GLchar* infoLog = new GLchar[maxLength];
-		glGetProgramInfoLog(programID, maxLength, &maxLength, infoLog);
-		
-		//We don't need the program anymore.
-		glDeleteProgram(programID);
-		//Don't leak shaders either.
-		glDeleteShader(vertexShaderID);
-		glDeleteShader(fragmentShaderID);
+		glGetProgramInfoLog(ProgramID, maxLength, &maxLength, infoLog);
 
-		std::cout<<"LINKING PROGRAM ERROR: "<<std::endl<<infoLog<<std::endl;
+		//We don't need the program anymore.
+		glDeleteProgram(ProgramID);
+		//Don't leak shaders either.
+		glDeleteShader(VertexShaderID);
+		glDeleteShader(FragmentShaderID);
+
+		std::cout << "LINKING PROGRAM ERROR: " << std::endl << infoLog << std::endl;
 		delete[] infoLog;
 		exit(1);
 	}
 	//Always detach shaders after a successful link.
-	glDetachShader(programID, vertexShaderID);
-	glDetachShader(programID, fragmentShaderID);
-	return programID;
+	glDetachShader(ProgramID, VertexShaderID);
+	glDetachShader(ProgramID, FragmentShaderID);
+	return ProgramID;
 }
 
-void StandardShader::loadTransformationMatrix(glm::mat4x4 transformationMatrix){
-	GLint location = glGetUniformLocation(programID, "transformationMatrix");
-	glUniformMatrix4fv(location, 1, GL_FALSE, &transformationMatrix[0][0]);
+void StandardShader::Start()
+{
+	glUseProgram(ProgramID);
+}
+void StandardShader::Stop()
+{
+	glUseProgram(0);
 }
 
-void StandardShader::loadProjectionMatrix(glm::mat4x4 projectionMatrix){
-	GLint location = glGetUniformLocation(programID, "projectionMatrix");
-	glUniformMatrix4fv(location, 1, GL_FALSE, &projectionMatrix[0][0]);
+void StandardShader::LoadColor(const glm::vec3 &Color)
+{
+	glUniform3fv(glGetUniformLocation(ProgramID, "color"), 1, &Color[0]);
 }
 
-void StandardShader::loadViewMatrix(glm::mat4x4 viewMatrix){
-	GLint location = glGetUniformLocation(programID, "viewMatrix");
-	glUniformMatrix4fv(location, 1, GL_FALSE, &viewMatrix[0][0]);
+void StandardShader::LoadTransformationMatrix(glm::mat4x4 TransformationMatrix)
+{
+	GLint location = glGetUniformLocation(ProgramID, "transformationMatrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, &TransformationMatrix[0][0]);
+}
+
+void StandardShader::LoadProjectionMatrix(glm::mat4x4 ProjectionMatrix)
+{
+	GLint location = glGetUniformLocation(ProgramID, "projectionMatrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, &ProjectionMatrix[0][0]);
+}
+
+void StandardShader::LoadViewMatrix(glm::mat4x4 ViewMatrix)
+{
+	GLint location = glGetUniformLocation(ProgramID, "viewMatrix");
+	glUniformMatrix4fv(location, 1, GL_FALSE, &ViewMatrix[0][0]);
 }
 
 
-void StandardShader::loadDirectionalLight(DirectionalLight directionalLight){
-	GLint location = glGetUniformLocation(programID, "lightColor");
-	glUniform3fv(location, 1, &directionalLight.color[0]);
-	location = glGetUniformLocation(programID, "lightDirection");
-	glUniform3fv(location, 1, &directionalLight.direction[0]);
+void StandardShader::LoadDirectionalLight(DirectionalLight DirectionalLightToLoad)
+{
+	GLint location = glGetUniformLocation(ProgramID, "lightColor");
+	glUniform3fv(location, 1, &DirectionalLightToLoad.color[0]);
+	location = glGetUniformLocation(ProgramID, "lightDirection");
+	glUniform3fv(location, 1, &DirectionalLightToLoad.direction[0]);
 }
 
+StandardShader& StandardShader::GetInstance()
+{
+	static StandardShader StandardShaderSingleton;
+	return StandardShaderSingleton;
+}
 
-
-
-
-
-std::string StandardShader::loadFile(std::string path){
+std::string StandardShader::LoadFile(std::string path) // TO-DO Move away from here
+{
 	std::ifstream t(path);
-	std::string str((std::istreambuf_iterator<char>(t)),
-		std::istreambuf_iterator<char>());
+	std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
 	return str;
 }

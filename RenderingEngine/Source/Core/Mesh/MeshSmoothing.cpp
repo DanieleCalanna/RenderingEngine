@@ -1,7 +1,10 @@
-#include <Core/Mesh/MeshSmoothing.hpp>
-
-#include <Core/Mesh/MeshRenderer.hpp>
+#include "Core/Mesh/MeshSmoothing.hpp"
+#include "Core/Entities/Actor.hpp"
+#include "Core/Mesh/IndexedMesh.hpp"
+#include "Core/Mesh/MeshRenderer.hpp"
 #include <cstdio>
+#include <iostream>
+#include <string>
 
 #define OCL_FILENAME "res/Kernels/meshsmooth.ocl"
 
@@ -107,7 +110,8 @@ cl_event normals_per_vertex(
 	return normals_per_vertex_evt;
 }
 
-MeshSmoothing::MeshSmoothing(){
+MeshSmoothing::MeshSmoothing(Actor* Owner) : Component(Owner)
+{
 	iterations = 1;
 	lambda = 0.5f;
 	mi = -0.500001f;
@@ -116,9 +120,8 @@ MeshSmoothing::MeshSmoothing(){
 
 #define CL_USE_DEPRECATED_OPENCL_1_1_APIS
 
-void MeshSmoothing::Start(){
-
-
+void MeshSmoothing::Start()
+{
 	cl_int err;
 	printf("\n======= BOILER INFO ========\n");
 	platform = select_platform(1);
@@ -138,14 +141,13 @@ void MeshSmoothing::Start(){
 	program = create_program(OCL_FILENAME, context, deviceID);
 	printf("============================\n");
 
+	MeshRenderer* OwnerMeshRenderer = (MeshRenderer*) GetOwner()->GetComponent<MeshRenderer>();
+	//Mesh = (IndexedMesh*)OwnerMeshRenderer->Get; //TO-DO
 
-	MeshRenderer *meshRenderer = (MeshRenderer*)gameObject->components.front();
-	mesh = (IndexedMesh*)meshRenderer->mesh;
 
-
-	mesh->meanAdjNum = mesh->nadjs/(float)mesh->nels;
-	mesh->memsize = 4*mesh->nels*sizeof(float);
-	mesh->adjmemsize = mesh->nadjs*sizeof(unsigned int);
+	Mesh->meanAdjNum = Mesh->nadjs/(float)Mesh->nels;
+	Mesh->memsize = 4*Mesh->nels*sizeof(float);
+	Mesh->adjmemsize = Mesh->nadjs*sizeof(unsigned int);
 		
 	printf("====== SMOOTHING INFO ======\n");
 	std::cout << " # Iterations: " << iterations << std::endl;
@@ -154,27 +156,27 @@ void MeshSmoothing::Start(){
 	printf("============================\n");
 		
 	printf("========= OBJ INFO =========\n");
-	std::cout << " # Vertex: " << mesh->nels << std::endl;
-	std::cout << " # Adjacents: " << mesh->nadjs << std::endl;
-	std::cout << " # Min vertex adjs: " << mesh->minAdjNum << std::endl;
-	std::cout << " # Max vertex adjs: " << mesh->maxAdjNum << std::endl;
-	std::cout << " # Mean vertex adjs: " << mesh->meanAdjNum << std::endl;
+	std::cout << " # Vertex: " << Mesh->nels << std::endl;
+	std::cout << " # Adjacents: " << Mesh->nadjs << std::endl;
+	std::cout << " # Min vertex adjs: " << Mesh->minAdjNum << std::endl;
+	std::cout << " # Max vertex adjs: " << Mesh->maxAdjNum << std::endl;
+	std::cout << " # Mean vertex adjs: " << Mesh->meanAdjNum << std::endl;
 	printf("============================\n\n");
 			
 	// Create Buffers
-	cl_vertex_buffer = clCreateFromGLBuffer(context, CL_MEM_READ_WRITE, mesh->vertexBuffer, &err);
-	cl_normals_buffer = clCreateFromGLBuffer(context, CL_MEM_READ_WRITE, mesh->normalsBuffer, &err);
-	cl_adjArray = clCreateBuffer(context, CL_MEM_READ_WRITE|CL_MEM_COPY_HOST_PTR, mesh->adjmemsize, mesh->adjArray, &err);
-	cl_result = clCreateBuffer(context, CL_MEM_READ_WRITE, mesh->memsize, NULL, &err);
-	cl_normals_per_face = clCreateBuffer(context, CL_MEM_READ_WRITE, mesh->indices.size()/3*sizeof(float)*4, NULL, &err);
+	cl_vertex_buffer = clCreateFromGLBuffer(context, CL_MEM_READ_WRITE, Mesh->vertexBuffer, &err);
+	cl_normals_buffer = clCreateFromGLBuffer(context, CL_MEM_READ_WRITE, Mesh->normalsBuffer, &err);
+	cl_adjArray = clCreateBuffer(context, CL_MEM_READ_WRITE|CL_MEM_COPY_HOST_PTR, Mesh->adjmemsize, Mesh->adjArray, &err);
+	cl_result = clCreateBuffer(context, CL_MEM_READ_WRITE, Mesh->memsize, NULL, &err);
+	cl_normals_per_face = clCreateBuffer(context, CL_MEM_READ_WRITE, Mesh->indices.size()/3*sizeof(float)*4, NULL, &err);
 
-	std::vector < unsigned int > *faces_of_each_vertex = new std::vector < unsigned int >[mesh->nels];
-	int faceIndexesDim = ((int)mesh->indices.size())/3*4;
+	std::vector < unsigned int > *faces_of_each_vertex = new std::vector < unsigned int >[Mesh->nels];
+	int faceIndexesDim = ((int)Mesh->indices.size())/3*4;
 	unsigned int* faceIndexes = new unsigned int[faceIndexesDim];
 	for(int i=0; i<faceIndexesDim/4; i++){
-		unsigned int vertex1ID = mesh->indices[i*3];
-		unsigned int vertex2ID = mesh->indices[i*3+1];
-		unsigned int vertex3ID = mesh->indices[i*3+2];
+		unsigned int vertex1ID = Mesh->indices[i*3];
+		unsigned int vertex2ID = Mesh->indices[i*3+1];
+		unsigned int vertex3ID = Mesh->indices[i*3+2];
 		faces_of_each_vertex[vertex1ID].push_back(i);
 		faces_of_each_vertex[vertex2ID].push_back(i);
 		faces_of_each_vertex[vertex3ID].push_back(i);
@@ -185,9 +187,9 @@ void MeshSmoothing::Start(){
 		//printf("face %d -> %d / %d / %d\n", i, faceIndexes[i*4], faceIndexes[i*4+1], faceIndexes[i*4+2]);
 	}
 
-	int *faces_info_array = new int[mesh->nels*2];
+	int *faces_info_array = new int[Mesh->nels*2];
 	unsigned int currentfaceIndex = 0;
-	for(int i=0; i<mesh->nels; i++){
+	for(unsigned int i=0; i<Mesh->nels; i++){
 
 		std::vector < unsigned int > faces_of_the_vertex = faces_of_each_vertex[i];
 
@@ -199,13 +201,14 @@ void MeshSmoothing::Start(){
 	}
 	unsigned int *faceIndex_per_vertex = new unsigned int[currentfaceIndex];
 	int index_per_vertex = 0;
-	for(int i=0; i<mesh->nels; i++){
+	for(unsigned int i=0; i<Mesh->nels; i++)
+	{
 		std::vector < unsigned int > faces_of_the_vertex = faces_of_each_vertex[i];
 		for(unsigned int x : faces_of_the_vertex)
 			faceIndex_per_vertex[index_per_vertex++] = x;
 	}
 
-	cl_faces_info_array = clCreateBuffer(context, CL_MEM_READ_WRITE|CL_MEM_COPY_HOST_PTR, mesh->nels*2*sizeof(int), faces_info_array, &err);
+	cl_faces_info_array = clCreateBuffer(context, CL_MEM_READ_WRITE|CL_MEM_COPY_HOST_PTR, Mesh->nels*2*sizeof(int), faces_info_array, &err);
 	cl_faceIndex_per_vertex = clCreateBuffer(context, CL_MEM_READ_WRITE|CL_MEM_COPY_HOST_PTR, currentfaceIndex*sizeof(unsigned int), faceIndex_per_vertex, &err);
 	cl_faceIndexes = clCreateBuffer(context, CL_MEM_READ_WRITE|CL_MEM_COPY_HOST_PTR, faceIndexesDim*sizeof(int), faceIndexes, &err);
 
@@ -235,12 +238,12 @@ void MeshSmoothing::ApplySmooth(){
 	clEnqueueAcquireGLObjects(queue, 2, &cl_vertex_buffer, 0, NULL, &lock);
 
 	for(int i=0; i<iterations; i++) {
-		cl_event smooth_evt1 = smooth(queue, smooth_k, &lock, cl_vertex_buffer, cl_adjArray, cl_result, mesh->nels, lambda);
-		lock = smooth(queue, smooth_k, &smooth_evt1, cl_result, cl_adjArray, cl_vertex_buffer, mesh->nels, mi);
+		cl_event smooth_evt1 = smooth(queue, smooth_k, &lock, cl_vertex_buffer, cl_adjArray, cl_result, Mesh->nels, lambda);
+		lock = smooth(queue, smooth_k, &smooth_evt1, cl_result, cl_adjArray, cl_vertex_buffer, Mesh->nels, mi);
 	}
 
-	cl_event normals_per_face_evt = normals_per_face(queue, normals_per_face_k, &lock, cl_vertex_buffer, cl_faceIndexes, cl_normals_per_face, ((cl_int)mesh->indices.size())/3);
-	cl_event normals_per_vertex_evt = normals_per_vertex(queue, normals_per_vertex_k, &normals_per_face_evt, cl_normals_per_face, cl_faces_info_array, cl_faceIndex_per_vertex, cl_normals_buffer, mesh->nels);
+	cl_event normals_per_face_evt = normals_per_face(queue, normals_per_face_k, &lock, cl_vertex_buffer, cl_faceIndexes, cl_normals_per_face, ((cl_int)Mesh->indices.size())/3);
+	cl_event normals_per_vertex_evt = normals_per_vertex(queue, normals_per_vertex_k, &normals_per_face_evt, cl_normals_per_face, cl_faces_info_array, cl_faceIndex_per_vertex, cl_normals_buffer, Mesh->nels);
 	clEnqueueReleaseGLObjects(queue, 2, buffersToAquire, 1, &normals_per_vertex_evt, &unlock);
 	clWaitForEvents(1, &unlock);
 }

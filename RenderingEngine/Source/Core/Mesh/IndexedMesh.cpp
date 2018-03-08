@@ -10,7 +10,7 @@
 
 using namespace std;
 
-std::vector<std::string> split(const std::string& s, char delimiter)
+std::vector<std::string> split(const std::string& s, char delimiter) //TO-DO Move away
 {
 	std::vector<std::string> tokens;
 	std::string token;
@@ -22,22 +22,24 @@ std::vector<std::string> split(const std::string& s, char delimiter)
 	return tokens;
 }
 
-void IndexedMesh::InitBuffers(){
-	glGenVertexArrays(1, &vaoID);
-	glBindVertexArray(vaoID);
+void IndexedMesh::InitBuffers()
+{
+	glGenVertexArrays(1, &VertexArrayID);
+	glBindVertexArray(VertexArrayID);
 
 	glGenBuffers(1, &elementbuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	vertexBuffer = storeDataInAttributeListShared(0, 4, &vertices[0], vertices.size());
+	vertexBuffer = storeDataInAttributeListShared(0, 4, &Vertices[0], (int)Vertices.size());
 	cout<<"vertexBuffer created"<<endl;
-	normalsBuffer = storeDataInAttributeListShared(1, 4, &normals[0], normals.size());
+	normalsBuffer = storeDataInAttributeListShared(1, 4, &Normals[0], (int)Normals.size());
 	glBindVertexArray(0);
 }
 
-Mesh* IndexedMesh::FromOBJFile(std::string path){
+Mesh* IndexedMesh::FromOBJFile(std::string path)
+{
 
 	IndexedMesh *indexedMesh = new IndexedMesh();
 	std::vector< unsigned int > vertexIndices, uvIndices, normalIndices;
@@ -46,13 +48,15 @@ Mesh* IndexedMesh::FromOBJFile(std::string path){
 	std::vector< glm::vec4 > temp_normals;
 
 	ifstream file(path);
-	if( !file.is_open() ){
+	if (!file.is_open())
+	{
 		printf("Impossible to open the file !\n");
 		return indexedMesh;
 	}
 	string line;
-	while(getline(file, line)){
-		
+	while (getline(file, line))
+	{
+
 		std::vector<std::string> words = split(line, ' ');
 
 		// else : parse lineHeader
@@ -63,7 +67,7 @@ Mesh* IndexedMesh::FromOBJFile(std::string path){
 			vertex.y = stof(words[2]);
 			vertex.z = stof(words[3]);
 			vertex.w = 0.0f;
-			indexedMesh->vertices.push_back(vertex);
+			indexedMesh->Vertices.push_back(vertex);
 			temp_vertices.push_back(vertex);
 		}
 		else if (words[0] == "vt")
@@ -102,47 +106,50 @@ Mesh* IndexedMesh::FromOBJFile(std::string path){
 			uvIndex[2] = stoi(ParamsOfVertex2[1]);
 			normalIndex[2] = stoi(ParamsOfVertex2[2]);
 
-			indexedMesh->indices.push_back(vertexIndex[0]-1);
-			indexedMesh->indices.push_back(vertexIndex[1]-1);
-			indexedMesh->indices.push_back(vertexIndex[2]-1);
+			indexedMesh->indices.push_back(vertexIndex[0] - 1);
+			indexedMesh->indices.push_back(vertexIndex[1] - 1);
+			indexedMesh->indices.push_back(vertexIndex[2] - 1);
 			vertexIndices.push_back(vertexIndex[0]);
 			vertexIndices.push_back(vertexIndex[1]);
 			vertexIndices.push_back(vertexIndex[2]);
-			uvIndices    .push_back(uvIndex[0]);
-			uvIndices    .push_back(uvIndex[1]);
-			uvIndices    .push_back(uvIndex[2]);
+			uvIndices.push_back(uvIndex[0]);
+			uvIndices.push_back(uvIndex[1]);
+			uvIndices.push_back(uvIndex[2]);
 			normalIndices.push_back(normalIndex[0]);
 			normalIndices.push_back(normalIndex[1]);
 			normalIndices.push_back(normalIndex[2]);
 		}
 	}
-	glm::vec4 *normals = new glm::vec4[indexedMesh->vertices.size()];
+	glm::vec4 *Normals = new glm::vec4[indexedMesh->Vertices.size()];
 	// For each vertex of each triangle
 
-	for( unsigned int i=0; i<vertexIndices.size(); i++ ){
+	for (unsigned int i = 0; i < vertexIndices.size(); i++)
+	{
 		unsigned int vertexIndex = vertexIndices[i] - 1;
 		unsigned int normalIndex = normalIndices[i] - 1;
-		normals[vertexIndex] = temp_normals[ normalIndex ];
+		Normals[vertexIndex] = temp_normals[normalIndex];
 	}
-	for( int i=0; i<indexedMesh->vertices.size(); i++){
-		indexedMesh->normals.push_back(normals[i]);
+	for (int i = 0; i < (int)indexedMesh->Vertices.size(); i++)
+	{
+		indexedMesh->Normals.push_back(Normals[i]);
 	}
-	
+
 
 	// Init number of vertex
-	indexedMesh->nels = indexedMesh->vertices.size();
+	indexedMesh->nels = (int)indexedMesh->Vertices.size();
 	// Discover adjacents vertex for each vertex
 	std::vector< unsigned int >* adjacents = new std::vector< unsigned int >[indexedMesh->nels];
 
-	for(int i=0; i<vertexIndices.size(); i+=3){
+	for (int i = 0; i < vertexIndices.size(); i += 3)
+	{
 		unsigned int vertexID1 = vertexIndices[i] - 1;
-		unsigned int vertexID2 = vertexIndices[i+1] - 1;
-		unsigned int vertexID3 = vertexIndices[i+2] - 1;
+		unsigned int vertexID2 = vertexIndices[i + 1] - 1;
+		unsigned int vertexID3 = vertexIndices[i + 2] - 1;
 
 		std::vector< unsigned int >* adjacent1 = &adjacents[vertexID1];
 		std::vector< unsigned int >* adjacent2 = &adjacents[vertexID2];
 		std::vector< unsigned int >* adjacent3 = &adjacents[vertexID3];
-		
+
 		if (std::find(adjacent1->begin(), adjacent1->end(), vertexID2) == adjacent1->end())
 			adjacent1->push_back(vertexID2);
 		if (std::find(adjacent1->begin(), adjacent1->end(), vertexID3) == adjacent1->end())
@@ -158,37 +165,39 @@ Mesh* IndexedMesh::FromOBJFile(std::string path){
 		if (std::find(adjacent3->begin(), adjacent3->end(), vertexID2) == adjacent3->end())
 			adjacent3->push_back(vertexID2);
 	}
-	
-	int currentAdjIndex = 0;
-	indexedMesh->minAdjNum = adjacents[0].size();
-	indexedMesh->maxAdjNum = 0;
-	
-	for(int i=0; i<indexedMesh->nels; i++) {
 
-		unsigned int currentAdjSize = adjacents[i].size();
+	int currentAdjIndex = 0;
+	indexedMesh->minAdjNum = (int)adjacents[0].size();
+	indexedMesh->maxAdjNum = 0;
+
+	for (unsigned int i = 0; i < indexedMesh->nels; i++)
+	{
+
+		unsigned int currentAdjSize = (unsigned int)adjacents[i].size();
 
 		unsigned int* adjIndexPtr = new unsigned int[1];
-		*adjIndexPtr = ((unsigned int)currentAdjIndex)<<6;
-		*adjIndexPtr += (currentAdjSize<<26)>>26;
+		*adjIndexPtr = ((unsigned int)currentAdjIndex) << 6;
+		*adjIndexPtr += (currentAdjSize << 26) >> 26;
 		float *f = (float*)adjIndexPtr;
-		indexedMesh->vertices[i].w = *f;
+		indexedMesh->Vertices[i].w = *f;
 
 		//printf("indexOfAdjs  ->  %d   vs   %d\n", (*adjIndexPtr)>>6, currentAdjIndex);
 		//printf("numOfAdjs  ->  %d   vs   %d\n", ((*adjIndexPtr)<<26)>>26, currentAdjSize);
 
 		// Min & max adjacent number 
-		if(currentAdjSize > indexedMesh->maxAdjNum) indexedMesh->maxAdjNum = currentAdjSize;
-		else if(currentAdjSize < indexedMesh->minAdjNum) indexedMesh->minAdjNum = currentAdjSize;
-		
+		if (currentAdjSize > indexedMesh->maxAdjNum) indexedMesh->maxAdjNum = currentAdjSize;
+		else if (currentAdjSize < indexedMesh->minAdjNum) indexedMesh->minAdjNum = currentAdjSize;
+
 		currentAdjIndex += currentAdjSize;
 	}
 	indexedMesh->nadjs = currentAdjIndex;
-	
+
 	// Now, currentAdjIndex is the tolal adjacents numbers.
 	indexedMesh->adjArray = new unsigned int[currentAdjIndex];
 	int adjIndex = 0;
-	for(int i=0; i<indexedMesh->nels; i++) {
-		for( unsigned int vertexIndex : adjacents[i])
+	for (unsigned int i = 0; i < indexedMesh->nels; i++)
+	{
+		for (unsigned int vertexIndex : adjacents[i])
 			indexedMesh->adjArray[adjIndex++] = vertexIndex;
 	}
 
@@ -205,29 +214,29 @@ Mesh* IndexedMesh::FromOBJFile(std::string path){
 	return indexedMesh;
 }
 
-void IndexedMesh::Render(){
+void IndexedMesh::Render()
+{
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
 
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glEnableClientState( GL_COLOR_ARRAY );
-
-	glBindVertexArray(vaoID);
+	glBindVertexArray(VertexArrayID);
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, (void*)0);
+	glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, (void*)0);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glBindVertexArray(0);
 
-	glDisableClientState( GL_VERTEX_ARRAY );
-	glDisableClientState( GL_COLOR_ARRAY );
-
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
 }
 
-GLuint IndexedMesh::storeDataInAttributeListShared(int attributeNumber, int coordinateSize, GLvoid * data, int size){
+GLuint IndexedMesh::storeDataInAttributeListShared(int attributeNumber, int coordinateSize, GLvoid * data, int size)
+{
 	GLuint vboID; 
 	glGenBuffers(1, &vboID);
 	glBindBuffer(GL_ARRAY_BUFFER_ARB, vboID);
@@ -238,6 +247,7 @@ GLuint IndexedMesh::storeDataInAttributeListShared(int attributeNumber, int coor
 }
 
 
-void IndexedMesh::Clear(){
+void IndexedMesh::Clear()
+{
 	//TO-DO
 }

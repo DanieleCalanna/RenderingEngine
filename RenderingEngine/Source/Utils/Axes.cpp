@@ -1,28 +1,35 @@
-#include "GL/glew.h"
 #include "Utils/Axes.hpp"
-#include "Core/Components/CameraComponent.hpp"
+#include "Core/Camera/Camera.hpp"
+#include "GL/glew.h"
+#include "glm/mat4x4.hpp"
 
-void Axes::glDrawGrid(){
-	int count = 100;
-	float length = 5;
+void Axes::DrawGrid()
+{
+	int Count = 100;
+	float Length = 5;
 	glBegin(GL_LINES);
 	glColor4f(25.0f/255.0f, 35.0f/255.0f, 46.0f/255.0f, 0.25f);
-	for(int x = -count; x<count; x++){
-		if(x != 0){
-			glVertex3f(x*length, 0, 100*5);
-			glVertex3f(x*length, 0, -100*5);
+	for(int x = -Count; x<Count; x++)
+	{
+		if(x != 0)
+		{
+			glVertex3f(x*Length, 0, 100*5);
+			glVertex3f(x*Length, 0, -100*5);
 		}
 	}
-	for(int z = -count; z<count; z++){
-		if(z != 0){
-			glVertex3f(100*length, 0, z*length);
-			glVertex3f(-100*length, 0, z*length);
+	for(int z = -Count; z<Count; z++)
+	{
+		if(z != 0)
+		{
+			glVertex3f(100*Length, 0, z*Length);
+			glVertex3f(-100*Length, 0, z*Length);
 		}
 	}
 	glEnd();
 }
 
-void Axes::glDrawAxes(){
+void Axes::DrawAxes()
+{
 	float length = 500;
 	glBegin(GL_LINES);
 	// draw line for x axis
@@ -40,8 +47,13 @@ void Axes::glDrawAxes(){
 	glEnd();
 }
 
-void Axes::glLoadCameraMatrix(){
-	glm::mat4x4 cameraMatrix = CameraComponent::getInstance().GetProjectionMatrix() * CameraComponent::getInstance().GetViewMatrix();
-	glLoadIdentity();
-	glMultMatrixf(&cameraMatrix[0][0]);
+void Axes::LoadCameraMatrix()
+{
+	const Camera* ActiveCamera = Camera::GetActiveCamera();
+	if (ActiveCamera)
+	{
+		glm::mat4x4 CameraMatrix = ActiveCamera->GetProjectionMatrix() * ActiveCamera->GetViewMatrix();
+		glLoadIdentity();
+		glMultMatrixf(&CameraMatrix[0][0]);
+	}
 }

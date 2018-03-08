@@ -171,12 +171,12 @@ cl_program create_program(const char * const fname, cl_context ctx, cl_device_id
 cl_ulong runtime_ns(cl_event evt)
 {
 	cl_int err;
-	cl_ulong start, end;
-	err = clGetEventProfilingInfo(evt, CL_PROFILING_COMMAND_START, sizeof(start), &start, NULL);
+	cl_ulong Start, end;
+	err = clGetEventProfilingInfo(evt, CL_PROFILING_COMMAND_START, sizeof(Start), &Start, NULL);
 	ocl_check(err, "get start");
 	err = clGetEventProfilingInfo(evt, CL_PROFILING_COMMAND_END, sizeof(end), &end, NULL);
 	ocl_check(err, "get end");
-	return (end - start);
+	return (end - Start);
 }
 
 // Runtime of an event, in milliseconds

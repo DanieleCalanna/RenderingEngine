@@ -1,13 +1,14 @@
 #pragma once
 
-class Axes{
+class Axes
+{
 private:
 	Axes(){}
+
 public:
-	static void glDrawGrid();
+	static void DrawGrid();
 
-	static void glDrawAxes();
+	static void DrawAxes();
 
-	static void glLoadCameraMatrix();
-
+	static void LoadCameraMatrix();
 };
