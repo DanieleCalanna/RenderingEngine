@@ -122,10 +122,12 @@ void StandardShader::LoadViewMatrix(glm::mat4x4 ViewMatrix)
 
 void StandardShader::LoadDirectionalLight(DirectionalLight DirectionalLightToLoad)
 {
+	auto Color = DirectionalLightToLoad.GetColor();
+	auto Direction = DirectionalLightToLoad.GetDirection();
 	GLint location = glGetUniformLocation(ProgramID, "lightColor");
-	glUniform3fv(location, 1, &DirectionalLightToLoad.color[0]);
+	glUniform3fv(location, 1, &Color[0]);
 	location = glGetUniformLocation(ProgramID, "lightDirection");
-	glUniform3fv(location, 1, &DirectionalLightToLoad.direction[0]);
+	glUniform3fv(location, 1, &Direction[0]);
 }
 
 StandardShader& StandardShader::GetInstance()

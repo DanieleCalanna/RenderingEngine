@@ -1,12 +1,15 @@
 #include "Core/Camera/Camera.hpp"
 #include "Core/Camera/CameraComponent.hpp"
+#include "Core/Camera/CameraController.hpp"
+#include "Core/Transform.hpp"
 #include "glm/mat4x4.hpp"
 
 const Camera* Camera::ActiveCamera = nullptr;
 
-Camera::Camera()
+Camera::Camera(std::string Name) : Actor(Name)
 {
 	OwnedCameraComponent = AddComponent<CameraComponent>();
+	OwnedCameraController = AddComponent<CameraController>();
 }
 
 void Camera::SetActive() const
@@ -21,7 +24,7 @@ glm::mat4x4 Camera::GetProjectionMatrix() const
 
 glm::mat4x4 Camera::GetViewMatrix() const
 {
-	return glm::mat4x4();
+	return OwnedCameraComponent->GetViewMatrix();
 }
 
 const Camera* Camera::GetActiveCamera()

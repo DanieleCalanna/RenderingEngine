@@ -1,14 +1,18 @@
 #pragma once
 
-class DirectionalLight;
-
-#include <Core/Components/Component.hpp>
+#include <Core/Entities/Actor.hpp>
 #include <glm/vec3.hpp>
 
-class DirectionalLight : public Component
+class DirectionalLight : public Actor
 {
 public:
-	glm::vec3 color = glm::vec3(1.0f);
-	glm::vec3 direction = glm::vec3(100,-300,1);
-	bool shadow = true;
+
+	DirectionalLight(std::string ActorName);
+
+	const glm::vec3 GetColor() const;
+	const glm::vec3 GetDirection() const;
+
+private:
+	glm::vec3 Color = glm::vec3(1.0f);
+	bool bGeneratesShadows = true;
 };

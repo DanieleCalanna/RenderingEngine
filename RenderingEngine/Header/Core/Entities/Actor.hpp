@@ -11,7 +11,7 @@ class Actor
 
 public:
 
-	Actor();
+	Actor(std::string ActorName);
 	~Actor();
 
 	void AttachToActor(Actor* ActorTarget);
@@ -47,7 +47,11 @@ public:
 	void SetWorldTransform(const Transform& NewWorldTransform);
 	Transform GetWorldTransform() const;
 
+	std::string GetName() const;
+
 private:
+
+	std::string Name;
 
 	Transform * RelativeTransform = nullptr;
 

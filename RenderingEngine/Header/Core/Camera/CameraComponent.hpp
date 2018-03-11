@@ -5,26 +5,14 @@
 
 class CameraComponent : public Component
 {
-
 public:
 
-	virtual void Update() override;
-
-	glm::mat4x4 GetProjectionMatrix() const;
-	glm::mat4x4 GetViewMatrix() const;
-
-	CameraComponent();
+	const glm::mat4x4 GetProjectionMatrix() const;
+	const glm::mat4x4 GetViewMatrix() const;
 
 private:
 
-	float FieldOfView = 70;
+	float FieldOfView = 70.0f;
 	float NearPlane = 0.1f;
-	float FarPlane = 3000;
-
-	glm::mat4x4* ProjectionMatrix = nullptr;
-	glm::mat4x4* ViewMatrix = nullptr;
-
-	void UpdateViewMatrix();
-	void UpdateProjectionMatrix();
-
+	float FarPlane = 3000.0f;
 };

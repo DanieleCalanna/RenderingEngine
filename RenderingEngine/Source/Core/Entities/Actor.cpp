@@ -3,12 +3,13 @@
 #include <Core/Components/Component.hpp>
 #include <algorithm>
 
-Actor::Actor() 
+Actor::Actor(std::string ActorName)
 {
+	Name = ActorName;
 	RelativeTransform = new Transform();
 }
 
-Actor::~Actor() 
+Actor::~Actor()
 {
 	for (Component* Component : Components)
 	{
@@ -158,4 +159,9 @@ Transform Actor::GetWorldTransform() const
 		return Transform::Combine(Parent->GetWorldTransform(), *RelativeTransform);
 	}
 	return *RelativeTransform;
+}
+
+std::string Actor::GetName() const
+{
+	return Name;
 }

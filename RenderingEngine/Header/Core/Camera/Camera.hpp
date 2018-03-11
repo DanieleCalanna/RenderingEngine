@@ -4,11 +4,12 @@
 #include "glm/fwd.hpp"
 
 class CameraComponent;
+class CameraController;
 
 class Camera : public Actor
 {
 public:
-	Camera();
+	Camera(std::string Name);
 
 	void SetActive() const;
 
@@ -20,6 +21,7 @@ public:
 private:
 
 	CameraComponent * OwnedCameraComponent = nullptr;
+	CameraController * OwnedCameraController = nullptr;
 
 	static const Camera* ActiveCamera;
 };

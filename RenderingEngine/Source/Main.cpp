@@ -1,9 +1,4 @@
-#include <GL/glew.h>
-
-#include <vector>
-#include <string>
-#include <iostream>
-
+#include "GL/glew.h"
 #include "Core/Window.hpp"
 #include "Core/Shaders/StandardShader.hpp"
 #include "Core/Mesh/Mesh.hpp"
@@ -17,31 +12,36 @@
 #include "Core/Transform.hpp"
 #include "Utils/Axes.hpp"
 
+#include <vector>
+#include <string>
+#include <iostream>
+
+
 Actor* Scene;
 
 void Init()
 {
 	/*-- Camera Start --*/
-	Scene = new Actor();
-	Camera* MainCamera = new Camera();
+	Scene = new Actor("Scene");
+	Camera* MainCamera = new Camera("Camera");
 	MainCamera->AttachToActor(Scene);
 	MainCamera->SetActive();
 	Transform CameraTransform;
 	CameraTransform.Location = glm::vec3(0.0f, 30.0f, 100.0f);
-	//CameraTransform.Rotation.Rotate(new Vector4f(1,0,0,(float)(22*Math.PI/180)));
+	CameraTransform.Rotation = glm::vec3(22*3.14f/180, 0.0f, 0.0f);
 	MainCamera->SetWorldTransform(CameraTransform);
 	/*-- Camera End --*/
 
 	/*-- Directional Light Start --*/
-	Actor* NewDirectionalLight = new Actor();
-	NewDirectionalLight->AddComponent<DirectionalLight>();
+	DirectionalLight* NewDirectionalLight = new DirectionalLight("DirectionalLight");
+	NewDirectionalLight->SetWorldTransform(Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(100, -300, 1), glm::vec3(1.0f, 1.0f, 1.0f)));
 	/*-- Directional Light End --*/
 	
 	Mesh* MeshTest = new Mesh("Resources/Obj/gun.obj");
-	Actor* ActorMeshTest = new Actor();
+	Actor* ActorMeshTest = new Actor("Gun");
 	Transform ActorMeshTestTransform;
 	ActorMeshTestTransform.Location = glm::vec3(0.0f, 0.0f, 0.0f);
-	ActorMeshTestTransform.Scale = glm::vec3(5.0f, 5.0f, 5.0f);
+	ActorMeshTestTransform.Scale = glm::vec3(20.0f, 20.0f, 20.0f);
 	ActorMeshTest->SetWorldTransform(ActorMeshTestTransform);
 	MeshRenderer* MeshTestRenderer = ActorMeshTest->AddComponent<MeshRenderer>();
 	MeshTestRenderer->SetMesh(MeshTest);
@@ -57,6 +57,9 @@ void Init()
 void Loop()
 {
 	//meshGameObject.transform.Rotation.y+=1;
+
+	const Camera* ActiveCamera = Camera::GetActiveCamera();
+
 	Axes::LoadCameraMatrix();
 	Axes::DrawGrid();
 	Axes::DrawAxes();
@@ -68,9 +71,11 @@ void Clear()
 	Scene->Clear();
 }
 
-
 int main(int argc, char** argv)
 {
-	Window::GetWindow().Run();
+	Window::GetSingletonWindow().SetInitFunction(Init);
+	Window::GetSingletonWindow().SetLoopFunction(Loop);
+	Window::GetSingletonWindow().SetClearFunction(Clear);
+	Window::GetSingletonWindow().Run();
 	return 0;
 }

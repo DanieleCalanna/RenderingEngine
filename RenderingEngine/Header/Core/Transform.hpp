@@ -1,29 +1,24 @@
 #pragma once
 
-#include <glm/vec3.hpp>
-#include <glm/mat4x4.hpp>
-#include <glm/gtx/string_cast.hpp>
+#include "glm/vec3.hpp"
+#include "glm/mat4x4.hpp"
+
 #include <string>
 
-using namespace glm;
+class Transform
+{
+public:
+	glm::vec3 Location = glm::vec3(0.0f);
+	glm::vec3 Rotation = glm::vec3(0.0f);
+	glm::vec3 Scale = glm::vec3(1.0f);
 
-class Transform {
-	public:
-		vec3 Location = vec3(0.0f);
-		vec3 Rotation = vec3(0.0f);
-		vec3 Scale = vec3(1.0f);
-	
-		mat4x4 transformationMatrix = mat4x4(1.0f);
-	
 	Transform();
-	~Transform();
+	Transform(glm::vec3 Location, glm::vec3 Rotation, glm::vec3 Scale);
 
-	Transform(vec3 Location, vec3 Rotation, vec3 Scale);
+	const glm::mat4x4 GetTransformationMatrix() const;
 
-	mat4x4 GetTransformationMatrix();
-	
 	static Transform Combine(Transform const &Transform1, Transform const &Transform2);
 	static Transform Negate(Transform const &TransformToNegate);
 
-	std::string toString();
+	std::string ToString() const;
 };

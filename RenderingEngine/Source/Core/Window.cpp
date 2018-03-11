@@ -3,7 +3,7 @@
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	Window::GetWindow().yWheelOffset += yoffset;
+	Window::GetSingletonWindow().SetYWheelOffset(Window::GetSingletonWindow().GetYWheelOffset()+yoffset);
 }
 
 /*
@@ -11,8 +11,6 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 */
 void Window::WindowInit()
 {
-	
-	
 	if( !glfwInit() )
 	{
 	    fprintf( stderr, "Failed to initialize GLFW\n" );
@@ -29,10 +27,10 @@ void Window::WindowInit()
 	glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing 	
 
 	// Open a window and create its OpenGL context
-	width = 800;
-	height = 600;
-	window = glfwCreateWindow( width, height, "GameEngine", NULL, NULL);
-	if( window == NULL )
+	Width = 800;
+	Height = 600;
+	GLFWWindow = glfwCreateWindow( Width, Height, "GameEngine", NULL, NULL);
+	if( GLFWWindow == NULL )
 	{
 	    fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
 	    glfwTerminate();
@@ -45,17 +43,17 @@ void Window::WindowInit()
 	const GLFWvidmode * vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 	// Center our window
 	glfwSetWindowPos(
-		window,
-		(vidmode->width - width) / 2,
-		(vidmode->height - height) / 2
+		GLFWWindow,
+		(vidmode->width - Width) / 2,
+		(vidmode->height - Height) / 2
 	);
 
-	glfwMakeContextCurrent(window); // Initialize GLEW
+	glfwMakeContextCurrent(GLFWWindow); // Initialize GLEW
 
 	glfwSwapInterval(1);
 
 	// Make the window visible
-	glfwShowWindow(window);
+	glfwShowWindow(GLFWWindow);
 
 	glewExperimental=true; // Needed in core profile
 	if (glewInit() != GLEW_OK) {
@@ -70,17 +68,17 @@ void Window::WindowInit()
 	glDepthFunc(GL_LEQUAL);    // Set the type of depth-test
 	glShadeModel(GL_SMOOTH);   // Enable smooth shading
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);  // Nice perspective corrections
-	glViewport(0, 0, width, height);
+	glViewport(0, 0, Width, Height);
 
 
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwGetCursorPos(window, &xpos, &ypos);
-	prevxpos = xpos;
-	prevypos = ypos;
+	glfwSetInputMode(GLFWWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwGetCursorPos(GLFWWindow, &XPosition, &YPosition);
+	PreviousXPosition = XPosition;
+	PreviousYPosition = YPosition;
 
-	glfwSetScrollCallback(window, scroll_callback);
-	
-	
+	glfwSetScrollCallback(GLFWWindow, scroll_callback);
+
+	if (InitFunction) { InitFunction(); }
 }
 
 void Window::WindowLoop(){
@@ -89,36 +87,62 @@ void Window::WindowLoop(){
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		Loop(); //Implemented by main.cpp
+		if (LoopFunction) { LoopFunction(); } //Implemented by main.cpp
 
 		// Swap buffers
-		glfwSwapBuffers(window);
+		glfwSwapBuffers(GLFWWindow);
 
-		prevxpos = xpos;
-		prevypos = ypos;
-		glfwGetCursorPos(window, &xpos, &ypos);
+		PreviousXPosition = XPosition;
+		PreviousYPosition = YPosition;
+		glfwGetCursorPos(GLFWWindow, &XPosition, &YPosition);
 		glfwPollEvents();
 
 	} // Check if the ESC key was pressed or the window was closed
-	while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS && glfwWindowShouldClose(window) == 0 );
+	while( glfwGetKey(GLFWWindow, GLFW_KEY_ESCAPE ) != GLFW_PRESS && glfwWindowShouldClose(GLFWWindow) == 0 );
 }
 
 void Window::Run()
 {
 	WindowInit();
-	Init();
 	WindowLoop();
-	Clear();
-	glfwDestroyWindow(window);
+	if (ClearFunction) { ClearFunction(); }
+	glfwDestroyWindow(GLFWWindow);
 	glfwTerminate();
 }
 
-
-bool Window::GetKeyDown(int key)
+bool Window::GetKeyDown(int KeyId)
 {
-	int state = glfwGetKey(window, key);
-	return state == GLFW_PRESS;
+	int State = glfwGetKey(GLFWWindow, KeyId);
+	return State == GLFW_PRESS;
 }
+
+void Window::SetSize(const int & WindowWidth, const int & WindowHeight)
+{
+	Width = WindowWidth;
+	Height = WindowHeight;
+}
+
+void Window::SetInitFunction(void(*InitFunctionToCall) (void))
+{
+	InitFunction = InitFunctionToCall;
+}
+void Window::SetLoopFunction(void(*LoopFunctionToCall) (void))
+{
+	LoopFunction = LoopFunctionToCall;
+}
+void Window::SetClearFunction(void(*ClearFunctionToCall) (void))
+{
+	ClearFunction = ClearFunctionToCall;
+}
+
+int Window::GetWidth() { return Width; }
+int Window::GetHeight() { return Height; }
+double Window::GetMouseX() { return XPosition - PreviousXPosition; }
+double Window::GetMouseY() { return YPosition - PreviousYPosition; }
+
+void Window::SetYWheelOffset(double NewYWheelOffset) { YWheelOffset = NewYWheelOffset; }
+
+double Window::GetYWheelOffset() { return YWheelOffset; }
 
 
 /* Handler for window re-size event. Called back when the window first appears and

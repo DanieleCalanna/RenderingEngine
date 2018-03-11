@@ -2,50 +2,50 @@
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
 
-
-void Init(); //To implement in main.cpp
-void Loop(); //To implement in main.cpp
-void Clear(); //To implement in main.cpp
-
-
-class Window{
+class Window
+{
 private:
-	int width, height;
-	double xpos, ypos;
-	double prevxpos, prevypos;
 
-	Window(){}
+	int Width, Height;
+	double XPosition, YPosition;
+	double PreviousXPosition, PreviousYPosition;
+	double YWheelOffset;
 
+	Window() {}
 
 	void WindowInit();
 	void WindowLoop();
+
+	GLFWwindow* GLFWWindow;
+
+	void(*InitFunction) (void) = nullptr;
+	void(*LoopFunction) (void) = nullptr;
+	void(*ClearFunction) (void) = nullptr;
 public:
-	
+
 	Window(Window const&) = delete;
 	void operator=(Window const&) = delete;
 
-	GLFWwindow* window;
-	double yWheelOffset;
-
-	void Destroy();
+	void SetInitFunction(void(*InitFunctionToCall) (void));
+	void SetLoopFunction(void(*LoopFunctionToCall) (void));
+	void SetClearFunction(void(*ClearFunctionToCall) (void));
+	
 	void Run();
 
+	bool GetKeyDown(int KeyId);
 
-	bool GetKeyDown(int key);
+	void SetSize(const int &WindowWidth, const int &WindowHeight);
 
-	void SetSize(const int &width, const int &height){
-		this->width = width;
-		this->height = height;
-	}
+	int GetWidth();
+	int GetHeight();
+	double GetMouseX();
+	double GetMouseY();
+	void SetYWheelOffset(double NewYWheelOffset);
+	double GetYWheelOffset();
 
-	int Width(){ return width; }
-	int Height(){ return height; }
-
-	double getMouseX(){ return xpos-prevxpos; }
-	double getMouseY(){ return ypos-prevypos; }
-
-	static Window& GetWindow(){
-		static Window window;
-		return window;
+	static Window & GetSingletonWindow()
+	{
+		static Window SingletonWindow;
+		return SingletonWindow;
 	}
 };

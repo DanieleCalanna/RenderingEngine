@@ -30,20 +30,20 @@ void Axes::DrawGrid()
 
 void Axes::DrawAxes()
 {
-	float length = 500;
+	float Length = 500;
 	glBegin(GL_LINES);
 	// draw line for x axis
 	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(-length, 0, 0);
-	glVertex3f(length, 0.0f, 0.0f);
+	glVertex3f(-Length, 0, 0);
+	glVertex3f(Length, 0.0f, 0.0f);
 	// draw line for y axis
 	glColor3f(0.0f, 1.0f, 0.0f);
-	glVertex3f(0, -length, 0);
-	glVertex3f(0.0f, length, 0.0f);
+	glVertex3f(0, -Length, 0);
+	glVertex3f(0.0f, Length, 0.0f);
 	// draw line for Z axis
 	glColor3f(0.0f, 0.0f, 1.0f);
-	glVertex3f(0, 0, -length);
-	glVertex3f(0.0f, 0.0f, length);
+	glVertex3f(0, 0, -Length);
+	glVertex3f(0.0f, 0.0f, Length);
 	glEnd();
 }
 
