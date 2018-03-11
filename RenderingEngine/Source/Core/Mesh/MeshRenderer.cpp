@@ -30,11 +30,12 @@ void MeshRenderer::Update()
 		MeshToRender->Render();
 		
 		glDisable(GL_POLYGON_OFFSET_FILL);
-		
+		/*
 		glPolygonOffset(1, 1);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		StandardShader::GetInstance().LoadColor(glm::vec3(0.05f, 0.05f, 0.05f));
 		MeshToRender->Render();
+		*/
 		
 		StandardShader::GetInstance().Stop();
 	}

@@ -23,6 +23,7 @@ Scene* MainScene;
 void Init()
 {
 	MainScene = new Scene();
+	//MainScene->AddComponent<SkyBoxComponent>();
 	/*-- Camera Start --*/
 	Camera* MainCamera = new Camera("Camera");
 	MainCamera->AttachToActor(MainScene);
@@ -39,6 +40,7 @@ void Init()
 	DirectionalLight::GetSingletonInstance().SetWorldTransform(Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(100, -300, 1), glm::vec3(1.0f, 1.0f, 1.0f)));
 	/*-- Directional Light End --*/
 	
+	
 	Mesh* MeshTest = new Mesh("Resources/Obj/gun.obj");
 	Actor* ActorMeshTest = new Actor("Gun");
 	Transform ActorMeshTestTransform;
@@ -48,6 +50,7 @@ void Init()
 	MeshRenderer* MeshTestRenderer = ActorMeshTest->AddComponent<MeshRenderer>();
 	MeshTestRenderer->SetMesh(MeshTest);
 	ActorMeshTest->AttachToActor(MainScene);
+	
 	
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);

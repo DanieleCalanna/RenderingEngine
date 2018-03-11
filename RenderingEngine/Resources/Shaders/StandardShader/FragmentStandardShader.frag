@@ -13,8 +13,8 @@ uniform float shineDamper = 1.0f;
 uniform float reflectivity = 0.3f;
 
 
-void main(){
-
+void main()
+{
 	vec3 unitNormal = normalize(surfaceNormal); 
 	vec3 unitLightVector = normalize(lightDirection); 
 

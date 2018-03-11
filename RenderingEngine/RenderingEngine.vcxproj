@@ -144,12 +144,14 @@
     <ClCompile Include="Source\Core\Mesh\Mesh.cpp" />
     <ClCompile Include="Source\Core\Mesh\MeshRenderer.cpp" />
     <ClCompile Include="Source\Core\Mesh\MeshSmoothing.cpp" />
-    <ClCompile Include="Source\Core\Scene\Skybox.cpp" />
+    <ClCompile Include="Source\Core\Scene\SkyBox.cpp" />
+    <ClCompile Include="Source\Core\Shaders\SkyBoxShader.cpp" />
     <ClCompile Include="Source\Core\Shaders\StandardShader.cpp" />
     <ClCompile Include="Source\Core\Transform.cpp" />
     <ClCompile Include="Source\Core\Window.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Utils\Axes.cpp" />
+    <ClCompile Include="Source\Utils\Png\lodepng.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\CL\ocl_boiler.h" />
@@ -164,16 +166,21 @@
     <ClInclude Include="Header\Core\Mesh\Mesh.hpp" />
     <ClInclude Include="Header\Core\Mesh\MeshRenderer.hpp" />
     <ClInclude Include="Header\Core\Mesh\MeshSmoothing.hpp" />
-    <ClInclude Include="Header\Core\Scene\Skybox.hpp" />
+    <ClInclude Include="Header\Core\Scene\SkyBox.hpp" />
+    <ClInclude Include="Header\Core\Shaders\SkyBoxShader.hpp" />
     <ClInclude Include="Header\Core\Shaders\StandardShader.hpp" />
     <ClInclude Include="Header\Core\Transform.hpp" />
     <ClInclude Include="Header\Core\Window.hpp" />
     <ClInclude Include="Header\Utils\Axes.hpp" />
-    <ClInclude Include="resource.h" />
+    <ClInclude Include="Header\Utils\Png\lodepng.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\Shaders\StandardShader\FragmentStandardShader.frag" />
     <Text Include="Resources\Shaders\StandardShader\VertexStandardShader.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Shaders\SkyBoxShader\FragmentSkyBoxShader.frag" />
+    <None Include="Resources\Shaders\SkyBoxShader\VertexSkyBoxShader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

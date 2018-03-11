@@ -82,6 +82,15 @@
     <Filter Include="Source Files\Core\Scene">
       <UniqueIdentifier>{82195b92-6876-4b28-a5eb-bbcce34b43e6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Utils\Png">
+      <UniqueIdentifier>{781c40eb-d1a7-4ec1-9f86-70a6e63e159c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utils\Png">
+      <UniqueIdentifier>{ece96859-88e9-494a-b662-9e7d971e4cd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\SkyBoxShader">
+      <UniqueIdentifier>{3d381e84-4bc3-421a-87e2-57fb1d4d8e06}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -135,8 +144,14 @@
     <ClCompile Include="Source\Core\Scene\Scene.cpp">
       <Filter>Source Files\Core\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Core\Scene\Skybox.cpp">
+    <ClCompile Include="Source\Core\Scene\SkyBox.cpp">
       <Filter>Source Files\Core\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Utils\Png\lodepng.cpp">
+      <Filter>Source Files\Utils\Png</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Shaders\SkyBoxShader.cpp">
+      <Filter>Source Files\Core\Shaders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -185,14 +200,17 @@
     <ClInclude Include="Header\Core\Camera\Camera.hpp">
       <Filter>Header Files\Core\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Header\Core\Scene\Scene.hpp">
       <Filter>Header Files\Core\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Header\Core\Scene\Skybox.hpp">
+    <ClInclude Include="Header\Core\Scene\SkyBox.hpp">
       <Filter>Header Files\Core\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Utils\Png\lodepng.h">
+      <Filter>Header Files\Utils\Png</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Core\Shaders\SkyBoxShader.hpp">
+      <Filter>Header Files\Core\Shaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -202,5 +220,13 @@
     <Text Include="Resources\Shaders\StandardShader\VertexStandardShader.vert">
       <Filter>Resource Files\Shaders\StandardShader</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Shaders\SkyBoxShader\FragmentSkyBoxShader.frag">
+      <Filter>Resource Files\Shaders\SkyBoxShader</Filter>
+    </None>
+    <None Include="Resources\Shaders\SkyBoxShader\VertexSkyBoxShader.vert">
+      <Filter>Resource Files\Shaders\SkyBoxShader</Filter>
+    </None>
   </ItemGroup>
 </Project>
