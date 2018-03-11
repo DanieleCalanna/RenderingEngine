@@ -19,7 +19,7 @@ void MeshRenderer::Update()
 		StandardShader::GetInstance().LoadTransformationMatrix(GetOwner()->GetWorldTransform().GetTransformationMatrix());
 		StandardShader::GetInstance().LoadProjectionMatrix(ActiveCamera->GetProjectionMatrix());
 		StandardShader::GetInstance().LoadViewMatrix(ActiveCamera->GetViewMatrix());
-		//StandardShader::GetInstance().loadDirectionalLight(DirectionalLight::GetInstance());
+		StandardShader::GetInstance().LoadDirectionalLight(DirectionalLight::GetSingletonInstance());
 				
 		//Solid + Wireframe
 		

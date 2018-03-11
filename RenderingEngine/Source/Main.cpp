@@ -1,5 +1,6 @@
 #include "GL/glew.h"
 #include "Core/Window.hpp"
+#include "Core/Scene/Scene.hpp"
 #include "Core/Shaders/StandardShader.hpp"
 #include "Core/Mesh/Mesh.hpp"
 #include "Core/Mesh/IndexedMesh.hpp"
@@ -17,14 +18,14 @@
 #include <iostream>
 
 
-Actor* Scene;
+Scene* MainScene;
 
 void Init()
 {
+	MainScene = new Scene();
 	/*-- Camera Start --*/
-	Scene = new Actor("Scene");
 	Camera* MainCamera = new Camera("Camera");
-	MainCamera->AttachToActor(Scene);
+	MainCamera->AttachToActor(MainScene);
 	MainCamera->SetActive();
 	Transform CameraTransform;
 	CameraTransform.Location = glm::vec3(0.0f, 30.0f, 100.0f);
@@ -33,8 +34,9 @@ void Init()
 	/*-- Camera End --*/
 
 	/*-- Directional Light Start --*/
-	DirectionalLight* NewDirectionalLight = new DirectionalLight("DirectionalLight");
-	NewDirectionalLight->SetWorldTransform(Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(100, -300, 1), glm::vec3(1.0f, 1.0f, 1.0f)));
+	//DirectionalLight* NewDirectionalLight = new DirectionalLight("DirectionalLight");
+	//NewDirectionalLight->SetWorldTransform(Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(100, -300, 1), glm::vec3(1.0f, 1.0f, 1.0f)));
+	DirectionalLight::GetSingletonInstance().SetWorldTransform(Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(100, -300, 1), glm::vec3(1.0f, 1.0f, 1.0f)));
 	/*-- Directional Light End --*/
 	
 	Mesh* MeshTest = new Mesh("Resources/Obj/gun.obj");
@@ -45,13 +47,13 @@ void Init()
 	ActorMeshTest->SetWorldTransform(ActorMeshTestTransform);
 	MeshRenderer* MeshTestRenderer = ActorMeshTest->AddComponent<MeshRenderer>();
 	MeshTestRenderer->SetMesh(MeshTest);
-	ActorMeshTest->AttachToActor(Scene);
+	ActorMeshTest->AttachToActor(MainScene);
 	
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
-	Scene->Start();
+	MainScene->Start();
 }
 
 void Loop()
@@ -63,12 +65,12 @@ void Loop()
 	Axes::LoadCameraMatrix();
 	Axes::DrawGrid();
 	Axes::DrawAxes();
-	Scene->Update();
+	MainScene->Update();
 }
 
 void Clear()
 {
-	Scene->Clear();
+	MainScene->Clear();
 }
 
 int main(int argc, char** argv)

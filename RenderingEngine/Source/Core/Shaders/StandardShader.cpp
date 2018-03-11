@@ -119,8 +119,7 @@ void StandardShader::LoadViewMatrix(glm::mat4x4 ViewMatrix)
 	glUniformMatrix4fv(location, 1, GL_FALSE, &ViewMatrix[0][0]);
 }
 
-
-void StandardShader::LoadDirectionalLight(DirectionalLight DirectionalLightToLoad)
+void StandardShader::LoadDirectionalLight(DirectionalLight& DirectionalLightToLoad)
 {
 	auto Color = DirectionalLightToLoad.GetColor();
 	auto Direction = DirectionalLightToLoad.GetDirection();

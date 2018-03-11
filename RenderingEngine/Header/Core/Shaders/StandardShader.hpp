@@ -29,7 +29,7 @@ public:
 	void LoadTransformationMatrix(glm::mat4x4 TransformationMatrix);
 	void LoadProjectionMatrix(glm::mat4x4 ProjectionMatrix);
 	void LoadViewMatrix(glm::mat4x4 ViewMatrix);
-	void LoadDirectionalLight(DirectionalLight DirectionalLightToLoad);
+	void LoadDirectionalLight(DirectionalLight& DirectionalLightToLoad);
 
 	static StandardShader& GetInstance();
 };

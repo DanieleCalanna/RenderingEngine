@@ -14,8 +14,8 @@ public:
 	Actor(std::string ActorName);
 	~Actor();
 
-	void AttachToActor(Actor* ActorTarget);
-	void DetachFromParent();
+	virtual void AttachToActor(Actor* ActorTarget);
+	virtual void DetachFromParent();
 
 	template <class ChildComponent> ChildComponent* AddComponent()
 	{
@@ -42,9 +42,9 @@ public:
 
 	Actor* GetParent() const;
 	
-	void SetRelativeTransform(const Transform& NewRelativeTransform);
+	virtual void SetRelativeTransform(const Transform& NewRelativeTransform);
 	Transform GetRelativeTransform() const;
-	void SetWorldTransform(const Transform& NewWorldTransform);
+	virtual void SetWorldTransform(const Transform& NewWorldTransform);
 	Transform GetWorldTransform() const;
 
 	std::string GetName() const;

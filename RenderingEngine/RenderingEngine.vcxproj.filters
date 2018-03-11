@@ -76,6 +76,12 @@
     <Filter Include="Resource Files\Shaders\StandardShader">
       <UniqueIdentifier>{ff85cc63-dc0c-42bf-8956-36aa1b960b7d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Core\Scene">
+      <UniqueIdentifier>{6228ad46-e3cc-4e4d-86ce-844439b084f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Scene">
+      <UniqueIdentifier>{82195b92-6876-4b28-a5eb-bbcce34b43e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -126,6 +132,12 @@
     <ClCompile Include="Source\Core\Camera\Camera.cpp">
       <Filter>Source Files\Core\Camera</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Core\Scene\Scene.cpp">
+      <Filter>Source Files\Core\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Scene\Skybox.cpp">
+      <Filter>Source Files\Core\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\Core\Transform.hpp">
@@ -175,6 +187,12 @@
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Core\Scene\Scene.hpp">
+      <Filter>Header Files\Core\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Core\Scene\Skybox.hpp">
+      <Filter>Header Files\Core\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

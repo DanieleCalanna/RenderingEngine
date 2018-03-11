@@ -12,6 +12,12 @@ public:
 	const glm::vec3 GetColor() const;
 	const glm::vec3 GetDirection() const;
 
+	static DirectionalLight& GetSingletonInstance()
+	{
+		static DirectionalLight SingletonDirectionalLight("MainDirectionalLight");
+		return SingletonDirectionalLight;
+	}
+
 private:
 	glm::vec3 Color = glm::vec3(1.0f);
 	bool bGeneratesShadows = true;

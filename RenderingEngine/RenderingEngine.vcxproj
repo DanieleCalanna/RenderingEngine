@@ -138,11 +138,13 @@
     <ClCompile Include="Source\Core\Camera\CameraController.cpp" />
     <ClCompile Include="Source\Core\Components\Component.cpp" />
     <ClCompile Include="Source\Core\Entities\Actor.cpp" />
+    <ClCompile Include="Source\Core\Scene\Scene.cpp" />
     <ClCompile Include="Source\Core\Lights\DirectionalLight.cpp" />
     <ClCompile Include="Source\Core\Mesh\IndexedMesh.cpp" />
     <ClCompile Include="Source\Core\Mesh\Mesh.cpp" />
     <ClCompile Include="Source\Core\Mesh\MeshRenderer.cpp" />
     <ClCompile Include="Source\Core\Mesh\MeshSmoothing.cpp" />
+    <ClCompile Include="Source\Core\Scene\Skybox.cpp" />
     <ClCompile Include="Source\Core\Shaders\StandardShader.cpp" />
     <ClCompile Include="Source\Core\Transform.cpp" />
     <ClCompile Include="Source\Core\Window.cpp" />
@@ -156,11 +158,13 @@
     <ClInclude Include="Header\Core\Camera\CameraController.hpp" />
     <ClInclude Include="Header\Core\Components\Component.hpp" />
     <ClInclude Include="Header\Core\Entities\Actor.hpp" />
+    <ClInclude Include="Header\Core\Scene\Scene.hpp" />
     <ClInclude Include="Header\Core\Lights\DirectionalLight.hpp" />
     <ClInclude Include="Header\Core\Mesh\IndexedMesh.hpp" />
     <ClInclude Include="Header\Core\Mesh\Mesh.hpp" />
     <ClInclude Include="Header\Core\Mesh\MeshRenderer.hpp" />
     <ClInclude Include="Header\Core\Mesh\MeshSmoothing.hpp" />
+    <ClInclude Include="Header\Core\Scene\Skybox.hpp" />
     <ClInclude Include="Header\Core\Shaders\StandardShader.hpp" />
     <ClInclude Include="Header\Core\Transform.hpp" />
     <ClInclude Include="Header\Core\Window.hpp" />
