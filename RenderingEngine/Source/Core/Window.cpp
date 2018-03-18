@@ -29,7 +29,7 @@ void Window::WindowInit()
 	// Open a window and create its OpenGL context
 	Width = 800;
 	Height = 600;
-	GLFWWindow = glfwCreateWindow( Width, Height, "GameEngine", NULL, NULL);
+	GLFWWindow = glfwCreateWindow( Width, Height, "Rendering Engine", NULL, NULL);
 	if( GLFWWindow == NULL )
 	{
 	    fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );

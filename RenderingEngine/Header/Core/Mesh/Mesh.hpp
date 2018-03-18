@@ -31,6 +31,8 @@ protected:
 	std::vector < glm::vec2 > UVs;
 	std::vector < glm::vec4 > Normals; 
 
+	GLuint texture = 0;
+
 	void LoadObj(std::string ObjFilePath);
 
 	virtual void InitBuffers();

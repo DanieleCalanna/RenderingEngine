@@ -152,6 +152,7 @@
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Utils\Axes.cpp" />
     <ClCompile Include="Source\Utils\Png\lodepng.cpp" />
+    <ClCompile Include="Source\Utils\Tga.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\CL\ocl_boiler.h" />
@@ -173,6 +174,7 @@
     <ClInclude Include="Header\Core\Window.hpp" />
     <ClInclude Include="Header\Utils\Axes.hpp" />
     <ClInclude Include="Header\Utils\Png\lodepng.h" />
+    <ClInclude Include="Header\Utils\Tga.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\Shaders\StandardShader\FragmentStandardShader.frag" />

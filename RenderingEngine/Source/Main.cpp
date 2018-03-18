@@ -41,7 +41,7 @@ void Init()
 	/*-- Directional Light End --*/
 	
 	
-	Mesh* MeshTest = new Mesh("Resources/Obj/gun.obj");
+	Mesh* MeshTest = new Mesh("Resources/Obj/Gun2.obj");
 	Actor* ActorMeshTest = new Actor("Gun");
 	Transform ActorMeshTestTransform;
 	ActorMeshTestTransform.Location = glm::vec3(0.0f, 0.0f, 0.0f);

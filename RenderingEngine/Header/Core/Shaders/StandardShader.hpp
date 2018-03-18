@@ -6,6 +6,8 @@
 #include <glm/vec3.hpp>
 #include <Core/Lights/DirectionalLight.hpp>
 
+class Texture;
+
 class StandardShader 
 {
 private:
@@ -19,6 +21,11 @@ private:
 	GLuint CreateProgram(GLuint VertexShaderID, GLuint FragmentShaderID);
 
 	std::string LoadFile(std::string path);
+
+	Texture* Albedo;
+	Texture* Specular;
+	Texture* Roughness;
+	Texture* Normal;
 
 public:
 

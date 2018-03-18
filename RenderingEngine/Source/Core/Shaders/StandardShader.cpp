@@ -1,5 +1,5 @@
 #include <Core/Shaders/StandardShader.hpp>
-
+#include <Windows.h>
 #include <iostream>
 #include <fstream>
 #include <streambuf>
@@ -45,6 +45,12 @@ GLuint StandardShader::CreateShaderFromFile(std::string FilePath, GLenum ShaderT
 		glGetShaderInfoLog(ShaderID, MaxLength, &MaxLength, InfoLog);
 		glDeleteShader(ShaderID);
 		std::cout << "COMPILING SHADER ERROR: " << FilePath << std::endl << InfoLog << std::endl;
+		std::string OutputError = "COMPILING SHADER ERROR: ";
+		OutputError = OutputError + FilePath;
+		OutputError = OutputError + "\n";
+		OutputError = OutputError + InfoLog;
+		OutputError = OutputError + "\n";
+		OutputDebugString(OutputError.c_str());
 		exit(1); //TO-DO
 	}
 	return ShaderID;

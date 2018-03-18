@@ -1,5 +1,7 @@
 #include <Core/Mesh/Mesh.hpp>
 
+#include "Utils/Tga.h"
+
 #include <iostream>
 #include <iterator>
 #include <sstream>
@@ -9,6 +11,8 @@
 #include <algorithm>
 
 using namespace std;
+
+class Tga;
 
 std::vector<std::string> split2(const std::string& s, char delimiter) // TO-DO Move away
 {
@@ -35,7 +39,19 @@ void Mesh::InitBuffers()
 	glBindVertexArray(VertexArrayID);
 	StoreDataInAttributeList(0, 4, &Vertices[0], (int)Vertices.size());
 	StoreDataInAttributeList(1, 4, &Normals[0], (int)Normals.size());
+	StoreDataInAttributeList(2, 2, &UVs[0], (int)UVs.size());
 	glBindVertexArray(0);
+
+	Tga info = Tga("D:/Download/Cerberus_by_Andrew_Maximov/Textures/Cerberus_A.tga");
+	glGenerateMipmap(GL_TEXTURE_2D);
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, info.HasAlphaChannel() ? GL_RGBA : GL_RGB, info.GetWidth(), info.GetWidth(), 0, info.HasAlphaChannel() ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, info.GetPixels().data());
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Mesh::LoadObj(std::string ObjFilePath)
@@ -47,7 +63,7 @@ void Mesh::LoadObj(std::string ObjFilePath)
 	std::vector< glm::vec4 > ObjNormals;
 	std::vector< unsigned int > ObjVerticesIndices, ObjUVsIndices, ObjNormalsIndices;
 
-	//Open the Obj file
+	//Open the Obj fileDom
 	ifstream ObjFile(ObjFilePath);
 	if (!ObjFile.is_open())
 	{
@@ -122,10 +138,10 @@ void Mesh::LoadObj(std::string ObjFilePath)
 	for(unsigned int i=0; i< (unsigned int) ObjVerticesIndices.size(); i++) 
 	{
 		unsigned int VertexIndex = ObjVerticesIndices[i];
-		unsigned int UVIndex = ObjVerticesIndices[i];
+		unsigned int UVIndex = ObjUVsIndices[i];
 		unsigned int NormalIndex = ObjNormalsIndices[i];
 		Vertices.push_back(ObjVertices[VertexIndex]);
-		UVs.push_back( ObjUVs[UVIndex]);
+		UVs.push_back(ObjUVs[UVIndex]);
 		Normals.push_back(ObjNormals[NormalIndex]);
 	}
 }
@@ -135,11 +151,19 @@ void Mesh::Render()
 	glBindVertexArray(VertexArrayID);
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture);
 
 	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)Vertices.size());
 
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glActiveTexture(0);
+
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
 	glBindVertexArray(0);
 }
 

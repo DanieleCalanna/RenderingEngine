@@ -1,8 +1,9 @@
-#version 150
+#version 400 core
 
 in vec3 surfaceNormal;
 in vec3 toCameraVector;
 in vec3 fromCameraVector;
+in vec2 uvFrag;
 
 out vec4 out_Color;
 
@@ -12,9 +13,12 @@ uniform vec3 lightDirection;
 uniform float shineDamper = 1.0f;
 uniform float reflectivity = 0.3f;
 
+uniform sampler2D myTextureSampler;
 
 void main()
 {
+	out_Color = texture(myTextureSampler, uvFrag);
+	/*
 	vec3 unitNormal = normalize(surfaceNormal); 
 	vec3 unitLightVector = normalize(lightDirection); 
 
@@ -31,7 +35,7 @@ void main()
 	float dampedFactor = pow(specularFactor, shineDamper);
 	vec3 finalSpecular = dampedFactor * reflectivity * lightColor;
 	out_Color = vec4(diffuse, 1.0) * vec4(color,1.0) + vec4(finalSpecular,1.0);
-	
+	*/
 	//out_Color = vec4(surfaceNormal, 1.0);
 
 /*

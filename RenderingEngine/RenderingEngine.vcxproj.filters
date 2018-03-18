@@ -153,6 +153,9 @@
     <ClCompile Include="Source\Core\Shaders\SkyBoxShader.cpp">
       <Filter>Source Files\Core\Shaders</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Utils\Tga.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\Core\Transform.hpp">
@@ -211,6 +214,9 @@
     </ClInclude>
     <ClInclude Include="Header\Core\Shaders\SkyBoxShader.hpp">
       <Filter>Header Files\Core\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Utils\Tga.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
