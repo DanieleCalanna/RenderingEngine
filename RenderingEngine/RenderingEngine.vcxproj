@@ -147,6 +147,7 @@
     <ClCompile Include="Source\Core\Scene\SkyBox.cpp" />
     <ClCompile Include="Source\Core\Shaders\SkyBoxShader.cpp" />
     <ClCompile Include="Source\Core\Shaders\StandardShader.cpp" />
+    <ClCompile Include="Source\Core\Texture\Texture.cpp" />
     <ClCompile Include="Source\Core\Transform.cpp" />
     <ClCompile Include="Source\Core\Window.cpp" />
     <ClCompile Include="Source\Main.cpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="Header\Core\Scene\SkyBox.hpp" />
     <ClInclude Include="Header\Core\Shaders\SkyBoxShader.hpp" />
     <ClInclude Include="Header\Core\Shaders\StandardShader.hpp" />
+    <ClInclude Include="Header\Core\Texture\Texture.h" />
     <ClInclude Include="Header\Core\Transform.hpp" />
     <ClInclude Include="Header\Core\Window.hpp" />
     <ClInclude Include="Header\Utils\Axes.hpp" />

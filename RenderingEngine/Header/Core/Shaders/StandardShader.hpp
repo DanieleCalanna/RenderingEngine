@@ -22,10 +22,10 @@ private:
 
 	std::string LoadFile(std::string path);
 
-	Texture* Albedo;
-	Texture* Specular;
-	Texture* Roughness;
-	Texture* Normal;
+	Texture* Albedo = nullptr;
+	Texture* Specular = nullptr;
+	Texture* Roughness = nullptr;
+	Texture* Normal = nullptr;
 
 public:
 

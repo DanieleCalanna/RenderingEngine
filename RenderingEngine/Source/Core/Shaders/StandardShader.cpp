@@ -1,8 +1,10 @@
-#include <Core/Shaders/StandardShader.hpp>
+#include "Core/Shaders/StandardShader.hpp"
+#include "Core/Texture/Texture.h"
 #include <Windows.h>
 #include <iostream>
 #include <fstream>
 #include <streambuf>
+
 
 StandardShader::StandardShader()
 {
@@ -11,8 +13,16 @@ StandardShader::StandardShader()
 	ProgramID = CreateProgram(VertexShaderID, FragmentShaderID);
 	glValidateProgram(ProgramID);
 	
-	Start();
+	Albedo = new Texture("D:/Download/Cerberus_by_Andrew_Maximov/Textures/Cerberus_A.tga");
+	Specular = new Texture("D:/Download/Cerberus_by_Andrew_Maximov/Textures/Cerberus_M.tga");
+	Roughness = new Texture("D:/Download/Cerberus_by_Andrew_Maximov/Textures/Cerberus_R.tga");
+	Normal = new Texture("D:/Download/Cerberus_by_Andrew_Maximov/Textures/Cerberus_N.tga");
 
+	Start();
+	glUniform1i(glGetUniformLocation(ProgramID, "Albedo"), 0);
+	glUniform1i(glGetUniformLocation(ProgramID, "Specular"), 1);
+	glUniform1i(glGetUniformLocation(ProgramID, "Roughness"), 2);
+	glUniform1i(glGetUniformLocation(ProgramID, "Normal"), 3);
 	/*TO-DO */
 	glm::vec3 tempColor(0.2578f, 0.5117f, 0.95312f);
 	LoadColor(tempColor);
@@ -96,9 +106,17 @@ GLuint StandardShader::CreateProgram(GLuint VertexShaderID, GLuint FragmentShade
 void StandardShader::Start()
 {
 	glUseProgram(ProgramID);
+	Albedo->Activate(GL_TEXTURE0);
+	Specular->Activate(GL_TEXTURE1);
+	Roughness->Activate(GL_TEXTURE2);
+	Normal->Activate(GL_TEXTURE3);
 }
 void StandardShader::Stop()
 {
+	Albedo->Deactivate();
+	Specular->Deactivate();
+	Roughness->Deactivate();
+	Normal->Deactivate();
 	glUseProgram(0);
 }
 

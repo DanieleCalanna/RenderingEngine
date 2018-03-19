@@ -13,11 +13,14 @@ uniform vec3 lightDirection;
 uniform float shineDamper = 1.0f;
 uniform float reflectivity = 0.3f;
 
-uniform sampler2D myTextureSampler;
+uniform sampler2D Albedo;
+uniform sampler2D Specular;
+uniform sampler2D Roughness;
+uniform sampler2D Normal;
 
 void main()
 {
-	out_Color = texture(myTextureSampler, uvFrag);
+	out_Color = texture(Specular, uvFrag);
 	/*
 	vec3 unitNormal = normalize(surfaceNormal); 
 	vec3 unitLightVector = normalize(lightDirection); 
