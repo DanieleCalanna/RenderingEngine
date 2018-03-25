@@ -27,10 +27,16 @@ private:
 	Texture* Roughness = nullptr;
 	Texture* Normal = nullptr;
 
+	bool bIsValid = false;
+
 public:
+
+	void Refresh();
 
 	void Start();
 	void Stop();
+
+	bool IsValid();
 
 	void LoadColor(const glm::vec3 &color);
 	void LoadTransformationMatrix(glm::mat4x4 TransformationMatrix);

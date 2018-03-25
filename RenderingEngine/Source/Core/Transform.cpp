@@ -6,13 +6,14 @@
 #include "Core/Transform.hpp"
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "glm/gtx/quaternion.hpp"
 
 #include <iostream>
 #include<glm/gtx/string_cast.hpp>
 
 Transform::Transform() {}
 
-Transform::Transform(glm::vec3 Location, glm::vec3 Rotation, glm::vec3 Scale)
+Transform::Transform(glm::vec3 Location, glm::quat Rotation, glm::vec3 Scale)
 {
 	this->Location = Location;
 	this->Rotation = Rotation;
@@ -23,31 +24,18 @@ const glm::mat4x4 Transform::GetTransformationMatrix() const
 {
 	glm::mat4x4 TransformationMatrix;
 	TransformationMatrix = glm::translate(glm::mat4x4(1.0), Location);
-	TransformationMatrix = glm::rotate(TransformationMatrix, (float)(Rotation.x * M_PI / 180), glm::vec3(1, 0, 0));
-	TransformationMatrix = glm::rotate(TransformationMatrix, (float)(Rotation.y * M_PI / 180), glm::vec3(0, 1, 0));
-	TransformationMatrix = glm::rotate(TransformationMatrix, (float)(Rotation.z * M_PI / 180), glm::vec3(0, 0, 1));
+	TransformationMatrix *= glm::toMat4(Rotation);
 	TransformationMatrix = glm::scale(TransformationMatrix, Scale);
 	return TransformationMatrix;
 }
 
 Transform Transform::Combine(Transform const &Transform1, Transform const &Transform2)
 {
-	glm::vec3 ResultLocation(
-		Transform1.Location.x + Transform2.Location.x,
-		Transform1.Location.y + Transform2.Location.y,
-		Transform1.Location.z + Transform2.Location.z
+	return Transform(
+		Transform1.Location + Transform2.Location,
+		Transform1.Rotation * Transform2.Rotation,
+		Transform1.Scale * Transform2.Scale
 	);
-	glm::vec3 ResultRotation(
-		Transform1.Rotation.x + Transform2.Rotation.x,
-		Transform1.Rotation.y + Transform2.Rotation.y,
-		Transform1.Rotation.z + Transform2.Rotation.z
-	);
-	glm::vec3 ResultScale(
-		Transform1.Scale.x * Transform2.Scale.x,
-		Transform1.Scale.y * Transform2.Scale.y,
-		Transform1.Scale.z * Transform2.Scale.z
-	);
-	return Transform(ResultLocation, ResultRotation, ResultScale);
 }
 
 Transform Transform::Negate(Transform const & TransformToNegate)
@@ -68,6 +56,19 @@ Transform Transform::Negate(Transform const & TransformToNegate)
 		1 / TransformToNegate.Scale.z
 	);
 	return Transform(ResultLocation, ResultRotation, ResultScale);
+}
+
+glm::vec3 Transform::GetForwardVector() const
+{
+	return glm::normalize(glm::inverse(glm::toMat3(Rotation))*glm::vec3(0.0f, 0.0f, -1.0f));
+}
+glm::vec3 Transform::GetRightVector() const
+{
+	return glm::normalize(glm::inverse(glm::toMat3(Rotation))*glm::vec3(1.0f, 0.0f, 0.0f));
+}
+glm::vec3 Transform::GetUpVector() const
+{
+	return glm::normalize(glm::inverse(glm::toMat3(Rotation))*glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 std::string Transform::ToString() const

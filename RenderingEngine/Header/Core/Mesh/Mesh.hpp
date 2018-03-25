@@ -2,8 +2,8 @@
 
 #include <string>
 #include <vector>
-#include "glm/vec2.hpp"
-#include "glm/vec4.hpp"
+#include "glm/fwd.hpp"
+
 #include "GL/glew.h"
 
 class MeshRenderer;
@@ -29,7 +29,9 @@ protected:
 
 	std::vector < glm::vec4 > Vertices;
 	std::vector < glm::vec2 > UVs;
-	std::vector < glm::vec4 > Normals; 
+	std::vector < glm::vec4 > Normals;
+	std::vector	< glm::vec3 > Tangents;
+	std::vector	< glm::vec3 > Bitangents;
 
 	void LoadObj(std::string ObjFilePath);
 

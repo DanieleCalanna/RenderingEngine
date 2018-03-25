@@ -1,5 +1,6 @@
 #include "Core/Shaders/StandardShader.hpp"
 #include "Core/Texture/Texture.h"
+#include "Core/Transform.hpp"
 #include <Windows.h>
 #include <iostream>
 #include <fstream>
@@ -8,15 +9,27 @@
 
 StandardShader::StandardShader()
 {
-	VertexShaderID = CreateShaderFromFile("Resources/Shaders/StandardShader/VertexStandardShader.vert", GL_VERTEX_SHADER);
-	FragmentShaderID = CreateShaderFromFile("Resources/Shaders/StandardShader/FragmentStandardShader.frag", GL_FRAGMENT_SHADER);
-	ProgramID = CreateProgram(VertexShaderID, FragmentShaderID);
-	glValidateProgram(ProgramID);
-	
 	Albedo = new Texture("D:/Download/Cerberus_by_Andrew_Maximov/Textures/Cerberus_A.tga");
 	Specular = new Texture("D:/Download/Cerberus_by_Andrew_Maximov/Textures/Cerberus_M.tga");
 	Roughness = new Texture("D:/Download/Cerberus_by_Andrew_Maximov/Textures/Cerberus_R.tga");
 	Normal = new Texture("D:/Download/Cerberus_by_Andrew_Maximov/Textures/Cerberus_N.tga");
+
+	Refresh();
+}
+
+void StandardShader::Refresh()
+{
+	VertexShaderID = CreateShaderFromFile("Resources/Shaders/StandardShader/VertexStandardShader.vert", GL_VERTEX_SHADER);
+	FragmentShaderID = CreateShaderFromFile("Resources/Shaders/StandardShader/FragmentStandardShader.frag", GL_FRAGMENT_SHADER);
+	
+	if (VertexShaderID == 0 || FragmentShaderID == 0) 
+	{
+		bIsValid = false;
+		return; 
+	}
+	
+	ProgramID = CreateProgram(VertexShaderID, FragmentShaderID);
+	glValidateProgram(ProgramID);
 
 	Start();
 	glUniform1i(glGetUniformLocation(ProgramID, "Albedo"), 0);
@@ -61,7 +74,7 @@ GLuint StandardShader::CreateShaderFromFile(std::string FilePath, GLenum ShaderT
 		OutputError = OutputError + InfoLog;
 		OutputError = OutputError + "\n";
 		OutputDebugString(OutputError.c_str());
-		exit(1); //TO-DO
+		return 0;
 	}
 	return ShaderID;
 }
@@ -120,6 +133,11 @@ void StandardShader::Stop()
 	glUseProgram(0);
 }
 
+bool StandardShader::IsValid()
+{
+	return bIsValid;
+}
+
 void StandardShader::LoadColor(const glm::vec3 &Color)
 {
 	glUniform3fv(glGetUniformLocation(ProgramID, "color"), 1, &Color[0]);
@@ -146,11 +164,11 @@ void StandardShader::LoadViewMatrix(glm::mat4x4 ViewMatrix)
 void StandardShader::LoadDirectionalLight(DirectionalLight& DirectionalLightToLoad)
 {
 	auto Color = DirectionalLightToLoad.GetColor();
-	auto Direction = DirectionalLightToLoad.GetDirection();
+	//auto Direction = DirectionalLightToLoad.GetWorldTransform().GetForwardVector();
 	GLint location = glGetUniformLocation(ProgramID, "lightColor");
 	glUniform3fv(location, 1, &Color[0]);
 	location = glGetUniformLocation(ProgramID, "lightDirection");
-	glUniform3fv(location, 1, &Direction[0]);
+	//glUniform3fv(location, 1, &Direction[0]);
 }
 
 StandardShader& StandardShader::GetInstance()

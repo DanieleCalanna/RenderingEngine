@@ -32,11 +32,11 @@ void Axes::DrawAxes()
 {
 	float Length = 500;
 	glBegin(GL_LINES);
-	// draw line for x axis
+	// draw line for X axis
 	glColor3f(1.0f, 0.0f, 0.0f);
 	glVertex3f(-Length, 0, 0);
 	glVertex3f(Length, 0.0f, 0.0f);
-	// draw line for y axis
+	// draw line for Y axis
 	glColor3f(0.0f, 1.0f, 0.0f);
 	glVertex3f(0, -Length, 0);
 	glVertex3f(0.0f, Length, 0.0f);

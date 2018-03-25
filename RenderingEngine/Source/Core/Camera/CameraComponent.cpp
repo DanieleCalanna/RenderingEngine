@@ -10,6 +10,7 @@
 #include "glm/vec3.hpp"
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtx/quaternion.hpp"
 
 const glm::mat4x4 CameraComponent::GetProjectionMatrix() const
 {
@@ -31,9 +32,7 @@ const glm::mat4x4 CameraComponent::GetViewMatrix() const
 {
 	glm::mat4x4 ViewMatrix(1.0f);
 	Transform CameraWorldTransform = GetOwner()->GetWorldTransform();
-	ViewMatrix = glm::rotate(ViewMatrix, (float)(CameraWorldTransform.Rotation.x * M_PI / 180), glm::vec3(1, 0, 0));
-	ViewMatrix = glm::rotate(ViewMatrix, (float)(CameraWorldTransform.Rotation.y * M_PI / 180), glm::vec3(0, 1, 0));
-	ViewMatrix = glm::rotate(ViewMatrix, (float)(CameraWorldTransform.Rotation.z * M_PI / 180), glm::vec3(0, 0, 1));
+	ViewMatrix *= glm::toMat4(CameraWorldTransform.Rotation);
 	ViewMatrix = glm::translate(ViewMatrix, -CameraWorldTransform.Location);
 	return ViewMatrix;
 }

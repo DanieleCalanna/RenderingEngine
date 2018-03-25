@@ -1,4 +1,8 @@
-#include <Core/Mesh/Mesh.hpp>
+#include "Core/Mesh/Mesh.hpp"
+
+#include "glm/vec2.hpp"
+#include "glm/vec3.hpp"
+#include "glm/vec4.hpp"
 
 #include <iostream>
 #include <iterator>
@@ -36,6 +40,8 @@ void Mesh::InitBuffers()
 	StoreDataInAttributeList(0, 4, &Vertices[0], (int)Vertices.size());
 	StoreDataInAttributeList(1, 4, &Normals[0], (int)Normals.size());
 	StoreDataInAttributeList(2, 2, &UVs[0], (int)UVs.size());
+	StoreDataInAttributeList(3, 3, &Tangents[0], (int)Tangents.size());
+	StoreDataInAttributeList(4, 3, &Bitangents[0], (int)Bitangents.size());
 	glBindVertexArray(0);
 
 
@@ -131,6 +137,43 @@ void Mesh::LoadObj(std::string ObjFilePath)
 		UVs.push_back(ObjUVs[UVIndex]);
 		Normals.push_back(ObjNormals[NormalIndex]);
 	}
+
+	for (int i = 0; i < Vertices.size(); i += 3)
+	{
+
+		// Shortcuts for vertices
+		glm::vec3 v0 = Vertices[i + 0];
+		glm::vec3 v1 = Vertices[i + 1];
+		glm::vec3 v2 = Vertices[i + 2];
+
+		// Shortcuts for UVs
+		glm::vec2 & uv0 = UVs[i + 0];
+		glm::vec2 & uv1 = UVs[i + 1];
+		glm::vec2 & uv2 = UVs[i + 2];
+
+		// Edges of the triangle : position delta
+		glm::vec3 deltaPos1 = v1 - v0;
+		glm::vec3 deltaPos2 = v2 - v0;
+
+		// UV delta
+		glm::vec2 deltaUV1 = uv1 - uv0;
+		glm::vec2 deltaUV2 = uv2 - uv0;
+
+		float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
+		glm::vec3 Tangent = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y)*r;
+		glm::vec3 Bitangent = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x)*r;
+
+		// Set the same tangent for all three vertices of the triangle.
+		// They will be merged later, in vboindexer.cpp
+		Tangents.push_back(Tangent);
+		Tangents.push_back(Tangent);
+		Tangents.push_back(Tangent);
+
+		// Same thing for bitangents
+		Bitangents.push_back(Bitangent);
+		Bitangents.push_back(Bitangent);
+		Bitangents.push_back(Bitangent);
+	}
 }
 
 void Mesh::Render()
@@ -139,12 +182,16 @@ void Mesh::Render()
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(3);
+	glEnableVertexAttribArray(4);
 
 	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)Vertices.size());
 
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
+	glDisableVertexAttribArray(3);
+	glDisableVertexAttribArray(4);
 	glBindVertexArray(0);
 }
 

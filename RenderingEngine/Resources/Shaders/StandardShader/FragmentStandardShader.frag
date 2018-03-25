@@ -1,15 +1,13 @@
 #version 400 core
 
-in vec3 surfaceNormal;
 in vec3 toCameraVector;
 in vec3 fromCameraVector;
-in vec2 uvFrag;
+in vec2 UV;
 
 out vec4 out_Color;
 
 uniform vec3 color;
 uniform vec3 lightColor;
-uniform vec3 lightDirection;
 uniform float shineDamper = 1.0f;
 uniform float reflectivity = 0.3f;
 
@@ -20,15 +18,20 @@ uniform sampler2D Normal;
 
 void main()
 {
-	out_Color = texture(Specular, uvFrag);
-	/*
-	vec3 unitNormal = normalize(surfaceNormal); 
-	vec3 unitLightVector = normalize(lightDirection); 
+	vec3 normal_tangent = normalize(texture(Normal, UV).rgb * (255.0/128.0) - 1.0);
+	//float specularFactor = dot(normal_tangent, unitVectorToCamera);
+	//vec3 unitNormal = normalize(normalMapValue.xyz);
+	//vec3 unitVectorToCamera = normalize(toCameraVector);
 
+	//vec3 normals = normalize (TBN * normalMapColor.xyz) * vec3 (0.5) + vec3(0.5);
+
+	out_Color = vec4(toCameraVector.xyz, 1.0);
+
+	/*
 	float nDot1 = dot(unitNormal, -unitLightVector);
-	float brightness = max(nDot1, 0.25);
-	vec3 diffuse = brightness * lightColor;
-	
+	float brightness = max(nDot1, 0.15);
+	vec4 diffuse = vec4(brightness * lightColor, 1.0) *texture(Albedo, uvFrag);
+
 	vec3 unitVectorToCamera = normalize(toCameraVector);
 
 	vec3 reflectedLightDirection = reflect(unitLightVector, unitNormal);
@@ -37,9 +40,8 @@ void main()
 	specularFactor = max(specularFactor, 0.0);
 	float dampedFactor = pow(specularFactor, shineDamper);
 	vec3 finalSpecular = dampedFactor * reflectivity * lightColor;
-	out_Color = vec4(diffuse, 1.0) * vec4(color,1.0) + vec4(finalSpecular,1.0);
+	out_Color = diffuse + vec4(finalSpecular, 1.0);
 	*/
-	//out_Color = vec4(surfaceNormal, 1.0);
 
 /*
 	// FRESNEL
@@ -49,8 +51,5 @@ void main()
 	float fresnel = max(0.1, min(1, bias + scale * pow(1.0 + dot(fromCameraVector, surfaceNormal),power)));
 	out_Color = vec4(fresnel, fresnel, fresnel, 1.0);
 */
-
-	//out_Color = vec4(color,1.0);
-
 	
 }

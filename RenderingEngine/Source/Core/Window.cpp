@@ -44,8 +44,9 @@ void Window::WindowInit()
 	// Center our window
 	glfwSetWindowPos(
 		GLFWWindow,
-		(vidmode->width - Width) / 2,
+		0/*(vidmode->width - Width) / 2*/,
 		(vidmode->height - Height) / 2
+		
 	);
 
 	glfwMakeContextCurrent(GLFWWindow); // Initialize GLEW

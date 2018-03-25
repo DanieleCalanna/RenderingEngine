@@ -4,8 +4,6 @@ class IndexedMesh;
 
 #include <string>
 #include <vector>
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
 #include <GL/glew.h>
 #include <Core/Mesh/Mesh.hpp>
 

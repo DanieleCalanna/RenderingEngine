@@ -10,7 +10,6 @@ public:
 	DirectionalLight(std::string ActorName);
 
 	const glm::vec3 GetColor() const;
-	const glm::vec3 GetDirection() const;
 
 	static DirectionalLight& GetSingletonInstance()
 	{
