@@ -26,7 +26,7 @@ void MeshRenderer::Update()
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glEnable(GL_POLYGON_OFFSET_FILL);
 
-		StandardShader::GetInstance().LoadColor(glm::vec3(0.75f, 0.75f, 0.75f));
+		StandardShader::GetInstance().LoadBaseColor(glm::vec3(0.75f, 0.75f, 0.75f));
 
 		MeshToRender->Render();
 		

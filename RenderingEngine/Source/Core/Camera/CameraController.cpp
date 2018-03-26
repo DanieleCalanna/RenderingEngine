@@ -13,14 +13,7 @@
 #include "glm/vec3.hpp"
 #include "Core/Camera/Camera.hpp"
 
-#include <string>
-#include <iostream>
-#include <glm/gtx/string_cast.hpp>
-
-void CameraController::Start()
-{
-	XRotation = (float)(GetOwner()->GetWorldTransform().Rotation[0] * 180 / M_PI);
-}
+void CameraController::Start() {}
 
 void CameraController::Update()
 {
@@ -28,10 +21,8 @@ void CameraController::Update()
 	if (MovementSpeed < 0.2f) MovementSpeed = 0.2f;
 
 	Transform OwnerWorldTransform = GetOwner()->GetWorldTransform();
-	OwnerWorldTransform.Rotation = glm::normalize(glm::rotate(OwnerWorldTransform.Rotation, (float)(Window::GetSingletonWindow().GetMouseX() *0.001f), glm::vec3(0.0f, 1.0f, 0.0f)));
-	OwnerWorldTransform.Rotation = glm::normalize(glm::rotate(OwnerWorldTransform.Rotation, (float)(Window::GetSingletonWindow().GetMouseY() *0.001f), OwnerWorldTransform.GetRightVector()));
-
-	std::cout << glm::to_string(OwnerWorldTransform.GetUpVector()) <<std::endl;
+	OwnerWorldTransform.Rotation = glm::normalize(glm::rotate(OwnerWorldTransform.Rotation, (float)(-Window::GetSingletonWindow().GetMouseX() *0.001f), glm::inverse(glm::toMat3(OwnerWorldTransform.Rotation))*glm::vec3(0.0f, 1.0f, 0.0f)));
+	OwnerWorldTransform.Rotation = glm::normalize(glm::rotate(OwnerWorldTransform.Rotation, (float)(-Window::GetSingletonWindow().GetMouseY() *0.001f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
 	if (Window::GetSingletonWindow().GetKeyDown(GLFW_KEY_W))
 	{

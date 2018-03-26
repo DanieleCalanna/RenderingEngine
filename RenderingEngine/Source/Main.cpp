@@ -37,7 +37,8 @@ void Init()
 	/*-- Directional Light Start --*/
 	//DirectionalLight* NewDirectionalLight = new DirectionalLight("DirectionalLight");
 	//NewDirectionalLight->SetWorldTransform(Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(100, -300, 1), glm::vec3(1.0f, 1.0f, 1.0f)));
-	DirectionalLight::GetSingletonInstance().SetWorldTransform(Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f)));
+	DirectionalLight::GetSingletonInstance().SetWorldTransform(Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::quat(glm::vec3(4.3f, 0.5f, -0.5f)), glm::vec3(1.0f, 1.0f, 1.0f)));
+	
 	/*-- Directional Light End --*/
 	
 	
@@ -62,9 +63,11 @@ void Init()
 
 void Loop()
 {
+	/*
 	auto ActorTransform = ActorMeshTest->GetWorldTransform();
-	ActorTransform.Rotation = glm::rotate(ActorTransform.Rotation, 0.01f, glm::vec3(0.0f, 1.0f, 0.0f));
+	ActorTransform.Rotation = glm::rotate(ActorTransform.Rotation, 0.01f, glm::vec3(0.0f, 0.0f, -1.0f));
 	ActorMeshTest->SetWorldTransform(ActorTransform);
+	*/
 	if (Window::GetSingletonWindow().GetKeyDown(GLFW_KEY_R))
 	{
 		StandardShader::GetInstance().Refresh();

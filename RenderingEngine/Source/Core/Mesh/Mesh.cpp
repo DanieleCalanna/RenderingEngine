@@ -75,7 +75,7 @@ void Mesh::LoadObj(std::string ObjFilePath)
 			Vertex.x = stof(WordsInLine[1]);
 			Vertex.y = stof(WordsInLine[2]);
 			Vertex.z = stof(WordsInLine[3]);
-			Vertex.w = 0.0f;
+			Vertex.w = 1.0f;
 			ObjVertices.push_back(Vertex);
 		}
 		else if (WordsInLine[0] == "vt")

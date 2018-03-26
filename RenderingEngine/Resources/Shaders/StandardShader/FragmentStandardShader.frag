@@ -1,31 +1,38 @@
 #version 400 core
 
+in vec3 TangentLightDirection;
 in vec3 toCameraVector;
 in vec3 fromCameraVector;
-in vec2 UV;
+in vec2 UVFrag;
 
-out vec4 out_Color;
+out vec4 OutColor;
 
-uniform vec3 color;
-uniform vec3 lightColor;
-uniform float shineDamper = 1.0f;
-uniform float reflectivity = 0.3f;
+uniform vec3 BaseColor;
+uniform float ShineDamper = 1.0f;
+uniform float Reflectivity = 0.3f;
+
+uniform vec3 LightColor;
 
 uniform sampler2D Albedo;
 uniform sampler2D Specular;
 uniform sampler2D Roughness;
 uniform sampler2D Normal;
 
+#define LightIntensity 5 //TO-DO Make Param
+
 void main()
 {
-	vec3 normal_tangent = normalize(texture(Normal, UV).rgb * (255.0/128.0) - 1.0);
+	vec3 AlbedoColor = texture(Albedo, UVFrag).rgb;
+	vec3 TangentNormal = normalize(texture(Normal, UVFrag).rgb * (255.0/128.0) - 1.0);
 	//float specularFactor = dot(normal_tangent, unitVectorToCamera);
 	//vec3 unitNormal = normalize(normalMapValue.xyz);
 	//vec3 unitVectorToCamera = normalize(toCameraVector);
 
 	//vec3 normals = normalize (TBN * normalMapColor.xyz) * vec3 (0.5) + vec3(0.5);
-
-	out_Color = vec4(toCameraVector.xyz, 1.0);
+	float Diffuse = clamp(dot(TangentNormal, -TangentLightDirection*LightIntensity), 0.2, 1.0);
+	vec3 DiffuseColor = AlbedoColor*Diffuse;
+	OutColor = vec4(DiffuseColor, 1.0);
+	//OutColor = vec4(AlbedoColor, 1.0);
 
 	/*
 	float nDot1 = dot(unitNormal, -unitLightVector);

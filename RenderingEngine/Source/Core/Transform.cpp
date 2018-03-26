@@ -60,15 +60,15 @@ Transform Transform::Negate(Transform const & TransformToNegate)
 
 glm::vec3 Transform::GetForwardVector() const
 {
-	return glm::normalize(glm::inverse(glm::toMat3(Rotation))*glm::vec3(0.0f, 0.0f, -1.0f));
+	return glm::normalize(glm::toMat3(Rotation)*glm::vec3(0.0f, 0.0f, -1.0f));
 }
 glm::vec3 Transform::GetRightVector() const
 {
-	return glm::normalize(glm::inverse(glm::toMat3(Rotation))*glm::vec3(1.0f, 0.0f, 0.0f));
+	return glm::normalize(glm::toMat3(Rotation)*glm::vec3(1.0f, 0.0f, 0.0f));
 }
 glm::vec3 Transform::GetUpVector() const
 {
-	return glm::normalize(glm::inverse(glm::toMat3(Rotation))*glm::vec3(0.0f, 1.0f, 0.0f));
+	return glm::normalize(glm::toMat3(Rotation)*glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 std::string Transform::ToString() const

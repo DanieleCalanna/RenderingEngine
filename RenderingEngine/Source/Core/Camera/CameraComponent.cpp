@@ -32,7 +32,7 @@ const glm::mat4x4 CameraComponent::GetViewMatrix() const
 {
 	glm::mat4x4 ViewMatrix(1.0f);
 	Transform CameraWorldTransform = GetOwner()->GetWorldTransform();
-	ViewMatrix *= glm::toMat4(CameraWorldTransform.Rotation);
+	ViewMatrix *= glm::inverse(glm::toMat4(CameraWorldTransform.Rotation));
 	ViewMatrix = glm::translate(ViewMatrix, -CameraWorldTransform.Location);
 	return ViewMatrix;
 }

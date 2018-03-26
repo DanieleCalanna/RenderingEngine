@@ -38,7 +38,7 @@ public:
 
 	bool IsValid();
 
-	void LoadColor(const glm::vec3 &color);
+	void LoadBaseColor(const glm::vec3 &color);
 	void LoadTransformationMatrix(glm::mat4x4 TransformationMatrix);
 	void LoadProjectionMatrix(glm::mat4x4 ProjectionMatrix);
 	void LoadViewMatrix(glm::mat4x4 ViewMatrix);

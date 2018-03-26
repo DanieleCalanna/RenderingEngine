@@ -37,11 +37,9 @@ void StandardShader::Refresh()
 	glUniform1i(glGetUniformLocation(ProgramID, "Roughness"), 2);
 	glUniform1i(glGetUniformLocation(ProgramID, "Normal"), 3);
 	/*TO-DO */
-	glm::vec3 tempColor(0.2578f, 0.5117f, 0.95312f);
-	LoadColor(tempColor);
-	//glUniform3fv(glGetUniformLocation(programID, "color"), 1, &tempColor[0]);
-	glUniform1f(glGetUniformLocation(ProgramID, "shineDamper"), 1.0f);
-	glUniform1f(glGetUniformLocation(ProgramID, "reflectivity"), 0.4f);
+	LoadBaseColor(glm::vec3(0.2578f, 0.5117f, 0.95312f));
+	glUniform1f(glGetUniformLocation(ProgramID, "ShineDamper"), 1.0f);
+	glUniform1f(glGetUniformLocation(ProgramID, "Reflectivity"), 0.4f);
 	/*TO-DO End*/
 
 	Stop();
@@ -138,37 +136,32 @@ bool StandardShader::IsValid()
 	return bIsValid;
 }
 
-void StandardShader::LoadColor(const glm::vec3 &Color)
+void StandardShader::LoadBaseColor(const glm::vec3 &Color)
 {
-	glUniform3fv(glGetUniformLocation(ProgramID, "color"), 1, &Color[0]);
+	glUniform3fv(glGetUniformLocation(ProgramID, "BaseColor"), 1, &Color[0]);
 }
 
 void StandardShader::LoadTransformationMatrix(glm::mat4x4 TransformationMatrix)
 {
-	GLint location = glGetUniformLocation(ProgramID, "transformationMatrix");
-	glUniformMatrix4fv(location, 1, GL_FALSE, &TransformationMatrix[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(ProgramID, "TransformationMatrix"), 1, GL_FALSE, &TransformationMatrix[0][0]);
 }
 
 void StandardShader::LoadProjectionMatrix(glm::mat4x4 ProjectionMatrix)
 {
-	GLint location = glGetUniformLocation(ProgramID, "projectionMatrix");
-	glUniformMatrix4fv(location, 1, GL_FALSE, &ProjectionMatrix[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(ProgramID, "ProjectionMatrix"), 1, GL_FALSE, &ProjectionMatrix[0][0]);
 }
 
 void StandardShader::LoadViewMatrix(glm::mat4x4 ViewMatrix)
 {
-	GLint location = glGetUniformLocation(ProgramID, "viewMatrix");
-	glUniformMatrix4fv(location, 1, GL_FALSE, &ViewMatrix[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(ProgramID, "ViewMatrix"), 1, GL_FALSE, &ViewMatrix[0][0]);
 }
 
 void StandardShader::LoadDirectionalLight(DirectionalLight& DirectionalLightToLoad)
 {
 	auto Color = DirectionalLightToLoad.GetColor();
-	//auto Direction = DirectionalLightToLoad.GetWorldTransform().GetForwardVector();
-	GLint location = glGetUniformLocation(ProgramID, "lightColor");
-	glUniform3fv(location, 1, &Color[0]);
-	location = glGetUniformLocation(ProgramID, "lightDirection");
-	//glUniform3fv(location, 1, &Direction[0]);
+	auto Direction = DirectionalLightToLoad.GetWorldTransform().GetForwardVector();
+	glUniform3fv(glGetUniformLocation(ProgramID, "LightColor"), 1, &Color[0]);
+	glUniform3fv(glGetUniformLocation(ProgramID, "LightDirection"), 1, &Direction[0]);
 }
 
 StandardShader& StandardShader::GetInstance()
