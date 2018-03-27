@@ -3,6 +3,7 @@
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
+#include <glm/glm.hpp>
 
 #include <iostream>
 #include <iterator>
@@ -11,6 +12,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <algorithm>
+#include <list>
 
 using namespace std;
 
@@ -92,7 +94,7 @@ void Mesh::LoadObj(std::string ObjFilePath)
 			Normal.y = stof(WordsInLine[2]);
 			Normal.z = stof(WordsInLine[3]);
 			Normal.w = 0.0f;
-			ObjNormals.push_back(Normal);
+			ObjNormals.push_back(glm::normalize(Normal));
 		}
 		else if (WordsInLine[0] == "f")
 		{
@@ -127,17 +129,21 @@ void Mesh::LoadObj(std::string ObjFilePath)
 			ObjNormalsIndices.push_back(FaceNormalsIndices[2] -1);
 		}
 	}
+	std::list<unsigned int>* A = new std::list<unsigned int>[ObjVertices.size()];
 	// For each vertex of each triangle
 	for(unsigned int i=0; i< (unsigned int) ObjVerticesIndices.size(); i++) 
 	{
 		unsigned int VertexIndex = ObjVerticesIndices[i];
 		unsigned int UVIndex = ObjUVsIndices[i];
 		unsigned int NormalIndex = ObjNormalsIndices[i];
+		A[VertexIndex].push_back(Vertices.size());
 		Vertices.push_back(ObjVertices[VertexIndex]);
 		UVs.push_back(ObjUVs[UVIndex]);
 		Normals.push_back(ObjNormals[NormalIndex]);
 	}
 
+	std::vector	< glm::vec3 > FlatTangents;
+	std::vector	< glm::vec3 > FlatBitangents;
 	for (int i = 0; i < Vertices.size(); i += 3)
 	{
 
@@ -160,20 +166,48 @@ void Mesh::LoadObj(std::string ObjFilePath)
 		glm::vec2 deltaUV2 = uv2 - uv0;
 
 		float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
-		glm::vec3 Tangent = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y)*r;
-		glm::vec3 Bitangent = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x)*r;
+		glm::vec3 Tangent = glm::normalize((deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y)*r);
+		glm::vec3 Bitangent = glm::normalize((deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x)*r);
 
 		// Set the same tangent for all three vertices of the triangle.
 		// They will be merged later, in vboindexer.cpp
+		FlatTangents.push_back(Tangent);
+		FlatTangents.push_back(Tangent);
+		FlatTangents.push_back(Tangent);
+
 		Tangents.push_back(Tangent);
 		Tangents.push_back(Tangent);
 		Tangents.push_back(Tangent);
 
 		// Same thing for bitangents
+		FlatBitangents.push_back(Bitangent);
+		FlatBitangents.push_back(Bitangent);
+		FlatBitangents.push_back(Bitangent);
+
 		Bitangents.push_back(Bitangent);
 		Bitangents.push_back(Bitangent);
 		Bitangents.push_back(Bitangent);
 	}
+
+	for (unsigned int i = 0; i< (unsigned int)ObjVertices.size(); i++)
+	{
+		glm::vec3 SmoothTangent(0.0f);
+		glm::vec3 SmoothBitangen(0.0f);
+		std::list<unsigned int> AA = A[i];
+		for (unsigned int VertexIndex : AA)
+		{
+			SmoothTangent += FlatTangents[VertexIndex];
+			SmoothBitangen += FlatBitangents[VertexIndex];
+		}
+		SmoothTangent /= AA.size();
+		SmoothBitangen /= AA.size();
+		for (unsigned int VertexIndex : AA)
+		{
+			Tangents[VertexIndex] = SmoothTangent;
+			Bitangents[VertexIndex] = SmoothBitangen;
+		}
+	}
+	delete[] A;
 }
 
 void Mesh::Render()

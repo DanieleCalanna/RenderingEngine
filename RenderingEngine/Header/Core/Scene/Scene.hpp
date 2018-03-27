@@ -11,6 +11,10 @@ public:
 	Scene();
 	~Scene();
 
+	void SetAsCurrentScene();
+
+	static Scene* GetCurrentScene();
+
 private:
 
 	SkyBoxComponent * SkyBox = nullptr;
@@ -20,4 +24,6 @@ private:
 
 	void SetRelativeTransform(const Transform& NewRelativeTransform) override {};
 	void SetWorldTransform(const Transform& NewWorldTransform)override {};
+
+	static Scene* CurrentScene;
 };

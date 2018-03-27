@@ -27,8 +27,8 @@ void Window::WindowInit()
 	glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing 	
 
 	// Open a window and create its OpenGL context
-	Width = 800;
-	Height = 600;
+	Width = 900;
+	Height = 700;
 	GLFWWindow = glfwCreateWindow( Width, Height, "Rendering Engine", NULL, NULL);
 	if( GLFWWindow == NULL )
 	{
@@ -45,7 +45,7 @@ void Window::WindowInit()
 	glfwSetWindowPos(
 		GLFWWindow,
 		0/*(vidmode->width - Width) / 2*/,
-		(vidmode->height - Height) / 2
+		0/*(vidmode->height - Height) / 2*/
 		
 	);
 

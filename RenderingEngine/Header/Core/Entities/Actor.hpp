@@ -28,7 +28,7 @@ public:
 	{
 		for (Component* Component : Components)
 		{
-			if (typeid(Component) == typeid(ChildComponent)) //TO-DO test
+			if (typeid(*Component) == typeid(ChildComponent))
 			{
 				return (ChildComponent*)Component;
 			}

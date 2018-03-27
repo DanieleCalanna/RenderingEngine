@@ -15,6 +15,8 @@ public:
 	virtual void Start() override;
 	virtual void Update() override;
 
+	GLuint GetCubeMapTextureId() const;
+
 private:
 
 	void CreateCubeMap(

@@ -5,7 +5,8 @@
 #include <iostream>
 #include <fstream>
 #include <streambuf>
-
+#include "Core/Scene/Scene.hpp"
+#include "Core/Scene/SkyBox.hpp"
 
 StandardShader::StandardShader()
 {
@@ -36,6 +37,7 @@ void StandardShader::Refresh()
 	glUniform1i(glGetUniformLocation(ProgramID, "Specular"), 1);
 	glUniform1i(glGetUniformLocation(ProgramID, "Roughness"), 2);
 	glUniform1i(glGetUniformLocation(ProgramID, "Normal"), 3);
+	glUniform1i(glGetUniformLocation(ProgramID, "EnvironmentMap"), 4);
 	/*TO-DO */
 	LoadBaseColor(glm::vec3(0.2578f, 0.5117f, 0.95312f));
 	glUniform1f(glGetUniformLocation(ProgramID, "ShineDamper"), 1.0f);
@@ -121,6 +123,14 @@ void StandardShader::Start()
 	Specular->Activate(GL_TEXTURE1);
 	Roughness->Activate(GL_TEXTURE2);
 	Normal->Activate(GL_TEXTURE3);
+
+	Scene* CurrentScene = Scene::GetCurrentScene();
+	if (CurrentScene)
+	{
+		SkyBoxComponent* SkyBox = CurrentScene->GetComponent<SkyBoxComponent>();
+		glActiveTexture(GL_TEXTURE4);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, SkyBox->GetCubeMapTextureId());
+	}
 }
 void StandardShader::Stop()
 {
@@ -128,6 +138,8 @@ void StandardShader::Stop()
 	Specular->Deactivate();
 	Roughness->Deactivate();
 	Normal->Deactivate();
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	glUseProgram(0);
 }
 

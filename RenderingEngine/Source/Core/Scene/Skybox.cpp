@@ -147,3 +147,8 @@ void SkyBoxComponent::Update()
 		glDepthMask(GL_TRUE);
 	}
 }
+
+GLuint SkyBoxComponent::GetCubeMapTextureId() const
+{
+	return CubeTexture;
+}
