@@ -33,10 +33,10 @@ void StandardShader::Refresh()
 	glValidateProgram(ProgramID);
 
 	Start();
-	glUniform1i(glGetUniformLocation(ProgramID, "Albedo"), 0);
-	glUniform1i(glGetUniformLocation(ProgramID, "Specular"), 1);
-	glUniform1i(glGetUniformLocation(ProgramID, "Roughness"), 2);
-	glUniform1i(glGetUniformLocation(ProgramID, "Normal"), 3);
+	glUniform1i(glGetUniformLocation(ProgramID, "AlbedoMap"), 0);
+	glUniform1i(glGetUniformLocation(ProgramID, "SpecularMap"), 1);
+	glUniform1i(glGetUniformLocation(ProgramID, "RoughnessMap"), 2);
+	glUniform1i(glGetUniformLocation(ProgramID, "NormalMap"), 3);
 	glUniform1i(glGetUniformLocation(ProgramID, "EnvironmentMap"), 4);
 	/*TO-DO */
 	LoadBaseColor(glm::vec3(0.2578f, 0.5117f, 0.95312f));

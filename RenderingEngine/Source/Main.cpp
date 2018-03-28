@@ -64,11 +64,11 @@ void Init()
 
 void Loop()
 {
-	
+	/*
 	auto ActorTransform = ActorMeshTest->GetWorldTransform();
 	ActorTransform.Rotation = glm::rotate(ActorTransform.Rotation, 0.001f, glm::vec3(0.0f, 0.0f, -1.0f));
 	ActorMeshTest->SetWorldTransform(ActorTransform);
-	
+	*/
 	if (Window::GetSingletonWindow().GetKeyDown(GLFW_KEY_R))
 	{
 		StandardShader::GetInstance().Refresh();

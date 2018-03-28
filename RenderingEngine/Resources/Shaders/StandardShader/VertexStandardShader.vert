@@ -6,11 +6,12 @@ layout(location = 2) in vec2 UV;
 layout(location = 3) in vec3 Tangent;
 layout(location = 4) in vec3 Bitangent;
 
-out vec3 fromCameraVector;
 out vec3 TangentToCameraVector;
 out vec2 UVFrag;
 out vec3 TangentLightDirection;
 out vec3 ReflectedVector;
+out mat3 TBN;
+out vec3 WorldFragPosition;
 
 uniform mat4 TransformationMatrix;
 uniform mat4 ProjectionMatrix;
@@ -23,8 +24,9 @@ void main()
 	mat4 ModelViewMatrix = ViewMatrix * TransformationMatrix;
 	vec4 WorldPosition = TransformationMatrix * Position;
 	gl_Position = ProjectionMatrix * ViewMatrix * WorldPosition;
-	
-	mat3 TBN = transpose(mat3(
+	WorldFragPosition = WorldPosition.xyz;
+
+	TBN = transpose(mat3(
         Tangent,
         Bitangent,
         Normal.xyz
