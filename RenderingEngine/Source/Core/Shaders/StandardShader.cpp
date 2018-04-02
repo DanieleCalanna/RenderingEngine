@@ -1,5 +1,6 @@
 #include "Core/Shaders/StandardShader.hpp"
-#include "Core/Texture/Texture.h"
+#include "Core/Material/Material.hpp"
+#include "Core/Texture/Texture.hpp"
 #include "Core/Transform.hpp"
 #include <Windows.h>
 #include <iostream>
@@ -10,11 +11,6 @@
 
 StandardShader::StandardShader()
 {
-	Albedo = new Texture("D:/Download/Cerberus_by_Andrew_Maximov/Textures/Cerberus_A.tga");
-	Specular = new Texture("D:/Download/Cerberus_by_Andrew_Maximov/Textures/Cerberus_M.tga");
-	Roughness = new Texture("D:/Download/Cerberus_by_Andrew_Maximov/Textures/Cerberus_R.tga");
-	Normal = new Texture("D:/Download/Cerberus_by_Andrew_Maximov/Textures/Cerberus_N.tga");
-	AO = new Texture("D:/Download/Cerberus_by_Andrew_Maximov/Textures/Raw/Cerberus_AO.tga");
 	Refresh();
 }
 
@@ -32,15 +28,14 @@ void StandardShader::Refresh()
 	ProgramID = CreateProgram(VertexShaderID, FragmentShaderID);
 	glValidateProgram(ProgramID);
 
-	Start();
+	glUseProgram(ProgramID);
 	glUniform1i(glGetUniformLocation(ProgramID, "AlbedoMap"), 0);
 	glUniform1i(glGetUniformLocation(ProgramID, "SpecularMap"), 1);
 	glUniform1i(glGetUniformLocation(ProgramID, "RoughnessMap"), 2);
 	glUniform1i(glGetUniformLocation(ProgramID, "NormalMap"), 3);
 	glUniform1i(glGetUniformLocation(ProgramID, "AOMap"), 4);
 	glUniform1i(glGetUniformLocation(ProgramID, "EnvironmentMap"), 5);
-
-	Stop();
+	glUseProgram(0);
 }
 
 GLuint StandardShader::CreateShaderFromFile(std::string FilePath, GLenum ShaderType)
@@ -112,33 +107,40 @@ GLuint StandardShader::CreateProgram(GLuint VertexShaderID, GLuint FragmentShade
 	return ProgramID;
 }
 
-void StandardShader::Start()
+void StandardShader::Start(Material* MaterialToRender)
 {
-	glUseProgram(ProgramID);
-	Albedo->Activate(GL_TEXTURE0);
-	Specular->Activate(GL_TEXTURE1);
-	Roughness->Activate(GL_TEXTURE2);
-	Normal->Activate(GL_TEXTURE3);
-	AO->Activate(GL_TEXTURE4);
-
-	Scene* CurrentScene = Scene::GetCurrentScene();
-	if (CurrentScene)
+	if (bIsActive)
 	{
-		SkyBoxComponent* SkyBox = CurrentScene->GetComponent<SkyBoxComponent>();
-		glActiveTexture(GL_TEXTURE5);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, SkyBox->GetCubeMapTextureId());
+		Stop();
 	}
+	CurrentMaterial = MaterialToRender;
+	if (CurrentMaterial)
+	{
+		glUseProgram(ProgramID);
+
+		CurrentMaterial->Activate(GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2, GL_TEXTURE3, GL_TEXTURE4);
+
+		Scene* CurrentScene = Scene::GetCurrentScene();
+		if (CurrentScene)
+		{
+			SkyBoxComponent* SkyBox = CurrentScene->GetComponent<SkyBoxComponent>();
+			glActiveTexture(GL_TEXTURE5);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, SkyBox->GetCubeMapTextureId());
+		}
+		bIsActive = true;
+	}
+
 }
 void StandardShader::Stop()
 {
-	Albedo->Deactivate();
-	Specular->Deactivate();
-	Roughness->Deactivate();
-	Normal->Deactivate();
-	AO->Deactivate();
-	glActiveTexture(GL_TEXTURE5);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-	glUseProgram(0);
+	if (bIsActive && CurrentMaterial)
+	{
+		CurrentMaterial->Deactivate();
+		glActiveTexture(GL_TEXTURE5);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+		glUseProgram(0);
+		bIsActive = false;
+	}
 }
 
 bool StandardShader::IsValid()

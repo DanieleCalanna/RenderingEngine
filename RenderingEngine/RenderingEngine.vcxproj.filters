@@ -97,6 +97,12 @@
     <Filter Include="Source Files\Core\Texture">
       <UniqueIdentifier>{1b8cf48c-8a76-45e1-b909-3b44309dd5ea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Core\Material">
+      <UniqueIdentifier>{065e043f-d9e5-4971-ae2b-49c1c15781b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Material">
+      <UniqueIdentifier>{713368c0-3cec-4e58-8338-31aba05cad9f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -165,6 +171,9 @@
     <ClCompile Include="Source\Utils\Tga.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Core\Material\Material.cpp">
+      <Filter>Source Files\Core\Material</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\Core\Transform.hpp">
@@ -224,11 +233,14 @@
     <ClInclude Include="Header\Core\Shaders\SkyBoxShader.hpp">
       <Filter>Header Files\Core\Shaders</Filter>
     </ClInclude>
-    <ClInclude Include="Header\Core\Texture\Texture.h">
-      <Filter>Header Files\Core\Texture</Filter>
-    </ClInclude>
     <ClInclude Include="Header\Utils\Tga.h">
       <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Core\Material\Material.hpp">
+      <Filter>Header Files\Core\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Core\Texture\Texture.hpp">
+      <Filter>Header Files\Core\Texture</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

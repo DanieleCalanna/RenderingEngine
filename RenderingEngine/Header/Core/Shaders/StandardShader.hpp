@@ -7,6 +7,7 @@
 #include <Core/Lights/DirectionalLight.hpp>
 
 class Texture;
+class Material;
 
 class StandardShader 
 {
@@ -22,19 +23,16 @@ private:
 
 	std::string LoadFile(std::string path);
 
-	Texture* Albedo = nullptr;
-	Texture* Specular = nullptr;
-	Texture* Roughness = nullptr;
-	Texture* Normal = nullptr;
-	Texture* AO = nullptr;
-
 	bool bIsValid = false;
+	bool bIsActive = false;
+
+	Material* CurrentMaterial = nullptr;
 
 public:
 
 	void Refresh();
 
-	void Start();
+	void Start(Material*);
 	void Stop();
 
 	bool IsValid();

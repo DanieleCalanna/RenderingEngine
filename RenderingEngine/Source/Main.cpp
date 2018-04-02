@@ -2,6 +2,7 @@
 #include "Core/Scene/Scene.hpp"
 #include "Core/Shaders/StandardShader.hpp"
 #include "Core/Mesh/Mesh.hpp"
+#include "Core/Material/Material.hpp"
 #include "Core/Mesh/IndexedMesh.hpp"
 #include "Core/Entities/Actor.hpp"
 #include "Core/Components/Component.hpp"
@@ -47,6 +48,12 @@ void Init()
 	
 	//Mesh* MeshTest = new Mesh("Resources/Obj/sphere.obj");
 	Mesh* MeshTest = new Mesh("Resources/Obj/Gun.obj");
+	Material* MaterialTest = new Material(
+		"Resources/Textures/Gun/Cerberus_A.tga",
+		"Resources/Textures/Gun/Cerberus_M.tga",
+		"Resources/Textures/Gun/Cerberus_R.tga",
+		"Resources/Textures/Gun/Cerberus_N.tga",
+		"Resources/Textures/Gun/Cerberus_AO.tga");
 	ActorMeshTest = new Actor("Gun");
 	Transform ActorMeshTestTransform;
 	ActorMeshTestTransform.Location = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -54,6 +61,7 @@ void Init()
 	ActorMeshTest->SetWorldTransform(ActorMeshTestTransform);
 	MeshRenderer* MeshTestRenderer = ActorMeshTest->AddComponent<MeshRenderer>("GunMeshRenderer");
 	MeshTestRenderer->SetMesh(MeshTest);
+	MeshTestRenderer->SetMaterial(MaterialTest);
 	ActorMeshTest->AttachToActor(MainScene);
 	
 	

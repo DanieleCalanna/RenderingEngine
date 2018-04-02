@@ -1,10 +1,10 @@
-#include "Core/Texture/Texture.h"
+#include "Core/Texture/Texture.hpp"
 
 #include "Utils/Tga.h"
 
 Texture::Texture(std::string FilePath)
 {
-	Tga info = Tga(FilePath.c_str()/*"D:/Download/Cerberus_by_Andrew_Maximov/Textures/Cerberus_A.tga"*/);
+	Tga info = Tga(FilePath.c_str());
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glGenTextures(1, &TextureId);
 	glBindTexture(GL_TEXTURE_2D, TextureId);

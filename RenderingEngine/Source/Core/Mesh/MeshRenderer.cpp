@@ -5,17 +5,22 @@
 #include "Core/Lights/DirectionalLight.hpp"
 #include "glm/vec3.hpp"
 
-void MeshRenderer::SetMesh(Mesh * Mesh)
+void MeshRenderer::SetMesh(Mesh * InMesh)
 {
-	MeshToRender = Mesh;
+	MeshToRender = InMesh;
+}
+
+void MeshRenderer::SetMaterial(Material * InMaterial)
+{
+	MaterialToRender = InMaterial;
 }
 
 void MeshRenderer::Update()
 {
 	const Camera* ActiveCamera = Camera::GetActiveCamera();
-	if (MeshToRender && ActiveCamera)
+	if (MeshToRender && MaterialToRender && ActiveCamera)
 	{
-		StandardShader::GetInstance().Start();
+		StandardShader::GetInstance().Start(MaterialToRender);
 		StandardShader::GetInstance().LoadTransformationMatrix(GetOwner()->GetWorldTransform().GetTransformationMatrix());
 		StandardShader::GetInstance().LoadProjectionMatrix(ActiveCamera->GetProjectionMatrix());
 		StandardShader::GetInstance().LoadViewMatrix(ActiveCamera->GetViewMatrix());

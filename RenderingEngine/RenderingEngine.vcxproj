@@ -138,6 +138,7 @@
     <ClCompile Include="Source\Core\Camera\CameraController.cpp" />
     <ClCompile Include="Source\Core\Components\Component.cpp" />
     <ClCompile Include="Source\Core\Entities\Actor.cpp" />
+    <ClCompile Include="Source\Core\Material\Material.cpp" />
     <ClCompile Include="Source\Core\Scene\Scene.cpp" />
     <ClCompile Include="Source\Core\Lights\DirectionalLight.cpp" />
     <ClCompile Include="Source\Core\Mesh\IndexedMesh.cpp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="Header\Core\Camera\CameraController.hpp" />
     <ClInclude Include="Header\Core\Components\Component.hpp" />
     <ClInclude Include="Header\Core\Entities\Actor.hpp" />
+    <ClInclude Include="Header\Core\Material\Material.hpp" />
     <ClInclude Include="Header\Core\Scene\Scene.hpp" />
     <ClInclude Include="Header\Core\Lights\DirectionalLight.hpp" />
     <ClInclude Include="Header\Core\Mesh\IndexedMesh.hpp" />
@@ -171,7 +173,7 @@
     <ClInclude Include="Header\Core\Scene\SkyBox.hpp" />
     <ClInclude Include="Header\Core\Shaders\SkyBoxShader.hpp" />
     <ClInclude Include="Header\Core\Shaders\StandardShader.hpp" />
-    <ClInclude Include="Header\Core\Texture\Texture.h" />
+    <ClInclude Include="Header\Core\Texture\Texture.hpp" />
     <ClInclude Include="Header\Core\Transform.hpp" />
     <ClInclude Include="Header\Core\Window.hpp" />
     <ClInclude Include="Header\Utils\Axes.hpp" />

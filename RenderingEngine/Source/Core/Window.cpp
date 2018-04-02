@@ -74,7 +74,7 @@ void Window::WindowInit()
 	}
 	std::cout<<glGetString(GL_VERSION)<<std::endl;
 
-	glClearColor(32.0f/255.0f, 42.0f/255.0f, 52.0f/255.0f, 1.0f); // Set background color to black and opaque
+	glClearColor(33.0f/255.0f, 43.0f/255.0f, 53.0f/255.0f, 1.0f); // Set background color to black and opaque
 	glClearDepth(1.0f);                   // Set background depth to farthest
 	glEnable(GL_DEPTH_TEST);   // Enable depth testing for z-culling
 	glDepthFunc(GL_LEQUAL);    // Set the type of depth-test
