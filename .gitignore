@@ -216,4 +216,8 @@ FakesAssemblies/
 **/*.Server/ModelManifest.xml
 _Pvt_Extensions
 
-RenderingEngine/Resources/Textures/
+RenderingEngine/Resources/Textures/CubeMap/
+
+RenderingEngine/Resources/Textures/CubeMap2/
+
+RenderingEngine/Resources/Textures/Gun/Cerberus_UV\.tga

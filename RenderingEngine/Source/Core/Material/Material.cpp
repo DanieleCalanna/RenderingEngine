@@ -3,47 +3,48 @@
 #include "Utils/Tga.h"
 #include <thread>         // std::thread
 
-struct Aei
+struct TextureLoadingThreadStruct
 {
 	Tga** TextureTga;
 	std::string Path;
 };
 
-void Load(Aei AeiAei)
+void Load(TextureLoadingThreadStruct TextureLoadingThreadParams)
 {
-	*AeiAei.TextureTga = new Tga(AeiAei.Path.c_str());
+	*TextureLoadingThreadParams.TextureTga = new Tga(TextureLoadingThreadParams.Path.c_str());
 }
 
 Material::Material(std::string AlbedoPath, std::string SpecularPath, std::string RoughnessPath, std::string NormalPath, std::string AOPath)
 {
+	//TO-DO check that TGA class load the file efficiently
+
 	Tga* AlbedoTga = nullptr;
 	Tga* SpecularTga = nullptr;
 	Tga* RoughnessTga = nullptr;
 	Tga* NormalTga = nullptr;
 	Tga* AOTga = nullptr;
 
-	Aei AeiAei;
+	TextureLoadingThreadStruct TextureLoadingThreadParams;
 
-	AeiAei.TextureTga = &AlbedoTga;
-	AeiAei.Path = AlbedoPath;
-	std::thread AlbedoThread(Load, AeiAei);
+	TextureLoadingThreadParams.TextureTga = &AlbedoTga;
+	TextureLoadingThreadParams.Path = AlbedoPath;
+	std::thread AlbedoThread(Load, TextureLoadingThreadParams);
 
-	AeiAei.TextureTga = &SpecularTga;
-	AeiAei.Path = SpecularPath;
-	std::thread SpecularThread(Load, AeiAei);
+	TextureLoadingThreadParams.TextureTga = &SpecularTga;
+	TextureLoadingThreadParams.Path = SpecularPath;
+	std::thread SpecularThread(Load, TextureLoadingThreadParams);
 
-	AeiAei.TextureTga = &RoughnessTga;
-	AeiAei.Path = RoughnessPath;
-	std::thread RoughnessThread(Load, AeiAei);
+	TextureLoadingThreadParams.TextureTga = &RoughnessTga;
+	TextureLoadingThreadParams.Path = RoughnessPath;
+	std::thread RoughnessThread(Load, TextureLoadingThreadParams);
 
-	AeiAei.TextureTga = &NormalTga;
-	AeiAei.Path = NormalPath;
-	std::thread NormalThread(Load, AeiAei);
+	TextureLoadingThreadParams.TextureTga = &NormalTga;
+	TextureLoadingThreadParams.Path = NormalPath;
+	std::thread NormalThread(Load, TextureLoadingThreadParams);
 
-	AeiAei.TextureTga = &AOTga;
-	AeiAei.Path = AOPath;
-	std::thread AOThread(Load, AeiAei);
-
+	TextureLoadingThreadParams.TextureTga = &AOTga;
+	TextureLoadingThreadParams.Path = AOPath;
+	std::thread AOThread(Load, TextureLoadingThreadParams);
 
 	AlbedoThread.join();
 	Albedo = new Texture(*AlbedoTga);
@@ -59,7 +60,6 @@ Material::Material(std::string AlbedoPath, std::string SpecularPath, std::string
 
 	AOThread.join();
 	AO = new Texture(*AOTga);
-
 
 	delete AlbedoTga;
 	delete SpecularTga;

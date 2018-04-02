@@ -49,7 +49,7 @@ void Init()
 	
 	
 	//Mesh* MeshTest = new Mesh("Resources/Obj/sphere.obj");
-	Mesh* MeshTest = new Mesh("Resources/Obj/Gun.obj");
+	Mesh* MeshTest = new Mesh("Resources/3DObj/Gun.3Dobj");
 	Material* MaterialTest = new Material(
 		"Resources/Textures/Gun/Cerberus_A.tga",
 		"Resources/Textures/Gun/Cerberus_M.tga",
