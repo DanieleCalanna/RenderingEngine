@@ -63,7 +63,7 @@ void SkyBoxComponent::Construct()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindVertexArray(0);
-
+	/*
 	CreateCubeMap("Resources/Textures/CubeMap/NegZ.png",
 				  "Resources/Textures/CubeMap/PosZ.png",
 				  "Resources/Textures/CubeMap/PosY.png",
@@ -71,6 +71,7 @@ void SkyBoxComponent::Construct()
 				  "Resources/Textures/CubeMap/NegX.png",
 				  "Resources/Textures/CubeMap/PosX.png"
 	);
+	*/
 }
 
 void SkyBoxComponent::Start()

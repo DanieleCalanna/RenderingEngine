@@ -40,8 +40,8 @@ void Window::WindowInit()
 	glfwWindowHint(GLFW_BLUE_BITS, VideoMode->blueBits);
 	glfwWindowHint(GLFW_REFRESH_RATE, VideoMode->refreshRate);
 
-	Width = /*VideoMode->width*/900;
-	Height = /*VideoMode->height*/700;
+	Width = /*VideoMode->width*/960;
+	Height = /*VideoMode->height*/720;
 	//GLFWWindow = glfwCreateWindow(VideoMode->width, VideoMode->height, "Rendering Engine", Monitor, NULL);
 	GLFWWindow = glfwCreateWindow(Width, Height, "Rendering Engine", NULL, NULL);
 	if( GLFWWindow == NULL )
