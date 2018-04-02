@@ -12,7 +12,7 @@ public:
 
 private:
 
-	float FieldOfView = 70.0f;
+	float FieldOfView = 50.0f;
 	float NearPlane = 0.1f;
 	float FarPlane = 3000.0f;
 };

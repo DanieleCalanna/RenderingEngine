@@ -1,4 +1,3 @@
-#include "GL/glew.h"
 #include "Core/Window.hpp"
 #include "Core/Scene/Scene.hpp"
 #include "Core/Shaders/StandardShader.hpp"
@@ -17,6 +16,9 @@
 #include <string>
 #include <iostream>
 
+#ifndef GLFW_KEY_R
+#define GLFW_KEY_R   82
+#endif
 
 Scene* MainScene;
 Actor* ActorMeshTest;
@@ -43,13 +45,14 @@ void Init()
 	/*-- Directional Light End --*/
 	
 	
-	Mesh* MeshTest = new Mesh("Resources/Obj/Gun2.obj");
+	//Mesh* MeshTest = new Mesh("Resources/Obj/sphere.obj");
+	Mesh* MeshTest = new Mesh("Resources/Obj/Gun.obj");
 	ActorMeshTest = new Actor("Gun");
 	Transform ActorMeshTestTransform;
 	ActorMeshTestTransform.Location = glm::vec3(0.0f, 0.0f, 0.0f);
 	ActorMeshTestTransform.Scale = glm::vec3(20.0f, 20.0f, 20.0f);
 	ActorMeshTest->SetWorldTransform(ActorMeshTestTransform);
-	MeshRenderer* MeshTestRenderer = ActorMeshTest->AddComponent<MeshRenderer>();
+	MeshRenderer* MeshTestRenderer = ActorMeshTest->AddComponent<MeshRenderer>("GunMeshRenderer");
 	MeshTestRenderer->SetMesh(MeshTest);
 	ActorMeshTest->AttachToActor(MainScene);
 	
@@ -75,9 +78,9 @@ void Loop()
 	}
 	const Camera* ActiveCamera = Camera::GetActiveCamera();
 
-	Axes::LoadCameraMatrix();
-	Axes::DrawGrid();
-	Axes::DrawAxes();
+	//Axes::LoadCameraMatrix();
+	//Axes::DrawGrid();
+	//Axes::DrawAxes();
 	MainScene->Update();
 }
 

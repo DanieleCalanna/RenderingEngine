@@ -6,7 +6,7 @@
 #include "Core/Shaders/StandardShader.hpp"
 #include "Core/Transform.hpp"
 
-void SkyBoxComponent::Start()
+void SkyBoxComponent::Construct()
 {
 	float Scale = 1000.0f;
 	float CubePoints[] = {
@@ -52,8 +52,6 @@ void SkyBoxComponent::Start()
 		-Scale, -Scale,  Scale,
 		Scale, -Scale,  Scale
 	};
-	
-
 
 	glGenVertexArrays(1, &CubeVertexArray);
 	glBindVertexArray(CubeVertexArray);
@@ -66,13 +64,18 @@ void SkyBoxComponent::Start()
 
 	glBindVertexArray(0);
 
-	CreateCubeMap("Resources/Textures/CubeMap/lnegz.png",
-				  "Resources/Textures/CubeMap/lposz.png",
-				  "Resources/Textures/CubeMap/lposy.png",
-				  "Resources/Textures/CubeMap/lnegy.png",
-				  "Resources/Textures/CubeMap/lnegx.png",
-				  "Resources/Textures/CubeMap/lposx.png"
+	CreateCubeMap("Resources/Textures/CubeMap/NegZ.png",
+				  "Resources/Textures/CubeMap/PosZ.png",
+				  "Resources/Textures/CubeMap/PosY.png",
+				  "Resources/Textures/CubeMap/NegY.png",
+				  "Resources/Textures/CubeMap/NegX.png",
+				  "Resources/Textures/CubeMap/PosX.png"
 	);
+}
+
+void SkyBoxComponent::Start()
+{
+
 }
 
 void SkyBoxComponent::CreateCubeMap(const std::string Front, const std::string Back,
@@ -85,8 +88,8 @@ void SkyBoxComponent::CreateCubeMap(const std::string Front, const std::string B
 	glBindTexture(GL_TEXTURE_CUBE_MAP, CubeTexture);
 
 	// load each image and copy into a side of the cube-map texture
-	LoadCubeMapSide(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, Front);
-	LoadCubeMapSide(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, Back);
+	LoadCubeMapSide(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, Back);
+	LoadCubeMapSide(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, Front);
 	LoadCubeMapSide(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, Top);
 	LoadCubeMapSide(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, Bottom);
 	LoadCubeMapSide(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, Left);

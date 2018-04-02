@@ -136,7 +136,7 @@ void Mesh::LoadObj(std::string ObjFilePath)
 		unsigned int VertexIndex = ObjVerticesIndices[i];
 		unsigned int UVIndex = ObjUVsIndices[i];
 		unsigned int NormalIndex = ObjNormalsIndices[i];
-		A[VertexIndex].push_back(Vertices.size());
+		A[VertexIndex].push_back((unsigned int)Vertices.size());
 		Vertices.push_back(ObjVertices[VertexIndex]);
 		UVs.push_back(ObjUVs[UVIndex]);
 		Normals.push_back(ObjNormals[NormalIndex]);
@@ -188,7 +188,7 @@ void Mesh::LoadObj(std::string ObjFilePath)
 		Bitangents.push_back(Bitangent);
 		Bitangents.push_back(Bitangent);
 	}
-
+	/*
 	for (unsigned int i = 0; i< (unsigned int)ObjVertices.size(); i++)
 	{
 		glm::vec3 SmoothTangent(0.0f);
@@ -208,6 +208,7 @@ void Mesh::LoadObj(std::string ObjFilePath)
 		}
 	}
 	delete[] A;
+	*/
 }
 
 void Mesh::Render()

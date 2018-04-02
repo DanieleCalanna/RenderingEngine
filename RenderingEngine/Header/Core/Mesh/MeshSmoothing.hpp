@@ -44,7 +44,7 @@ public:
 	cl_event lock, unlock;
 
 
-	MeshSmoothing(Actor* Owner);
+	MeshSmoothing();
 
 	void Start();
 	

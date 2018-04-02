@@ -17,10 +17,12 @@ public:
 	virtual void AttachToActor(Actor* ActorTarget);
 	virtual void DetachFromParent();
 
-	template <class ChildComponent> ChildComponent* AddComponent()
+	template <class ChildComponent> ChildComponent* AddComponent(std::string Name)
 	{
 		ChildComponent* NewComponent = new ChildComponent();
 		NewComponent->SetOwner(this);
+		NewComponent->SetName(Name);
+		NewComponent->Construct();
 		Components.push_back((Component*)NewComponent);
 		return NewComponent;
 	}

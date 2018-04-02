@@ -110,7 +110,7 @@ cl_event normals_per_vertex(
 	return normals_per_vertex_evt;
 }
 
-MeshSmoothing::MeshSmoothing(Actor* Owner) : Component(Owner)
+MeshSmoothing::MeshSmoothing()
 {
 	iterations = 1;
 	lambda = 0.5f;

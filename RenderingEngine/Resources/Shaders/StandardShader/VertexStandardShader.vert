@@ -6,12 +6,16 @@ layout(location = 2) in vec2 UV;
 layout(location = 3) in vec3 Tangent;
 layout(location = 4) in vec3 Bitangent;
 
-out vec3 TangentToCameraVector;
 out vec2 UVFrag;
-out vec3 TangentLightDirection;
 out vec3 ReflectedVector;
-out mat3 TBN;
-out vec3 WorldFragPosition;
+out vec3 FragmentPosition_WS;
+out vec3 SurfaceNormal;
+out vec3 FragTangent;
+out vec3 FragBitangent;
+out vec3 FragNormal;
+
+out vec3 FragmentToCamera_TS;
+out vec3 LightDirection_TS;
 
 uniform mat4 TransformationMatrix;
 uniform mat4 ProjectionMatrix;
@@ -22,23 +26,27 @@ uniform vec3 LightDirection;
 void main()
 {
 	mat4 ModelViewMatrix = ViewMatrix * TransformationMatrix;
-	vec4 WorldPosition = TransformationMatrix * Position;
-	gl_Position = ProjectionMatrix * ViewMatrix * WorldPosition;
-	WorldFragPosition = WorldPosition.xyz;
+	vec4 Position_WS = TransformationMatrix * Position;
+	gl_Position = ProjectionMatrix * ViewMatrix * Position_WS;
+	FragmentPosition_WS = Position_WS.xyz;
 
-	TBN = transpose(mat3(
-        Tangent,
-        Bitangent,
+	FragTangent = Tangent;
+	FragBitangent = Bitangent;
+	FragNormal = Normal.xyz;
+	mat3 TBN = transpose(mat3(
+        cross(Normal.xyz, Bitangent),
+        cross(Tangent, Normal.xyz),
         Normal.xyz
     ));
 
-	vec3 WorldCameraPosition = (inverse(ViewMatrix)*vec4(0.0, 0.0, 0.0, 1.0)).xyz;
-	vec3 WorldCameraForward = (inverse(ViewMatrix)*vec4(0.0, 0.0, -1.0, 0.0)).xyz;
+	vec3 CameraPosition_WS = (inverse(ViewMatrix)*vec4(0.0, 0.0, 0.0, 1.0)).xyz;
+	vec3 CameraForward_WS = (inverse(ViewMatrix)*vec4(0.0, 0.0, -1.0, 0.0)).xyz;
 
-	TangentLightDirection = normalize((TBN * (inverse(TransformationMatrix) * vec4(LightDirection, 0.0)).xyz));
-	TangentToCameraVector = normalize((TBN * (inverse(TransformationMatrix) * vec4((WorldCameraPosition-WorldPosition.xyz), 0.0)).xyz));
+	LightDirection_TS = normalize((TBN * (inverse(TransformationMatrix) * vec4(LightDirection, 0.0)).xyz));
+	FragmentToCamera_TS = normalize((TBN * (inverse(TransformationMatrix) * vec4((CameraPosition_WS-Position_WS.xyz), 0.0)).xyz));
 
 	UVFrag = UV;
+	SurfaceNormal = Normal.xyz;
 
-	ReflectedVector = reflect(normalize(WorldPosition.xyz-WorldCameraPosition), normalize((TransformationMatrix*Normal).xyz));
+	ReflectedVector = reflect(normalize(Position_WS.xyz-CameraPosition_WS), normalize((TransformationMatrix*Normal).xyz));
 }

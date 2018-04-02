@@ -26,6 +26,7 @@ private:
 	Texture* Specular = nullptr;
 	Texture* Roughness = nullptr;
 	Texture* Normal = nullptr;
+	Texture* AO = nullptr;
 
 	bool bIsValid = false;
 

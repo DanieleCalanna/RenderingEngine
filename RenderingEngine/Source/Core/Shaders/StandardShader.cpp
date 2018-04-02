@@ -14,7 +14,7 @@ StandardShader::StandardShader()
 	Specular = new Texture("D:/Download/Cerberus_by_Andrew_Maximov/Textures/Cerberus_M.tga");
 	Roughness = new Texture("D:/Download/Cerberus_by_Andrew_Maximov/Textures/Cerberus_R.tga");
 	Normal = new Texture("D:/Download/Cerberus_by_Andrew_Maximov/Textures/Cerberus_N.tga");
-
+	AO = new Texture("D:/Download/Cerberus_by_Andrew_Maximov/Textures/Raw/Cerberus_AO.tga");
 	Refresh();
 }
 
@@ -37,12 +37,8 @@ void StandardShader::Refresh()
 	glUniform1i(glGetUniformLocation(ProgramID, "SpecularMap"), 1);
 	glUniform1i(glGetUniformLocation(ProgramID, "RoughnessMap"), 2);
 	glUniform1i(glGetUniformLocation(ProgramID, "NormalMap"), 3);
-	glUniform1i(glGetUniformLocation(ProgramID, "EnvironmentMap"), 4);
-	/*TO-DO */
-	LoadBaseColor(glm::vec3(0.2578f, 0.5117f, 0.95312f));
-	glUniform1f(glGetUniformLocation(ProgramID, "ShineDamper"), 1.0f);
-	glUniform1f(glGetUniformLocation(ProgramID, "Reflectivity"), 0.4f);
-	/*TO-DO End*/
+	glUniform1i(glGetUniformLocation(ProgramID, "AOMap"), 4);
+	glUniform1i(glGetUniformLocation(ProgramID, "EnvironmentMap"), 5);
 
 	Stop();
 }
@@ -84,8 +80,8 @@ GLuint StandardShader::CreateProgram(GLuint VertexShaderID, GLuint FragmentShade
 	GLuint ProgramID = glCreateProgram();
 	glAttachShader(ProgramID, VertexShaderID);
 	glAttachShader(ProgramID, FragmentShaderID);
-	glBindAttribLocation(ProgramID, 0, "position");
-	glBindAttribLocation(ProgramID, 1, "normal");
+	//glBindAttribLocation(ProgramID, 0, "position");
+	//glBindAttribLocation(ProgramID, 1, "normal");
 	glLinkProgram(ProgramID);
 
 	//Note the different functions here: glGetProgram* instead of glGetShader*.
@@ -123,12 +119,13 @@ void StandardShader::Start()
 	Specular->Activate(GL_TEXTURE1);
 	Roughness->Activate(GL_TEXTURE2);
 	Normal->Activate(GL_TEXTURE3);
+	AO->Activate(GL_TEXTURE4);
 
 	Scene* CurrentScene = Scene::GetCurrentScene();
 	if (CurrentScene)
 	{
 		SkyBoxComponent* SkyBox = CurrentScene->GetComponent<SkyBoxComponent>();
-		glActiveTexture(GL_TEXTURE4);
+		glActiveTexture(GL_TEXTURE5);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, SkyBox->GetCubeMapTextureId());
 	}
 }
@@ -138,7 +135,8 @@ void StandardShader::Stop()
 	Specular->Deactivate();
 	Roughness->Deactivate();
 	Normal->Deactivate();
-	glActiveTexture(GL_TEXTURE4);
+	AO->Deactivate();
+	glActiveTexture(GL_TEXTURE5);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	glUseProgram(0);
 }

@@ -8,8 +8,8 @@ const Camera* Camera::ActiveCamera = nullptr;
 
 Camera::Camera(std::string Name) : Actor(Name)
 {
-	OwnedCameraComponent = AddComponent<CameraComponent>();
-	OwnedCameraController = AddComponent<CameraController>();
+	OwnedCameraComponent = AddComponent<CameraComponent>("CameraComponent");
+	OwnedCameraController = AddComponent<CameraController>("CameraController");
 }
 
 void Camera::SetActive() const

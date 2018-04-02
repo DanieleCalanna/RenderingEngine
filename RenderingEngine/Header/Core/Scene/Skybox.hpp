@@ -11,7 +11,7 @@ class SkyBoxComponent : public Component
 	GLuint CubeTexture;
 
 public:
-
+	virtual void Construct() override;
 	virtual void Start() override;
 	virtual void Update() override;
 

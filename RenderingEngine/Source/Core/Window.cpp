@@ -1,4 +1,8 @@
 #include "Core/Window.hpp"
+
+#include "GL/glew.h"
+#include "GLFW/glfw3.h"
+
 #include <iostream>
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
@@ -27,25 +31,32 @@ void Window::WindowInit()
 	glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing 	
 
 	// Open a window and create its OpenGL context
-	Width = 900;
-	Height = 700;
-	GLFWWindow = glfwCreateWindow( Width, Height, "Rendering Engine", NULL, NULL);
+
+	GLFWmonitor* Monitor = glfwGetPrimaryMonitor();
+
+	const GLFWvidmode* VideoMode = glfwGetVideoMode(Monitor);
+	glfwWindowHint(GLFW_RED_BITS, VideoMode->redBits);
+	glfwWindowHint(GLFW_GREEN_BITS, VideoMode->greenBits);
+	glfwWindowHint(GLFW_BLUE_BITS, VideoMode->blueBits);
+	glfwWindowHint(GLFW_REFRESH_RATE, VideoMode->refreshRate);
+
+	Width = /*VideoMode->width*/900;
+	Height = /*VideoMode->height*/700;
+	//GLFWWindow = glfwCreateWindow(VideoMode->width, VideoMode->height, "Rendering Engine", Monitor, NULL);
+	GLFWWindow = glfwCreateWindow(Width, Height, "Rendering Engine", NULL, NULL);
 	if( GLFWWindow == NULL )
 	{
-	    fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
+	    std::cerr<<"Failed to open GLFW window.\n"<<std::endl;
 	    glfwTerminate();
 	    return;
 	}
 
-
-
 	// Get the resolution of the primary monitor
-	const GLFWvidmode * vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 	// Center our window
 	glfwSetWindowPos(
 		GLFWWindow,
-		0/*(vidmode->width - Width) / 2*/,
-		0/*(vidmode->height - Height) / 2*/
+		0/*(VideoMode->width - Width) / 2*/,
+		0/*(VideoMode->height - Height) / 2*/
 		
 	);
 
@@ -63,7 +74,7 @@ void Window::WindowInit()
 	}
 	std::cout<<glGetString(GL_VERSION)<<std::endl;
 
-	glClearColor(34.0f/255.0f, 44.0f/255.0f, 55.0f/255.0f, 1.0f); // Set background color to black and opaque
+	glClearColor(32.0f/255.0f, 42.0f/255.0f, 52.0f/255.0f, 1.0f); // Set background color to black and opaque
 	glClearDepth(1.0f);                   // Set background depth to farthest
 	glEnable(GL_DEPTH_TEST);   // Enable depth testing for z-culling
 	glDepthFunc(GL_LEQUAL);    // Set the type of depth-test

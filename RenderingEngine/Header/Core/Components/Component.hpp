@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 class Actor;
 
 class Component 
@@ -7,14 +9,16 @@ class Component
 	friend class Actor;
 
 private:
+	std::string Name;
+
 	Actor* Owner;
 	bool bEnabled = true;
 
 	void SetOwner(Actor* const& NewOwner);
 
 protected:
-	Component(Actor* Owner);
-	Component() {};
+	/*Component(Actor* Owner);*/
+	Component();
 	~Component();
 
 public:
@@ -24,7 +28,11 @@ public:
 	bool IsEnabled() const;
 	void SetEnabled(bool bNewEnabled);
 
+	virtual void Construct() {}
 	virtual void Start() {}
 	virtual void Update() {}
 	virtual void Clear() {}
+
+	void SetName(std::string NewName);
+	std::string GetName() const;
 };
