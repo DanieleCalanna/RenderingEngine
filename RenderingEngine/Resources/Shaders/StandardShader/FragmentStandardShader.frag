@@ -119,7 +119,7 @@ void main()
 	OutColor = vec4(G);
 
 	vec3 F0 = vec3(0.04);
-	F0 = mix(F0, AlbedoColor, 1.0-SpecularColor.r);
+	F0 = mix(F0, AlbedoColor, SpecularColor.r);
 	vec3 F = FresnelSchlick(dot(Normal_TS, FragmentToCamera_TS), F0);
 	OutColor = vec4(F, 1.0);
 
@@ -130,7 +130,7 @@ void main()
 	vec3 kS = F;
 	vec3 kD = vec3(1.0) - kS;
   
-	kD *= 1.0 - (1.0-SpecularColor.r);	
+	kD *= 1.0 - (SpecularColor.r);	
 
 	vec3 Radiance = vec3(1.0, 1.0, 1.1)*LightIntensity;
 	float NdotL = max(dot(Normal_TS, -LightDirection_TS), 0.0);        
@@ -146,7 +146,7 @@ void main()
 	OutColor.rgb = pow(OutColor.rgb, vec3(1.0/Gamma));
 	
 	//OutColor = vec4(WorldNormal, 1.0);
-	//OutColor = vec4(AOColor, 1.0);
+	//OutColor = vec4(SpecularColor.r);
 	//OutColor = vec4(ReflectedColour);
 	//OutColor = vec4(pow(AlbedoColor,vec3(Gamma)), 1.0);
 	

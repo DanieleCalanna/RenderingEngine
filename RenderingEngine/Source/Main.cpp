@@ -12,6 +12,7 @@
 #include "Core/Camera/Camera.hpp"
 #include "Core/Transform.hpp"
 #include "Utils/Axes.hpp"
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <vector>
 #include <string>
@@ -22,6 +23,7 @@
 #endif
 
 Scene* MainScene;
+Camera* MainCamera;
 Actor* ActorMeshTest;
 
 void Init()
@@ -30,11 +32,11 @@ void Init()
 	MainScene->SetAsCurrentScene();
 	//MainScene->AddComponent<SkyBoxComponent>();
 	/*-- Camera Start --*/
-	Camera* MainCamera = new Camera("Camera");
+	MainCamera = new Camera("Camera");
 	MainCamera->AttachToActor(MainScene);
 	MainCamera->SetActive();
 	Transform CameraTransform;
-	CameraTransform.Location = glm::vec3(0.0f, 30.0f, 100.0f);
+	CameraTransform.Location = glm::vec3(15.0f, 2.0f, 9.0f);
 	MainCamera->SetWorldTransform(CameraTransform);
 	/*-- Camera End --*/
 

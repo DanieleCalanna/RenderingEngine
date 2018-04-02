@@ -45,17 +45,12 @@ Transform Transform::Negate(Transform const & TransformToNegate)
 		-TransformToNegate.Location.y,
 		-TransformToNegate.Location.z
 	);
-	glm::vec3 ResultRotation(
-		-TransformToNegate.Rotation.x,
-		-TransformToNegate.Rotation.y,
-		-TransformToNegate.Rotation.z
-	);
 	glm::vec3 ResultScale(
 		1 / TransformToNegate.Scale.x,
 		1 / TransformToNegate.Scale.y,
 		1 / TransformToNegate.Scale.z
 	);
-	return Transform(ResultLocation, ResultRotation, ResultScale);
+	return Transform(ResultLocation, -TransformToNegate.Rotation, ResultScale);
 }
 
 glm::vec3 Transform::GetForwardVector() const
@@ -74,7 +69,7 @@ glm::vec3 Transform::GetUpVector() const
 std::string Transform::ToString() const
 {
 	std::string LocationString("\tLocation: " + glm::to_string(Location) + "\n");
-	std::string RotationString("\tRotation: " + glm::to_string(Rotation) + "\n");
+	std::string RotationString("\tRotation: " + glm::to_string(glm::normalize(Rotation)) + "\n");
 	std::string ScaleString("\tScale: " + glm::to_string(Scale) + "\n");
 	return std::string("Transform:\n") + LocationString + RotationString + ScaleString;
 }
