@@ -1,7 +1,7 @@
 #include "Core/Material/Material.hpp"
 #include "Core/Texture/Texture.hpp"
 #include "Utils/Tga.h"
-#include <thread>         // std::thread
+#include <thread>
 
 struct TextureLoadingThreadStruct
 {
