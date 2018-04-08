@@ -65,12 +65,6 @@ void Init()
 	MeshTestRenderer->SetMesh(MeshTest);
 	MeshTestRenderer->SetMaterial(MaterialTest);
 	ActorMeshTest->AttachToActor(MainScene);
-	
-	
-	
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
 
 	MainScene->Start();
 }
