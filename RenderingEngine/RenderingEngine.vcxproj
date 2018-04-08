@@ -99,6 +99,14 @@
       <AdditionalLibraryDirectories>$(ProjectDir)External\Libraries;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32.lib;glfw3.lib;Opengl32.lib;OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>If Not Exist $(OutDir)glew32.dll (xcopy /y $(ProjDir)External\Binaries\glew32.dll $(OutDir))
+If Not Exist $(OutDir)glfw3.dll (xcopy /y $(ProjDir)External\Binaries\glfw3.dll $(OutDir))</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -130,6 +138,14 @@
       <AdditionalDependencies>glew32.lib;glfw3.lib;Opengl32.lib;OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)External\Libraries;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>If Not Exist $(OutDir)glew32.dll (xcopy /y $(ProjDir)External\Binaries\glew32.dll $(OutDir))
+If Not Exist $(OutDir)glfw3.dll (xcopy /y $(ProjDir)External\Binaries\glfw3.dll $(OutDir))</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\CL\ocl_boiler.cpp" />
