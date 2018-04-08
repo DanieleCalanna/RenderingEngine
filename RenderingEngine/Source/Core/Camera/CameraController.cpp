@@ -13,12 +13,15 @@
 #include "glm/vec3.hpp"
 #include "Core/Camera/Camera.hpp"
 
-void CameraController::Start() {}
+void CameraController::Start() 
+{
+
+}
 
 void CameraController::Update()
 {
-	float MovementSpeed = (float)(Window::GetSingletonWindow().GetYWheelOffset() + 1) / 20 + 1;
-	if (MovementSpeed < 0.2f) MovementSpeed = 0.2f;
+	float MovementSpeed = (float)(Window::GetSingletonWindow().GetYWheelOffset()+ 10.0f);
+	if (MovementSpeed < 1.0f) MovementSpeed = 1.0f;
 
 	Transform OwnerWorldTransform = GetOwner()->GetWorldTransform();
 	OwnerWorldTransform.Rotation = glm::normalize(glm::rotate(OwnerWorldTransform.Rotation, (float)(-Window::GetSingletonWindow().GetMouseX() *0.001f), glm::inverse(glm::toMat3(OwnerWorldTransform.Rotation))*glm::vec3(0.0f, 1.0f, 0.0f)));
@@ -26,27 +29,27 @@ void CameraController::Update()
 
 	if (Window::GetSingletonWindow().GetKeyDown(GLFW_KEY_W))
 	{
-		OwnerWorldTransform.Location += OwnerWorldTransform.GetForwardVector()*MovementSpeed;
+		OwnerWorldTransform.Location += OwnerWorldTransform.GetForwardVector()*MovementSpeed * Window::GetSingletonWindow().GetDeltaTime();
 	}
 	if (Window::GetSingletonWindow().GetKeyDown(GLFW_KEY_S))
 	{
-		OwnerWorldTransform.Location -= OwnerWorldTransform.GetForwardVector()*MovementSpeed;
+		OwnerWorldTransform.Location -= OwnerWorldTransform.GetForwardVector()*MovementSpeed * Window::GetSingletonWindow().GetDeltaTime();
 	}
 	if (Window::GetSingletonWindow().GetKeyDown(GLFW_KEY_D))
 	{
-		OwnerWorldTransform.Location += OwnerWorldTransform.GetRightVector()*MovementSpeed;
+		OwnerWorldTransform.Location += OwnerWorldTransform.GetRightVector()*MovementSpeed * Window::GetSingletonWindow().GetDeltaTime();
 	}
 	if (Window::GetSingletonWindow().GetKeyDown(GLFW_KEY_A))
 	{
-		OwnerWorldTransform.Location -= OwnerWorldTransform.GetRightVector()*MovementSpeed;
+		OwnerWorldTransform.Location -= OwnerWorldTransform.GetRightVector()*MovementSpeed * Window::GetSingletonWindow().GetDeltaTime();
 	}
 	if (Window::GetSingletonWindow().GetKeyDown(GLFW_KEY_Q))
 	{
-		OwnerWorldTransform.Location -= glm::vec3(0.0f, 1.0f, 0.0f)*MovementSpeed;
+		OwnerWorldTransform.Location -= glm::vec3(0.0f, 1.0f, 0.0f)*MovementSpeed * Window::GetSingletonWindow().GetDeltaTime();
 	}
 	if (Window::GetSingletonWindow().GetKeyDown(GLFW_KEY_E))
 	{
-		OwnerWorldTransform.Location += glm::vec3(0.0f, 1.0f, 0.0f)*MovementSpeed;
+		OwnerWorldTransform.Location += glm::vec3(0.0f, 1.0f, 0.0f)*MovementSpeed * Window::GetSingletonWindow().GetDeltaTime();
 	}
 	GetOwner()->SetWorldTransform(OwnerWorldTransform);
 }

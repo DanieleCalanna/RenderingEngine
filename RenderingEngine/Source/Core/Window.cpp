@@ -5,9 +5,11 @@
 
 #include <iostream>
 
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+void Window::UpdateDeltaTime()
 {
-	Window::GetSingletonWindow().SetYWheelOffset(Window::GetSingletonWindow().GetYWheelOffset()+yoffset);
+	float CurrentTime = (float)glfwGetTime();
+	DeltaTime = CurrentTime - WorldTime;
+	WorldTime = CurrentTime;
 }
 
 /*
@@ -28,7 +30,7 @@ void Window::WindowInit()
 	glfwWindowHint(GLFW_STENCIL_BITS, 1024); //antialiasing
 	glfwWindowHint(GLFW_SAMPLES, 1024); //antialiasing
 
-	glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing 	
+	glfwWindowHint(GLFW_SAMPLES, 8); // 8x antialiasing 	
 
 	// Open a window and create its OpenGL context
 
@@ -62,7 +64,7 @@ void Window::WindowInit()
 
 	glfwMakeContextCurrent(GLFWWindow); // Initialize GLEW
 
-	glfwSwapInterval(1);
+	glfwSwapInterval(1); // v-sync on
 
 	// Make the window visible
 	glfwShowWindow(GLFWWindow);
@@ -84,13 +86,18 @@ void Window::WindowInit()
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);  // Nice perspective corrections
 	glViewport(0, 0, Width, Height);
 
-
 	glfwSetInputMode(GLFWWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 	glfwGetCursorPos(GLFWWindow, &XPosition, &YPosition);
 	PreviousXPosition = XPosition;
 	PreviousYPosition = YPosition;
 
-	glfwSetScrollCallback(GLFWWindow, scroll_callback);
+	auto ScrollCallbackLambda = [](GLFWwindow* GLFWindow, double XOffset, double YOffset)
+	{
+		static_cast<Window*>(glfwGetWindowUserPointer(GLFWindow))->ScrollCallback(XOffset, YOffset);
+	};
+	glfwSetWindowUserPointer(GLFWWindow, this);
+	glfwSetScrollCallback(GLFWWindow, ScrollCallbackLambda);
 
 	if (InitFunction) { InitFunction(); }
 }
@@ -108,11 +115,20 @@ void Window::WindowLoop(){
 
 		PreviousXPosition = XPosition;
 		PreviousYPosition = YPosition;
+
 		glfwGetCursorPos(GLFWWindow, &XPosition, &YPosition);
+
+		UpdateDeltaTime();
+
 		glfwPollEvents();
 
 	} // Check if the ESC key was pressed or the window was closed
 	while( glfwGetKey(GLFWWindow, GLFW_KEY_ESCAPE ) != GLFW_PRESS && glfwWindowShouldClose(GLFWWindow) == 0 );
+}
+
+void Window::ScrollCallback(double XOffset, double YOffset)
+{
+	YWheelOffset += YOffset;
 }
 
 void Window::Run()
@@ -124,7 +140,7 @@ void Window::Run()
 	glfwTerminate();
 }
 
-bool Window::GetKeyDown(int KeyId)
+bool Window::GetKeyDown(int KeyId) const
 {
 	int State = glfwGetKey(GLFWWindow, KeyId);
 	return State == GLFW_PRESS;
@@ -149,14 +165,16 @@ void Window::SetClearFunction(void(*ClearFunctionToCall) (void))
 	ClearFunction = ClearFunctionToCall;
 }
 
-int Window::GetWidth() { return Width; }
-int Window::GetHeight() { return Height; }
-double Window::GetMouseX() { return XPosition - PreviousXPosition; }
-double Window::GetMouseY() { return YPosition - PreviousYPosition; }
+int Window::GetWidth() const { return Width; }
+int Window::GetHeight() const { return Height; }
+double Window::GetMouseX() const { return XPosition - PreviousXPosition; }
+double Window::GetMouseY() const { return YPosition - PreviousYPosition; }
 
-void Window::SetYWheelOffset(double NewYWheelOffset) { YWheelOffset = NewYWheelOffset; }
+double Window::GetYWheelOffset() const { return YWheelOffset; }
 
-double Window::GetYWheelOffset() { return YWheelOffset; }
+float Window::GetWorldTime() const { return WorldTime; }
+
+float Window::GetDeltaTime() const { return DeltaTime; }
 
 
 /* Handler for window re-size event. Called back when the window first appears and

@@ -80,7 +80,10 @@ void Loop()
 	{
 		StandardShader::GetInstance().Refresh();
 	}
-	const Camera* ActiveCamera = Camera::GetActiveCamera();
+
+	std::cout << "Framerate : " << 1.0f/Window::GetSingletonWindow().GetDeltaTime() << std::endl;
+
+	//const Camera* ActiveCamera = Camera::GetActiveCamera();
 
 	//Axes::LoadCameraMatrix();
 	//Axes::DrawGrid();

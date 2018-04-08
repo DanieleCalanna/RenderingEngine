@@ -11,16 +11,22 @@ private:
 	double PreviousXPosition, PreviousYPosition;
 	double YWheelOffset;
 
+	float WorldTime = 0.0f;
+	float DeltaTime = 0.0f;
+	void UpdateDeltaTime();
+
+
+	GLFWwindow* GLFWWindow;
+
 	Window() {}
 
 	void WindowInit();
 	void WindowLoop();
 
-	GLFWwindow* GLFWWindow;
-
 	void(*InitFunction) (void) = nullptr;
 	void(*LoopFunction) (void) = nullptr;
 	void(*ClearFunction) (void) = nullptr;
+
 public:
 
 	Window(Window const&) = delete;
@@ -32,16 +38,19 @@ public:
 	
 	void Run();
 
-	bool GetKeyDown(int KeyId);
+	bool GetKeyDown(int KeyId) const;
 
 	void SetSize(const int &WindowWidth, const int &WindowHeight);
 
-	int GetWidth();
-	int GetHeight();
-	double GetMouseX();
-	double GetMouseY();
-	void SetYWheelOffset(double NewYWheelOffset);
-	double GetYWheelOffset();
+	int GetWidth() const;
+	int GetHeight() const;
+	double GetMouseX() const;
+	double GetMouseY() const;
+	double GetYWheelOffset() const;
+	float GetWorldTime() const;
+	float GetDeltaTime() const;
+
+	void ScrollCallback(double XOffset, double YOffset);
 
 	static Window & GetSingletonWindow()
 	{
