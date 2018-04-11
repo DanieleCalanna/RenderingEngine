@@ -162,6 +162,7 @@ If Not Exist $(OutDir)glfw3.dll (xcopy /y $(ProjDir)External\Binaries\glfw3.dll 
     <ClCompile Include="Source\Core\Mesh\MeshRenderer.cpp" />
     <ClCompile Include="Source\Core\Mesh\MeshSmoothing.cpp" />
     <ClCompile Include="Source\Core\Scene\SkyBox.cpp" />
+    <ClCompile Include="Source\Core\Shaders\Shader.cpp" />
     <ClCompile Include="Source\Core\Shaders\SkyBoxShader.cpp" />
     <ClCompile Include="Source\Core\Shaders\StandardShader.cpp" />
     <ClCompile Include="Source\Core\Texture\Texture.cpp" />
@@ -187,6 +188,7 @@ If Not Exist $(OutDir)glfw3.dll (xcopy /y $(ProjDir)External\Binaries\glfw3.dll 
     <ClInclude Include="Header\Core\Mesh\MeshRenderer.hpp" />
     <ClInclude Include="Header\Core\Mesh\MeshSmoothing.hpp" />
     <ClInclude Include="Header\Core\Scene\SkyBox.hpp" />
+    <ClInclude Include="Header\Core\Shaders\Shader.hpp" />
     <ClInclude Include="Header\Core\Shaders\SkyBoxShader.hpp" />
     <ClInclude Include="Header\Core\Shaders\StandardShader.hpp" />
     <ClInclude Include="Header\Core\Texture\Texture.hpp" />
@@ -194,6 +196,7 @@ If Not Exist $(OutDir)glfw3.dll (xcopy /y $(ProjDir)External\Binaries\glfw3.dll 
     <ClInclude Include="Header\Core\Window.hpp" />
     <ClInclude Include="Header\Utils\Axes.hpp" />
     <ClInclude Include="Header\Utils\Png\lodepng.h" />
+    <ClInclude Include="Header\Utils\stb_image.h" />
     <ClInclude Include="Header\Utils\Tga.h" />
   </ItemGroup>
   <ItemGroup>
@@ -201,6 +204,8 @@ If Not Exist $(OutDir)glfw3.dll (xcopy /y $(ProjDir)External\Binaries\glfw3.dll 
     <Text Include="Resources\Shaders\StandardShader\VertexStandardShader.vert" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Shaders\HdrToCubemapShader\HdrToCubemapFragment.glsl" />
+    <None Include="Resources\Shaders\HdrToCubemapShader\HdrToCubemapVertex.glsl" />
     <None Include="Resources\Shaders\SkyBoxShader\FragmentSkyBoxShader.frag" />
     <None Include="Resources\Shaders\SkyBoxShader\VertexSkyBoxShader.vert" />
   </ItemGroup>

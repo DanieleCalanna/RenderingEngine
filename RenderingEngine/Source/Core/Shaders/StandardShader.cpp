@@ -9,24 +9,11 @@
 #include "Core/Scene/Scene.hpp"
 #include "Core/Scene/SkyBox.hpp"
 
-StandardShader::StandardShader()
-{
-	Refresh();
-}
+StandardShader::StandardShader() :Shader("Resources/Shaders/StandardShader/VertexStandardShader.vert", "Resources/Shaders/StandardShader/FragmentStandardShader.frag") { Refresh(); }
 
 void StandardShader::Refresh()
 {
-	VertexShaderID = CreateShaderFromFile("Resources/Shaders/StandardShader/VertexStandardShader.vert", GL_VERTEX_SHADER);
-	FragmentShaderID = CreateShaderFromFile("Resources/Shaders/StandardShader/FragmentStandardShader.frag", GL_FRAGMENT_SHADER);
-	
-	if (VertexShaderID == 0 || FragmentShaderID == 0) 
-	{
-		bIsValid = false;
-		return; 
-	}
-	
-	ProgramID = CreateProgram(VertexShaderID, FragmentShaderID);
-	glValidateProgram(ProgramID);
+	Shader::Refresh();
 
 	glUseProgram(ProgramID);
 	glUniform1i(glGetUniformLocation(ProgramID, "AlbedoMap"), 0);
@@ -38,85 +25,11 @@ void StandardShader::Refresh()
 	glUseProgram(0);
 }
 
-GLuint StandardShader::CreateShaderFromFile(std::string FilePath, GLenum ShaderType)
+void StandardShader::Start()
 {
-	std::string ShaderSource = LoadFile(FilePath);
-	//std::cout<<"Shader loaded: "<<path<<std::endl<<shaderSource<<std::endl;
-	const GLuint ShaderID = glCreateShader(ShaderType);
-	const GLchar* Source = (const GLchar *)ShaderSource.c_str();
-	glShaderSource(ShaderID, 1, &Source, 0);
-	glCompileShader(ShaderID);
-
-	GLint IsCompiled = GL_FALSE;
-	glGetShaderiv(ShaderID, GL_COMPILE_STATUS, &IsCompiled);
-
-	if (IsCompiled == GL_FALSE)
+	if (IsValid())
 	{
-		GLint MaxLength = 0;
-		glGetShaderiv(ShaderID, GL_INFO_LOG_LENGTH, &MaxLength); //Get Log Length
-
-		char* InfoLog = new char[MaxLength];
-		glGetShaderInfoLog(ShaderID, MaxLength, &MaxLength, InfoLog);
-		glDeleteShader(ShaderID);
-		std::cout << "COMPILING SHADER ERROR: " << FilePath << std::endl << InfoLog << std::endl;
-		std::string OutputError = "COMPILING SHADER ERROR: ";
-		OutputError = OutputError + FilePath;
-		OutputError = OutputError + "\n";
-		OutputError = OutputError + InfoLog;
-		OutputError = OutputError + "\n";
-		OutputDebugString(OutputError.c_str());
-		return 0;
-	}
-	return ShaderID;
-}
-
-GLuint StandardShader::CreateProgram(GLuint VertexShaderID, GLuint FragmentShaderID)
-{
-	GLuint ProgramID = glCreateProgram();
-	glAttachShader(ProgramID, VertexShaderID);
-	glAttachShader(ProgramID, FragmentShaderID);
-	//glBindAttribLocation(ProgramID, 0, "position");
-	//glBindAttribLocation(ProgramID, 1, "normal");
-	glLinkProgram(ProgramID);
-
-	//Note the different functions here: glGetProgram* instead of glGetShader*.
-	GLint isLinked = 0;
-	glGetProgramiv(ProgramID, GL_LINK_STATUS, (int *)&isLinked);
-	if (isLinked == GL_FALSE)
-	{
-		GLint maxLength = 0;
-		glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &maxLength);
-
-		//The maxLength includes the NULL character
-		GLchar* infoLog = new GLchar[maxLength];
-		glGetProgramInfoLog(ProgramID, maxLength, &maxLength, infoLog);
-
-		//We don't need the program anymore.
-		glDeleteProgram(ProgramID);
-		//Don't leak shaders either.
-		glDeleteShader(VertexShaderID);
-		glDeleteShader(FragmentShaderID);
-
-		std::cout << "LINKING PROGRAM ERROR: " << std::endl << infoLog << std::endl;
-		delete[] infoLog;
-		exit(1);
-	}
-	//Always detach shaders after a successful link.
-	glDetachShader(ProgramID, VertexShaderID);
-	glDetachShader(ProgramID, FragmentShaderID);
-	return ProgramID;
-}
-
-void StandardShader::Start(Material* MaterialToRender)
-{
-	if (bIsActive)
-	{
-		Stop();
-	}
-	CurrentMaterial = MaterialToRender;
-	if (CurrentMaterial)
-	{
-		glUseProgram(ProgramID);
+		Shader::Start();
 
 		CurrentMaterial->Activate(GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2, GL_TEXTURE3, GL_TEXTURE4);
 
@@ -127,25 +40,39 @@ void StandardShader::Start(Material* MaterialToRender)
 			glActiveTexture(GL_TEXTURE5);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, SkyBox->GetCubeMapTextureId());
 		}
-		bIsActive = true;
 	}
 
 }
 void StandardShader::Stop()
 {
-	if (bIsActive && CurrentMaterial)
+	if (bIsActive)
 	{
 		CurrentMaterial->Deactivate();
 		glActiveTexture(GL_TEXTURE5);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-		glUseProgram(0);
-		bIsActive = false;
+		Shader::Stop();
 	}
 }
 
-bool StandardShader::IsValid()
+bool StandardShader::IsValid() const
 {
-	return bIsValid;
+	return Shader::IsValid() && CurrentMaterial;
+}
+
+void StandardShader::SetMaterial(Material * InMaterial)
+{
+	if(InMaterial)
+	{
+		if (CurrentMaterial)
+		{
+			CurrentMaterial->Deactivate();
+		}
+		CurrentMaterial = InMaterial;
+		if (bIsActive)
+		{
+			CurrentMaterial->Activate(GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2, GL_TEXTURE3, GL_TEXTURE4);
+		}
+	}
 }
 
 void StandardShader::LoadBaseColor(const glm::vec3 &Color)
@@ -180,11 +107,4 @@ StandardShader& StandardShader::GetInstance()
 {
 	static StandardShader StandardShaderSingleton;
 	return StandardShaderSingleton;
-}
-
-std::string StandardShader::LoadFile(std::string path) // TO-DO Move away from here
-{
-	std::ifstream t(path);
-	std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
-	return str;
 }

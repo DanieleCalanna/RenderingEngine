@@ -1,12 +1,16 @@
 #version 400
 
-out vec4 out_Color;
+out vec4 FragColor;
 
 in vec3 texcoords;
 
-uniform samplerCube cube_texture;
+uniform samplerCube CubeMap;
 
 void main()
 {
-	out_Color = texture(cube_texture, texcoords);
+	vec3 EnvColor = texture(CubeMap, texcoords).rgb;
+    EnvColor = EnvColor / (EnvColor + vec3(1.0));
+    EnvColor = pow(EnvColor, vec3(1.0/2.2)); 
+    
+    FragColor = vec4(EnvColor, 1.0);
 }

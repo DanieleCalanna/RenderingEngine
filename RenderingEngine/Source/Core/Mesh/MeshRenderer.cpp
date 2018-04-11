@@ -20,7 +20,8 @@ void MeshRenderer::Update()
 	const Camera* ActiveCamera = Camera::GetActiveCamera();
 	if (MeshToRender && MaterialToRender && ActiveCamera)
 	{
-		StandardShader::GetInstance().Start(MaterialToRender);
+		StandardShader::GetInstance().SetMaterial(MaterialToRender);
+		StandardShader::GetInstance().Start();
 		StandardShader::GetInstance().LoadTransformationMatrix(GetOwner()->GetWorldTransform().GetTransformationMatrix());
 		StandardShader::GetInstance().LoadProjectionMatrix(ActiveCamera->GetProjectionMatrix());
 		StandardShader::GetInstance().LoadViewMatrix(ActiveCamera->GetViewMatrix());

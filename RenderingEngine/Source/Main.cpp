@@ -48,7 +48,7 @@ void Init()
 	/*-- Directional Light End --*/
 	
 	
-	//Mesh* MeshTest = new Mesh("Resources/Obj/sphere.obj");
+	
 	Mesh* MeshTest = new Mesh("Resources/3DObj/Gun.3Dobj");
 	Material* MaterialTest = new Material(
 		"Resources/Textures/Gun/Cerberus_A.tga",
@@ -65,6 +65,7 @@ void Init()
 	MeshTestRenderer->SetMesh(MeshTest);
 	MeshTestRenderer->SetMaterial(MaterialTest);
 	ActorMeshTest->AttachToActor(MainScene);
+	
 
 	MainScene->Start();
 }
@@ -85,9 +86,9 @@ void Loop()
 
 	//const Camera* ActiveCamera = Camera::GetActiveCamera();
 
-	//Axes::LoadCameraMatrix();
-	//Axes::DrawGrid();
-	//Axes::DrawAxes();
+	Axes::LoadCameraMatrix();
+	Axes::DrawGrid();
+	Axes::DrawAxes();
 	MainScene->Update();
 }
 

@@ -8,7 +8,9 @@ class SkyBoxComponent : public Component
 {
 	GLuint CubeVertexArray;
 	GLuint CubeVertexBuffer;
+
 	GLuint CubeTexture;
+	GLuint HdrTexture;
 
 public:
 	virtual void Construct() override;
@@ -29,6 +31,5 @@ private:
 
 	bool LoadCubeMapSide(GLenum side_target, const std::string TexturePath);
 
-	
-
+	GLuint GetCubemapFromHdr(std::string HdrPath, GLsizei Size) const;
 };

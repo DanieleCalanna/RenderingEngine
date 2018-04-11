@@ -1,41 +1,30 @@
 #pragma once
 
-#include "GL/glew.h"
-#include <string>
-#include <glm/mat4x4.hpp>
-#include <glm/vec3.hpp>
-#include <Core/Lights/DirectionalLight.hpp>
+#include "Core/Shaders/Shader.hpp"
+#include "glm/mat4x4.hpp"
+#include "glm/vec3.hpp"
+#include "Core/Lights/DirectionalLight.hpp"
 
-class Texture;
 class Material;
 
-class StandardShader 
+class StandardShader : public Shader
 {
 private:
-	GLuint ProgramID;
-	GLuint VertexShaderID;
-	GLuint FragmentShaderID;
-	
+
 	StandardShader();
-
-	GLuint CreateShaderFromFile(std::string FilePath, GLenum ShaderType);
-	GLuint CreateProgram(GLuint VertexShaderID, GLuint FragmentShaderID);
-
-	std::string LoadFile(std::string path);
-
-	bool bIsValid = false;
-	bool bIsActive = false;
 
 	Material* CurrentMaterial = nullptr;
 
 public:
 
-	void Refresh();
+	virtual void Refresh() override;
 
-	void Start(Material*);
-	void Stop();
+	virtual void Start() override;
+	virtual void Stop() override;
 
-	bool IsValid();
+	virtual bool IsValid() const override;
+
+	void SetMaterial(Material* InMaterial);
 
 	void LoadBaseColor(const glm::vec3 &color);
 	void LoadTransformationMatrix(glm::mat4x4 TransformationMatrix);

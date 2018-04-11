@@ -5,52 +5,56 @@
 #include "Core/Shaders/SkyBoxShader.hpp"
 #include "Core/Shaders/StandardShader.hpp"
 #include "Core/Transform.hpp"
+#include "glm/ext.hpp"
+#include "Core/Window.hpp"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "Utils/stb_image.h"
 
 void SkyBoxComponent::Construct()
 {
-	float Scale = 1000.0f;
 	float CubePoints[] = {
-		-Scale,  Scale, -Scale,
-		-Scale, -Scale, -Scale,
-		Scale, -Scale, -Scale,
-		Scale, -Scale, -Scale,
-		Scale,  Scale, -Scale,
-		-Scale,  Scale, -Scale,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
+		1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
 
-		-Scale, -Scale,  Scale,
-		-Scale, -Scale, -Scale,
-		-Scale,  Scale, -Scale,
-		-Scale,  Scale, -Scale,
-		-Scale,  Scale,  Scale,
-		-Scale, -Scale,  Scale,
+		-1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
 
-		Scale, -Scale, -Scale,
-		Scale, -Scale,  Scale,
-		Scale,  Scale,  Scale,
-		Scale,  Scale,  Scale,
-		Scale,  Scale, -Scale,
-		Scale, -Scale, -Scale,
+		1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
 
-		-Scale, -Scale,  Scale,
-		-Scale,  Scale,  Scale,
-		Scale,  Scale,  Scale,
-		Scale,  Scale,  Scale,
-		Scale, -Scale,  Scale,
-		-Scale, -Scale,  Scale,
+		-1.0f, -1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
 
-		-Scale,  Scale, -Scale,
-		Scale,  Scale, -Scale,
-		Scale,  Scale,  Scale,
-		Scale,  Scale,  Scale,
-		-Scale,  Scale,  Scale,
-		-Scale,  Scale, -Scale,
+		-1.0f,  1.0f, -1.0f,
+		1.0f,  1.0f, -1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f, -1.0f,
 
-		-Scale, -Scale, -Scale,
-		-Scale, -Scale,  Scale,
-		Scale, -Scale, -Scale,
-		Scale, -Scale, -Scale,
-		-Scale, -Scale,  Scale,
-		Scale, -Scale,  Scale
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		1.0f, -1.0f,  1.0f
 	};
 
 	glGenVertexArrays(1, &CubeVertexArray);
@@ -63,6 +67,10 @@ void SkyBoxComponent::Construct()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindVertexArray(0);
+
+	CubeTexture = GetCubemapFromHdr("Resources/Textures/HDR/Newport_Loft/Newport_Loft_8k.jpg", 4096);
+	HdrTexture = GetCubemapFromHdr("Resources/Textures/HDR/Newport_Loft/Newport_Loft_Ref.hdr", 1024);
+	
 	/*
 	CreateCubeMap("Resources/Textures/CubeMap/NegZ.png",
 				  "Resources/Textures/CubeMap/PosZ.png",
@@ -106,6 +114,7 @@ void SkyBoxComponent::CreateCubeMap(const std::string Front, const std::string B
 	glActiveTexture(0);
 }
 
+
 bool SkyBoxComponent::LoadCubeMapSide(GLenum SideTarget, const std::string TexturePath)
 {
 	std::vector<unsigned char> PngImage;
@@ -128,23 +137,120 @@ bool SkyBoxComponent::LoadCubeMapSide(GLenum SideTarget, const std::string Textu
 	return true;
 }
 
-void SkyBoxComponent::Update()
+GLuint SkyBoxComponent::GetCubemapFromHdr(std::string HdrPath, GLsizei Size) const
 {
-	const Camera* ActiveCamera = Camera::GetActiveCamera();
-	if (ActiveCamera)
+	// Setup framebuffer
+	unsigned int CaptureFBO;
+	unsigned int CaptureRBO;
+	glGenFramebuffers(1, &CaptureFBO);
+	glGenRenderbuffers(1, &CaptureRBO);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, CaptureFBO);
+	glBindRenderbuffer(GL_RENDERBUFFER, CaptureRBO);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, Size, Size);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, CaptureRBO);
+
+	// Load the HDR environment map
+	stbi_set_flip_vertically_on_load(true);
+	int HdrWidth, HdrHeight, HdrComponents;
+	float *HdrData = stbi_loadf(HdrPath.c_str(), &HdrWidth, &HdrHeight, &HdrComponents, 0);
+	GLuint HdrTextureId;
+	if (HdrData)
 	{
-		glDepthMask(GL_FALSE);
-		SkyBoxShader::GetInstance().Start();
-		SkyBoxShader::GetInstance().LoadProjectionMatrix(ActiveCamera->GetProjectionMatrix());
-		SkyBoxShader::GetInstance().LoadViewMatrix(ActiveCamera->GetViewMatrix());
-		SkyBoxShader::GetInstance().LoadTransformationMatrix(Transform(ActiveCamera->GetWorldTransform().Location, glm::vec3(0), glm::vec3(1)).GetTransformationMatrix());
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, CubeTexture);
+		glGenTextures(1, &HdrTextureId);
+		glBindTexture(GL_TEXTURE_2D, HdrTextureId);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, HdrWidth, HdrHeight, 0, GL_RGB, GL_FLOAT, HdrData); // note how we specify the texture's data value to be float
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		stbi_image_free(HdrData);
+	}
+	else
+	{
+		std::cout << "Failed to load HDR image." << std::endl;
+	}
+
+	// Setup cubemap to render to and attach to framebuffer
+	GLuint EnvCubemap;
+	glGenTextures(1, &EnvCubemap);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, EnvCubemap);
+	for (unsigned int i = 0; i < 6; ++i)
+	{
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, Size, Size, 0, GL_RGB, GL_FLOAT, nullptr);
+	}
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// Set up projection and view matrices for capturing data onto the 6 cubemap face directions
+	glm::mat4 CaptureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+	glm::mat4 CaptureViews[] =
+	{
+		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+	};
+
+	// Convert HDR environment map to cubemap equivalent
+	Shader HdrToCubemapShader("Resources/Shaders/HdrToCubemapShader/HdrToCubemapVertex.glsl", "Resources/Shaders/HdrToCubemapShader/HdrToCubemapFragment.glsl");
+	HdrToCubemapShader.Refresh();
+	HdrToCubemapShader.Start();
+	HdrToCubemapShader.LoadInt("HdrMap", 0);
+	HdrToCubemapShader.LoadMat4("Projection", CaptureProjection);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, HdrTextureId);
+
+	glViewport(0, 0, Size, Size); // don't forget to configure the viewport to the capture dimensions.
+	glBindFramebuffer(GL_FRAMEBUFFER, CaptureFBO);
+	for (unsigned int i = 0; i < 6; ++i)
+	{
+		HdrToCubemapShader.LoadMat4("View", CaptureViews[i]);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, EnvCubemap, 0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
+		// Render Cube
 		glBindVertexArray(CubeVertexArray);
 		glEnableVertexAttribArray(0);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		glDisableVertexAttribArray(1);
 		glBindVertexArray(0);
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	HdrToCubemapShader.Stop();
+	glViewport(0, 0, Window::GetSingletonWindow().GetWidth() , Window::GetSingletonWindow().GetHeight());
+	return EnvCubemap;
+}
+
+
+void SkyBoxComponent::Update()
+{
+	const Camera* ActiveCamera = Camera::GetActiveCamera();
+	if (ActiveCamera)
+	{
+		
+		glDepthMask(GL_FALSE);
+		SkyBoxShader::GetInstance().Start();
+		SkyBoxShader::GetInstance().LoadInt("CubeMap", 0);
+		SkyBoxShader::GetInstance().LoadProjectionMatrix(ActiveCamera->GetProjectionMatrix());
+		SkyBoxShader::GetInstance().LoadViewMatrix(ActiveCamera->GetViewMatrix());
+		SkyBoxShader::GetInstance().LoadTransformationMatrix(Transform(ActiveCamera->GetWorldTransform().Location, glm::vec3(0.0f), glm::vec3(1000.0f)).GetTransformationMatrix());
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, CubeTexture);
+
+		glBindVertexArray(CubeVertexArray);
+		glEnableVertexAttribArray(0);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDisableVertexAttribArray(1);
+		glBindVertexArray(0);
+
 		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 		glActiveTexture(0);
 		SkyBoxShader::GetInstance().Stop();

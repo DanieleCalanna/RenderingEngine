@@ -103,6 +103,9 @@
     <Filter Include="Source Files\Core\Material">
       <UniqueIdentifier>{713368c0-3cec-4e58-8338-31aba05cad9f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Shaders\HdrToCubemapShader">
+      <UniqueIdentifier>{ffbae0b9-2b13-4073-aeb0-ad847425a932}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -174,6 +177,9 @@
     <ClCompile Include="Source\Core\Material\Material.cpp">
       <Filter>Source Files\Core\Material</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Core\Shaders\Shader.cpp">
+      <Filter>Source Files\Core\Shaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\Core\Transform.hpp">
@@ -242,6 +248,12 @@
     <ClInclude Include="Header\Core\Texture\Texture.hpp">
       <Filter>Header Files\Core\Texture</Filter>
     </ClInclude>
+    <ClInclude Include="Header\Utils\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Core\Shaders\Shader.hpp">
+      <Filter>Header Files\Core\Shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\Shaders\StandardShader\FragmentStandardShader.frag">
@@ -257,6 +269,12 @@
     </None>
     <None Include="Resources\Shaders\SkyBoxShader\VertexSkyBoxShader.vert">
       <Filter>Resource Files\Shaders\SkyBoxShader</Filter>
+    </None>
+    <None Include="Resources\Shaders\HdrToCubemapShader\HdrToCubemapVertex.glsl">
+      <Filter>Resource Files\Shaders\HdrToCubemapShader</Filter>
+    </None>
+    <None Include="Resources\Shaders\HdrToCubemapShader\HdrToCubemapFragment.glsl">
+      <Filter>Resource Files\Shaders\HdrToCubemapShader</Filter>
     </None>
   </ItemGroup>
 </Project>
