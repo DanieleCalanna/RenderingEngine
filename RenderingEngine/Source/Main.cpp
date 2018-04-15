@@ -48,7 +48,7 @@ void Init()
 	/*-- Directional Light End --*/
 	
 	
-	
+	//Mesh* MeshTest = new Mesh("Resources/3DObj/Sphere.3Dobj");
 	Mesh* MeshTest = new Mesh("Resources/3DObj/Gun.3Dobj");
 	Material* MaterialTest = new Material(
 		"Resources/Textures/Gun/Cerberus_A.tga",
@@ -82,13 +82,13 @@ void Loop()
 		StandardShader::GetInstance().Refresh();
 	}
 
-	std::cout << "Framerate : " << 1.0f/Window::GetSingletonWindow().GetDeltaTime() << std::endl;
+	//std::cout << "Framerate : " << 1.0f/Window::GetSingletonWindow().GetDeltaTime() << std::endl;
 
 	//const Camera* ActiveCamera = Camera::GetActiveCamera();
 
-	Axes::LoadCameraMatrix();
-	Axes::DrawGrid();
-	Axes::DrawAxes();
+	//Axes::LoadCameraMatrix();
+	//Axes::DrawGrid();
+	//Axes::DrawAxes();
 	MainScene->Update();
 }
 

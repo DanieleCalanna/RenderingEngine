@@ -36,5 +36,6 @@ public:
 	bool IsActive() const;
 
 	void LoadInt(std::string Location, GLint Value);
+	void LoadFloat(std::string Location, GLfloat Value);
 	void LoadMat4(std::string Location, glm::mat4x4 Matrix);
 };

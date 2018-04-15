@@ -200,14 +200,20 @@ If Not Exist $(OutDir)glfw3.dll (xcopy /y $(ProjDir)External\Binaries\glfw3.dll 
     <ClInclude Include="Header\Utils\Tga.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Resources\Shaders\StandardShader\FragmentStandardShader.frag" />
-    <Text Include="Resources\Shaders\StandardShader\VertexStandardShader.vert" />
+    <Text Include="Resources\Shaders\StandardShader\StandardShaderFragment.glsl" />
+    <Text Include="Resources\Shaders\StandardShader\StandardShaderVertex.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Shaders\HdrToCubemapShader\HdrToCubemapFragment.glsl" />
-    <None Include="Resources\Shaders\HdrToCubemapShader\HdrToCubemapVertex.glsl" />
-    <None Include="Resources\Shaders\SkyBoxShader\FragmentSkyBoxShader.frag" />
-    <None Include="Resources\Shaders\SkyBoxShader\VertexSkyBoxShader.vert" />
+    <None Include="Resources\Shaders\BRDFShader\BRDFFragment.glsl" />
+    <None Include="Resources\Shaders\BRDFShader\BRDFVertex.glsl" />
+    <None Include="Resources\Shaders\CubemapConvolutionShader\CubemapConvolutionFragment.glsl" />
+    <None Include="Resources\Shaders\CubemapConvolutionShader\CubemapConvolutionVertex.glsl" />
+    <None Include="Resources\Shaders\EquirectangularToCubemapShader\EquirectangularToCubemapFragment.glsl" />
+    <None Include="Resources\Shaders\EquirectangularToCubemapShader\EquirectangularToCubemapVertex.glsl" />
+    <None Include="Resources\Shaders\PrefilterCubemapShader\PrefilterCubemapFragment.glsl" />
+    <None Include="Resources\Shaders\PrefilterCubemapShader\PrefilterCubemapVertex.glsl" />
+    <None Include="Resources\Shaders\SkyBoxShader\SkyBoxFragment.glsl" />
+    <None Include="Resources\Shaders\SkyBoxShader\SkyBoxVertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

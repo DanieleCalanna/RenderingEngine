@@ -9,20 +9,23 @@
 #include "Core/Scene/Scene.hpp"
 #include "Core/Scene/SkyBox.hpp"
 
-StandardShader::StandardShader() :Shader("Resources/Shaders/StandardShader/VertexStandardShader.vert", "Resources/Shaders/StandardShader/FragmentStandardShader.frag") { Refresh(); }
+StandardShader::StandardShader() :Shader("Resources/Shaders/StandardShader/StandardShaderVertex.glsl", "Resources/Shaders/StandardShader/StandardShaderFragment.glsl") { Refresh(); }
 
 void StandardShader::Refresh()
 {
 	Shader::Refresh();
 
-	glUseProgram(ProgramID);
-	glUniform1i(glGetUniformLocation(ProgramID, "AlbedoMap"), 0);
-	glUniform1i(glGetUniformLocation(ProgramID, "SpecularMap"), 1);
-	glUniform1i(glGetUniformLocation(ProgramID, "RoughnessMap"), 2);
-	glUniform1i(glGetUniformLocation(ProgramID, "NormalMap"), 3);
-	glUniform1i(glGetUniformLocation(ProgramID, "AOMap"), 4);
-	glUniform1i(glGetUniformLocation(ProgramID, "EnvironmentMap"), 5);
-	glUseProgram(0);
+	Shader::Start();
+	LoadInt("AlbedoMap", 0);
+	LoadInt("SpecularMap", 1);
+	LoadInt("RoughnessMap", 2);
+	LoadInt("NormalMap", 3);
+	LoadInt("AOMap", 4);
+	LoadInt("EnvironmentMap", 5);
+	LoadInt("IrradianceMap", 6);
+	LoadInt("PrefilterMap", 7);
+	LoadInt("BRDFLUT", 8);
+	Shader::Stop();
 }
 
 void StandardShader::Start()
@@ -38,7 +41,13 @@ void StandardShader::Start()
 		{
 			SkyBoxComponent* SkyBox = CurrentScene->GetComponent<SkyBoxComponent>();
 			glActiveTexture(GL_TEXTURE5);
-			glBindTexture(GL_TEXTURE_CUBE_MAP, SkyBox->GetCubeMapTextureId());
+			glBindTexture(GL_TEXTURE_CUBE_MAP, SkyBox->GetPrefilteredCubemapTextureId());
+			glActiveTexture(GL_TEXTURE6);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, SkyBox->GetIrradianceMapTextureId());
+			glActiveTexture(GL_TEXTURE7);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, SkyBox->GetPrefilteredCubemapTextureId());
+			glActiveTexture(GL_TEXTURE8);
+			glBindTexture(GL_TEXTURE_2D, SkyBox->GetBRDFTextureId());
 		}
 	}
 
@@ -50,6 +59,12 @@ void StandardShader::Stop()
 		CurrentMaterial->Deactivate();
 		glActiveTexture(GL_TEXTURE5);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+		glActiveTexture(GL_TEXTURE6);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+		glActiveTexture(GL_TEXTURE7);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+		glActiveTexture(GL_TEXTURE8);
+		glBindTexture(GL_TEXTURE_2D, 0);
 		Shader::Stop();
 	}
 }

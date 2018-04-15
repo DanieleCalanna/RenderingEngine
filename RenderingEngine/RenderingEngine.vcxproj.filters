@@ -103,8 +103,17 @@
     <Filter Include="Source Files\Core\Material">
       <UniqueIdentifier>{713368c0-3cec-4e58-8338-31aba05cad9f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\Shaders\HdrToCubemapShader">
+    <Filter Include="Resource Files\Shaders\CubemapConvolutionShader">
+      <UniqueIdentifier>{5d150662-947a-4bcc-81f5-0f35483a7016}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\EquirectangularToCubemapShader">
       <UniqueIdentifier>{ffbae0b9-2b13-4073-aeb0-ad847425a932}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\PrefilterCubemapShader">
+      <UniqueIdentifier>{88fde967-e23c-4b60-8d92-33b4cbb6f7b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\BRDFShader">
+      <UniqueIdentifier>{1e624383-85c9-4f07-a6f4-bb2105cf816a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -256,25 +265,43 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Resources\Shaders\StandardShader\FragmentStandardShader.frag">
+    <Text Include="Resources\Shaders\StandardShader\StandardShaderFragment.glsl">
       <Filter>Resource Files\Shaders\StandardShader</Filter>
     </Text>
-    <Text Include="Resources\Shaders\StandardShader\VertexStandardShader.vert">
+    <Text Include="Resources\Shaders\StandardShader\StandardShaderVertex.glsl">
       <Filter>Resource Files\Shaders\StandardShader</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Shaders\SkyBoxShader\FragmentSkyBoxShader.frag">
+    <None Include="Resources\Shaders\CubemapConvolutionShader\CubemapConvolutionVertex.glsl">
+      <Filter>Resource Files\Shaders\CubemapConvolutionShader</Filter>
+    </None>
+    <None Include="Resources\Shaders\CubemapConvolutionShader\CubemapConvolutionFragment.glsl">
+      <Filter>Resource Files\Shaders\CubemapConvolutionShader</Filter>
+    </None>
+    <None Include="Resources\Shaders\SkyBoxShader\SkyBoxFragment.glsl">
       <Filter>Resource Files\Shaders\SkyBoxShader</Filter>
     </None>
-    <None Include="Resources\Shaders\SkyBoxShader\VertexSkyBoxShader.vert">
+    <None Include="Resources\Shaders\SkyBoxShader\SkyBoxVertex.glsl">
       <Filter>Resource Files\Shaders\SkyBoxShader</Filter>
     </None>
-    <None Include="Resources\Shaders\HdrToCubemapShader\HdrToCubemapVertex.glsl">
-      <Filter>Resource Files\Shaders\HdrToCubemapShader</Filter>
+    <None Include="Resources\Shaders\EquirectangularToCubemapShader\EquirectangularToCubemapFragment.glsl">
+      <Filter>Resource Files\Shaders\EquirectangularToCubemapShader</Filter>
     </None>
-    <None Include="Resources\Shaders\HdrToCubemapShader\HdrToCubemapFragment.glsl">
-      <Filter>Resource Files\Shaders\HdrToCubemapShader</Filter>
+    <None Include="Resources\Shaders\EquirectangularToCubemapShader\EquirectangularToCubemapVertex.glsl">
+      <Filter>Resource Files\Shaders\EquirectangularToCubemapShader</Filter>
+    </None>
+    <None Include="Resources\Shaders\PrefilterCubemapShader\PrefilterCubemapFragment.glsl">
+      <Filter>Resource Files\Shaders\PrefilterCubemapShader</Filter>
+    </None>
+    <None Include="Resources\Shaders\PrefilterCubemapShader\PrefilterCubemapVertex.glsl">
+      <Filter>Resource Files\Shaders\PrefilterCubemapShader</Filter>
+    </None>
+    <None Include="Resources\Shaders\BRDFShader\BRDFFragment.glsl">
+      <Filter>Resource Files\Shaders\BRDFShader</Filter>
+    </None>
+    <None Include="Resources\Shaders\BRDFShader\BRDFVertex.glsl">
+      <Filter>Resource Files\Shaders\BRDFShader</Filter>
     </None>
   </ItemGroup>
 </Project>

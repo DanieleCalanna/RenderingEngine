@@ -45,8 +45,6 @@ void Mesh::InitBuffers()
 	StoreDataInAttributeList(3, 3, &Tangents[0], (int)Tangents.size());
 	StoreDataInAttributeList(4, 3, &Bitangents[0], (int)Bitangents.size());
 	glBindVertexArray(0);
-
-
 }
 
 void Mesh::LoadObj(std::string ObjFilePath)

@@ -9,19 +9,33 @@ class SkyBoxComponent : public Component
 	GLuint CubeVertexArray;
 	GLuint CubeVertexBuffer;
 
-	GLuint CubeTexture;
+	GLuint QuadVertexArray;
+	GLuint QuadVertexBuffer;
+
+	GLuint CubemapTexture;
+	GLuint IrradianceCubemap;
 	GLuint HdrTexture;
+	GLuint PrefilteredCubemap;
+	GLuint BRDFTexture;
 
 public:
 	virtual void Construct() override;
 	virtual void Start() override;
 	virtual void Update() override;
 
-	GLuint GetCubeMapTextureId() const;
+	GLuint GetCubemapTextureId() const;
+	GLuint GetIrradianceMapTextureId() const;
+	GLuint GetPrefilteredCubemapTextureId() const;
+	GLuint GetBRDFTextureId() const;
+
+	GLuint GetConvolutedCubemap(GLuint Cubemap, GLsizei Size) const;
+	GLuint GetCubemapFromEquirectangular(std::string HdrPath, GLsizei Size) const;
+	GLuint GetPrefilteredCubemap(GLuint Cubemap, GLsizei Size) const;
+	GLuint GetBRDFTexture(GLsizei Size) const;
 
 private:
 
-	void CreateCubeMap(
+	void CreateCubemap(
 		const std::string Front,
 		const std::string Back,
 		const std::string Top,
@@ -29,7 +43,6 @@ private:
 		const std::string Left,
 		const std::string Right);
 
-	bool LoadCubeMapSide(GLenum side_target, const std::string TexturePath);
+	bool LoadCubemapSide(GLenum side_target, const std::string TexturePath);
 
-	GLuint GetCubemapFromHdr(std::string HdrPath, GLsizei Size) const;
 };

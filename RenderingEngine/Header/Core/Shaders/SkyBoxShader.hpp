@@ -12,6 +12,8 @@ private:
 
 public:
 
+	virtual void Refresh() override;
+
 	void LoadTransformationMatrix(glm::mat4x4 TransformationMatrix);
 	void LoadProjectionMatrix(glm::mat4x4 ProjectionMatrix);
 	void LoadViewMatrix(glm::mat4x4 ViewMatrix);
