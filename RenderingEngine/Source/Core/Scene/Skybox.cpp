@@ -7,9 +7,7 @@
 #include "Core/Transform.hpp"
 #include "glm/ext.hpp"
 #include "Core/Window.hpp"
-
-#define STB_IMAGE_IMPLEMENTATION
-#include "Utils/stb_image.h"
+#include "Core/Texture/Texture.hpp"
 
 void SkyBoxComponent::Construct()
 {
@@ -89,10 +87,10 @@ void SkyBoxComponent::Construct()
 	//HdrTexture = GetCubemapFromEquirectangular("Resources/Textures/HDR/Newport_Loft/Newport_Loft_Ref.hdr", 4096);
 
 	CubemapTexture = GetCubemapFromEquirectangular("Resources/Textures/HDR/Malibu_Overlook/Malibu_Overlook_8k.jpg", 4096);
-	HdrTexture = GetCubemapFromEquirectangular("Resources/Textures/HDR/Malibu_Overlook/Malibu_Overlook_3k.hdr", 4096);
+	HdrTexture = GetCubemapFromEquirectangular("Resources/Textures/HDR/Malibu_Overlook/Malibu_Overlook_3k.hdr", 2048);
 
 	IrradianceCubemap = GetConvolutedCubemap(HdrTexture, 64);
-	PrefilteredCubemap = GetPrefilteredCubemap(HdrTexture, 256);
+	PrefilteredCubemap = GetPrefilteredCubemap(HdrTexture, 32);
 	BRDFTexture = GetBRDFTexture(512);
 	//CubemapTexture = PrefilteredCubemap;
 	//CubemapTexture = IrradianceCubemap;
@@ -210,28 +208,7 @@ GLuint SkyBoxComponent::GetCubemapFromEquirectangular(std::string Equirectangula
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, Size, Size);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, CaptureRBO);
 
-	// Load the Equirectangular environment map
-	stbi_set_flip_vertically_on_load(true);
-	int EquirectangularWidth, EquirectangularHeight, EquirectangularComponents;
-	float *EquirectangularData = stbi_loadf(EquirectangularPath.c_str(), &EquirectangularWidth, &EquirectangularHeight, &EquirectangularComponents, 0);
-	GLuint EquirectangularTextureId;
-	if (EquirectangularData)
-	{
-		glGenTextures(1, &EquirectangularTextureId);
-		glBindTexture(GL_TEXTURE_2D, EquirectangularTextureId);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, EquirectangularWidth, EquirectangularHeight, 0, GL_RGB, GL_FLOAT, EquirectangularData); // note how we specify the texture's data value to be float
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		stbi_image_free(EquirectangularData);
-	}
-	else
-	{
-		std::cout << "Failed to load Equirectangular image." << std::endl;
-	}
+	GLuint EquirectangularTextureId = LoadTexture(EquirectangularPath, GL_RGB16F, GL_RGB, GL_FLOAT);
 
 	// Setup cubemap to render to and attach to framebuffer
 	GLuint EnvCubemap;

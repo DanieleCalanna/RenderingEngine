@@ -49,6 +49,8 @@ void Init()
 	
 	
 	//Mesh* MeshTest = new Mesh("Resources/3DObj/Sphere.3Dobj");
+	
+	/*
 	Mesh* MeshTest = new Mesh("Resources/3DObj/Gun.3Dobj");
 	Material* MaterialTest = new Material(
 		"Resources/Textures/Gun/Cerberus_A.tga",
@@ -57,6 +59,18 @@ void Init()
 		"Resources/Textures/Gun/Cerberus_N.tga",
 		"Resources/Textures/Gun/Cerberus_AO.tga");
 	ActorMeshTest = new Actor("Gun");
+	*/
+	
+	Mesh* MeshTest = new Mesh("Resources/3DObj/Drone.3Dobj");
+	Material* MaterialTest = new Material(
+		"Resources/Textures/Drone/Drone_diff.jpg",
+		"Resources/Textures/Drone/Drone_spec.jpg",
+		"Resources/Textures/Drone/Drone_gloss.jpg",
+		"Resources/Textures/Drone/Drone_normal.jpg",
+		"Resources/Textures/Drone/Drone_ao.jpg");
+	ActorMeshTest = new Actor("Drone");
+	
+
 	Transform ActorMeshTestTransform;
 	ActorMeshTestTransform.Location = glm::vec3(0.0f, 0.0f, 0.0f);
 	ActorMeshTestTransform.Scale = glm::vec3(20.0f, 20.0f, 20.0f);
@@ -83,8 +97,6 @@ void Loop()
 	}
 
 	//std::cout << "Framerate : " << 1.0f/Window::GetSingletonWindow().GetDeltaTime() << std::endl;
-
-	//const Camera* ActiveCamera = Camera::GetActiveCamera();
 
 	//Axes::LoadCameraMatrix();
 	//Axes::DrawGrid();

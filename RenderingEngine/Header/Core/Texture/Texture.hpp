@@ -9,6 +9,7 @@ class Texture
 {
 public:
 
+	Texture(std::string FilePath, GLint InternalFormat, GLenum PixelFormat, GLenum PixelType);
 	Texture(std::string FilePath);
 	Texture(Tga info);
 
@@ -25,3 +26,7 @@ private:
 	bool IsActive();
 
 };
+
+GLuint LoadTexture(std::string FilePath, GLint InternalFormat, GLenum PixelFormat, GLenum PixelType);
+GLuint LoadTexture2(std::string FilePath, GLint InternalFormat, GLenum PixelFormat, GLenum PixelType);
+

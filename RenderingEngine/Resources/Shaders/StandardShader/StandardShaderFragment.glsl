@@ -103,14 +103,16 @@ void main()
 	vec3 Normal_TS = normalize(texture(NormalMap, UVFrag).rgb * (255.0/128.0) - 1.0);
 	vec3 SpecularColor = texture(SpecularMap, UVFrag).rgb;
 	vec3 RoughnessColor = texture(RoughnessMap, UVFrag).rgb;
+	RoughnessColor = pow(pow(RoughnessColor, vec3(Gamma)), vec3(1.4));
 	vec3 AOColor = texture(AOMap, UVFrag).rgb;
 
 	/*TEMP*/
 	mat3 TBN = transpose(mat3(
-        normalize(cross(FragNormal, FragBitangent)),
-        normalize(cross(FragTangent, FragNormal)),
-        normalize(FragNormal)
-    ));
+		normalize(cross(FragNormal, FragBitangent)),
+		normalize(cross(FragTangent, FragNormal)),
+		normalize(FragNormal)
+	));
+
 
 	vec3 WorldNormal = normalize((TransformationMatrix*vec4(inverse(TBN)*Normal_TS, 0.0)).xyz);
 	vec3 WorldCameraPosition = (inverse(ViewMatrix)*vec4(0.0, 0.0, 0.0, 1.0)).xyz;
@@ -166,17 +168,20 @@ void main()
     Color = Color / (Color + vec3(1.0));
    
     OutColor = vec4(Color, 1.0);
-	OutColor.rgb = pow(OutColor.rgb, vec3(1.0/Gamma));
 	
+	OutColor.rgb = pow(OutColor.rgb, vec3(1.0 / Gamma));
+
 	//OutColor = vec4(Specular, 0.0);r
 	//OutColor = vec4(EnvBDRF, 0.0, 1.0);
 	//OutColor = vec4(PrefilteredColor, 1.0);
 	//OutColor = vec4(Irradiance, 1.0);
-	//OutColor = vec4(SpecularColor.r);
-	//OutColor = vec4(ReflectedColour);
-	//OutColor = vec4(pow(AlbedoColor,vec3(Gamma)), 1.0);
+	//OutColor = vec4(AlbedoColor, 1.0);
+	//OutColor = vec4(Normal_TS, 1.0);
+	//OutColor = vec4(inverse(TBN)*Normal_TS, 1.0);
 	
 	//OutColor = vec4(max(dot(Normal_TS, -LightDirection_TS), 0.0));
 	//OutColor.xyz = cross(FragTangent, FragNormal);
+
+	
    	
 }

@@ -60,7 +60,7 @@ void Mesh::LoadObj(std::string ObjFilePath)
 	ifstream ObjFile(ObjFilePath);
 	if (!ObjFile.is_open())
 	{
-		std::cout<<"Impossible to open the file !"<<std::endl;
+		std::cout << "Impossible to open the file !" << std::endl;
 		return;
 	}
 
@@ -116,20 +116,20 @@ void Mesh::LoadObj(std::string ObjFilePath)
 			FaceNormalsIndices[2] = stoi(ParamsOfVertex2[2]);
 
 			//Put params in the 
-			ObjVerticesIndices.push_back(FaceVerticesIndices[0] -1);
-			ObjVerticesIndices.push_back(FaceVerticesIndices[1] -1);
-			ObjVerticesIndices.push_back(FaceVerticesIndices[2] -1);
-			ObjUVsIndices.push_back(FaceUVsIndices[0] -1);
-			ObjUVsIndices.push_back(FaceUVsIndices[1] -1);
-			ObjUVsIndices.push_back(FaceUVsIndices[2] -1);
-			ObjNormalsIndices.push_back(FaceNormalsIndices[0] -1);
-			ObjNormalsIndices.push_back(FaceNormalsIndices[1] -1);
-			ObjNormalsIndices.push_back(FaceNormalsIndices[2] -1);
+			ObjVerticesIndices.push_back(FaceVerticesIndices[0] - 1);
+			ObjVerticesIndices.push_back(FaceVerticesIndices[1] - 1);
+			ObjVerticesIndices.push_back(FaceVerticesIndices[2] - 1);
+			ObjUVsIndices.push_back(FaceUVsIndices[0] - 1);
+			ObjUVsIndices.push_back(FaceUVsIndices[1] - 1);
+			ObjUVsIndices.push_back(FaceUVsIndices[2] - 1);
+			ObjNormalsIndices.push_back(FaceNormalsIndices[0] - 1);
+			ObjNormalsIndices.push_back(FaceNormalsIndices[1] - 1);
+			ObjNormalsIndices.push_back(FaceNormalsIndices[2] - 1);
 		}
 	}
 	std::list<unsigned int>* A = new std::list<unsigned int>[ObjVertices.size()];
 	// For each vertex of each triangle
-	for(unsigned int i=0; i< (unsigned int) ObjVerticesIndices.size(); i++) 
+	for (unsigned int i = 0; i < (unsigned int)ObjVerticesIndices.size(); i++)
 	{
 		unsigned int VertexIndex = ObjVerticesIndices[i];
 		unsigned int UVIndex = ObjUVsIndices[i];
@@ -139,7 +139,7 @@ void Mesh::LoadObj(std::string ObjFilePath)
 		UVs.push_back(ObjUVs[UVIndex]);
 		Normals.push_back(ObjNormals[NormalIndex]);
 	}
-
+	
 	std::vector	< glm::vec3 > FlatTangents;
 	std::vector	< glm::vec3 > FlatBitangents;
 	for (int i = 0; i < Vertices.size(); i += 3)
@@ -168,7 +168,6 @@ void Mesh::LoadObj(std::string ObjFilePath)
 		glm::vec3 Bitangent = glm::normalize((deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x)*r);
 
 		// Set the same tangent for all three vertices of the triangle.
-		// They will be merged later, in vboindexer.cpp
 		FlatTangents.push_back(Tangent);
 		FlatTangents.push_back(Tangent);
 		FlatTangents.push_back(Tangent);
@@ -186,28 +185,9 @@ void Mesh::LoadObj(std::string ObjFilePath)
 		Bitangents.push_back(Bitangent);
 		Bitangents.push_back(Bitangent);
 	}
-	/*
-	for (unsigned int i = 0; i< (unsigned int)ObjVertices.size(); i++)
-	{
-		glm::vec3 SmoothTangent(0.0f);
-		glm::vec3 SmoothBitangen(0.0f);
-		std::list<unsigned int> AA = A[i];
-		for (unsigned int VertexIndex : AA)
-		{
-			SmoothTangent += FlatTangents[VertexIndex];
-			SmoothBitangen += FlatBitangents[VertexIndex];
-		}
-		SmoothTangent /= AA.size();
-		SmoothBitangen /= AA.size();
-		for (unsigned int VertexIndex : AA)
-		{
-			Tangents[VertexIndex] = SmoothTangent;
-			Bitangents[VertexIndex] = SmoothBitangen;
-		}
-	}
-	delete[] A;
-	*/
 }
+
+
 
 void Mesh::Render()
 {

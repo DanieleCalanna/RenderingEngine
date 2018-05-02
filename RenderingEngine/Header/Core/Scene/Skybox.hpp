@@ -46,3 +46,5 @@ private:
 	bool LoadCubemapSide(GLenum side_target, const std::string TexturePath);
 
 };
+
+
