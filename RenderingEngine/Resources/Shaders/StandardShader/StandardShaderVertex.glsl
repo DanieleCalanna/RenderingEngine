@@ -33,12 +33,13 @@ void main()
 	FragTangent = Tangent;
 	FragBitangent = Bitangent;
 	FragNormal = Normal.xyz;
+	
 	mat3 TBN = transpose(mat3(
         cross(Normal.xyz, Bitangent),
         cross(Tangent, Normal.xyz),
         Normal.xyz
     ));
-
+	
 	vec3 CameraPosition_WS = (inverse(ViewMatrix)*vec4(0.0, 0.0, 0.0, 1.0)).xyz;
 	vec3 CameraForward_WS = (inverse(ViewMatrix)*vec4(0.0, 0.0, -1.0, 0.0)).xyz;
 
