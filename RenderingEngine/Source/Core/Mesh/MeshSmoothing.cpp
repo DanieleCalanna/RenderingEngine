@@ -6,7 +6,7 @@
 #include <iostream>
 #include <string>
 
-#define OCL_FILENAME "res/Kernels/meshsmooth.ocl"
+#define OCL_FILENAME "Resources/Kernels/meshsmooth.ocl"
 
 
 size_t preferred_wg_smooth;
@@ -142,7 +142,7 @@ void MeshSmoothing::Start()
 	printf("============================\n");
 
 	MeshRenderer* OwnerMeshRenderer = (MeshRenderer*) GetOwner()->GetComponent<MeshRenderer>();
-	//Mesh = (IndexedMesh*)OwnerMeshRenderer->Get; //TO-DO
+	Mesh = (IndexedMesh*)OwnerMeshRenderer->GetMesh();
 
 
 	Mesh->meanAdjNum = Mesh->nadjs/(float)Mesh->nels;
@@ -168,15 +168,15 @@ void MeshSmoothing::Start()
 	cl_normals_buffer = clCreateFromGLBuffer(context, CL_MEM_READ_WRITE, Mesh->normalsBuffer, &err);
 	cl_adjArray = clCreateBuffer(context, CL_MEM_READ_WRITE|CL_MEM_COPY_HOST_PTR, Mesh->adjmemsize, Mesh->adjArray, &err);
 	cl_result = clCreateBuffer(context, CL_MEM_READ_WRITE, Mesh->memsize, NULL, &err);
-	cl_normals_per_face = clCreateBuffer(context, CL_MEM_READ_WRITE, Mesh->indices.size()/3*sizeof(float)*4, NULL, &err);
+	cl_normals_per_face = clCreateBuffer(context, CL_MEM_READ_WRITE, Mesh->Indices.size()/3*sizeof(float)*4, NULL, &err);
 
 	std::vector < unsigned int > *faces_of_each_vertex = new std::vector < unsigned int >[Mesh->nels];
-	int faceIndexesDim = ((int)Mesh->indices.size())/3*4;
+	int faceIndexesDim = ((int)Mesh->Indices.size())/3*4;
 	unsigned int* faceIndexes = new unsigned int[faceIndexesDim];
 	for(int i=0; i<faceIndexesDim/4; i++){
-		unsigned int vertex1ID = Mesh->indices[i*3];
-		unsigned int vertex2ID = Mesh->indices[i*3+1];
-		unsigned int vertex3ID = Mesh->indices[i*3+2];
+		unsigned int vertex1ID = Mesh->Indices[i*3];
+		unsigned int vertex2ID = Mesh->Indices[i*3+1];
+		unsigned int vertex3ID = Mesh->Indices[i*3+2];
 		faces_of_each_vertex[vertex1ID].push_back(i);
 		faces_of_each_vertex[vertex2ID].push_back(i);
 		faces_of_each_vertex[vertex3ID].push_back(i);
@@ -242,7 +242,7 @@ void MeshSmoothing::ApplySmooth(){
 		lock = smooth(queue, smooth_k, &smooth_evt1, cl_result, cl_adjArray, cl_vertex_buffer, Mesh->nels, mi);
 	}
 
-	cl_event normals_per_face_evt = normals_per_face(queue, normals_per_face_k, &lock, cl_vertex_buffer, cl_faceIndexes, cl_normals_per_face, ((cl_int)Mesh->indices.size())/3);
+	cl_event normals_per_face_evt = normals_per_face(queue, normals_per_face_k, &lock, cl_vertex_buffer, cl_faceIndexes, cl_normals_per_face, ((cl_int)Mesh->Indices.size())/3);
 	cl_event normals_per_vertex_evt = normals_per_vertex(queue, normals_per_vertex_k, &normals_per_face_evt, cl_normals_per_face, cl_faces_info_array, cl_faceIndex_per_vertex, cl_normals_buffer, Mesh->nels);
 	clEnqueueReleaseGLObjects(queue, 2, buffersToAquire, 1, &normals_per_vertex_evt, &unlock);
 	clWaitForEvents(1, &unlock);
@@ -251,7 +251,7 @@ void MeshSmoothing::ApplySmooth(){
 
 void MeshSmoothing::Update(){
 	static int x = 0;
-	if(x++ % 1 == 0){
+	if(x++ % 1 == 0 && x>160){
 		ApplySmooth();
 	}
 }

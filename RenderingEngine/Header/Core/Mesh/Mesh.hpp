@@ -21,7 +21,6 @@ public:
 
 	virtual void Clear();
 
-	GLuint StoreDataInAttributeList(unsigned int AttributeIndex, unsigned int CoordinateSize, GLvoid* Data, int NumberOfElements);
 
 protected:
 	
@@ -37,4 +36,8 @@ protected:
 
 	virtual void InitBuffers();
 
+	GLuint StoreDataInAttributeList(unsigned int AttributeIndex, unsigned int CoordinateSize, GLvoid* Data, int NumberOfElements);
+
 };
+
+std::vector<std::string> split(const std::string& s, char delimiter); // TO-DO Move away

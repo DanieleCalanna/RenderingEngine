@@ -26,7 +26,7 @@ uniform vec3 LightDirection;
 void main()
 {
 	mat4 ModelViewMatrix = ViewMatrix * TransformationMatrix;
-	vec4 Position_WS = TransformationMatrix * Position;
+	vec4 Position_WS = TransformationMatrix * vec4(Position.xyz, 1.0);
 	gl_Position = ProjectionMatrix * ViewMatrix * Position_WS;
 	FragmentPosition_WS = Position_WS.xyz;
 

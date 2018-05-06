@@ -42,7 +42,7 @@ void Window::WindowInit()
 	glfwWindowHint(GLFW_BLUE_BITS, VideoMode->blueBits);
 	glfwWindowHint(GLFW_REFRESH_RATE, VideoMode->refreshRate);
 
-	Width = 960;
+	Width = 720;
 	Height = 720;
 	//Width = VideoMode->width;
 	//Height = VideoMode->height;

@@ -11,6 +11,9 @@ class IndexedMesh : public Mesh{
 
 public:
 
+	IndexedMesh() {}
+	IndexedMesh(std::string ObjFilePath);
+
 	unsigned int nels, nadjs;
 	unsigned int minAdjNum, maxAdjNum;
 	float meanAdjNum;
@@ -21,19 +24,21 @@ public:
 	GLuint vertexBuffer;
 	GLuint normalsBuffer;
 
-	std::vector < unsigned int > indices;
+	std::vector < unsigned int > Indices;
 
 	GLuint elementbuffer;
-
-	IndexedMesh():Mesh(){}
 	
-	static Mesh* FromOBJFile(std::string path);
 
-	virtual void InitBuffers();
-	
-	virtual void Render();
+protected:
 
-	virtual void Clear();
+	void LoadObj(std::string ObjFilePath);
+
+	virtual void InitBuffers() override;
 	
-	GLuint storeDataInAttributeListShared(int attributeNumber, int coordinateSize, GLvoid * data, int size);
+	virtual void Render() override;
+
+	virtual void Clear() override;
+	
+	GLuint StoreDataInAttributeListShared(unsigned int AttributeIndex, int CoordinateSize, GLvoid * Data, int NumberOfElements);
+
 };

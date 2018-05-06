@@ -16,7 +16,7 @@
 
 using namespace std;
 
-std::vector<std::string> split2(const std::string& s, char delimiter) // TO-DO Move away
+std::vector<std::string> split(const std::string& s, char delimiter) // TO-DO Move away
 {
 	std::vector<std::string> tokens;
 	std::string token;
@@ -26,6 +26,30 @@ std::vector<std::string> split2(const std::string& s, char delimiter) // TO-DO M
 		tokens.push_back(token);
 	}
 	return tokens;
+}
+
+void splitfill2(std::string const& s, const char delimiter, unsigned int output[])
+{
+	size_t start = 0;
+	size_t end = s.find_first_of(delimiter);
+
+	std::string str;
+	int i = 0;
+
+	output[1] = 0;
+	output[2] = 0;
+
+	while (end <= std::string::npos)
+	{
+		str = s.substr(start, end - start);
+
+		output[i++] = (str != "") ? stoi(str) : 0;
+
+		if (end == std::string::npos) break;
+
+		start = end + 1;
+		end = s.find_first_of(delimiter, start);
+	}
 }
 
 
@@ -64,10 +88,56 @@ void Mesh::LoadObj(std::string ObjFilePath)
 		return;
 	}
 
+	std::stringstream ObjStringStream;
+	ObjStringStream << ObjFile.rdbuf();
+
+	std::string Keyword, a, b, c;
+
+	unsigned int Face1[3] { 0 }, Face2[3] { 0 }, Face3[3] { 0 };
+
+	while (ObjStringStream >> Keyword)
+	{
+		if (Keyword == "v")
+		{
+			ObjStringStream >> a >> b >> c;
+			ObjVertices.push_back(glm::vec4(stof(a), stof(b), stof(c), 1.0f));
+		}
+		else if (Keyword == "vn")
+		{
+			ObjStringStream >> a >> b >> c;
+			ObjNormals.push_back(glm::vec4(stof(a), stof(b), stof(c), 0.0f));
+		}
+		else if (Keyword == "vt")
+		{
+			ObjStringStream >> a >> b;
+			ObjUVs.push_back(glm::vec2(stof(a), stof(b)));
+		}
+		else if (Keyword == "f")
+		{
+			ObjStringStream >> a >> b >> c;
+
+			splitfill2(a, '/', Face1);
+			splitfill2(b, '/', Face2);
+			splitfill2(c, '/', Face3);
+
+			ObjVerticesIndices.push_back(Face1[0] - 1);
+			ObjVerticesIndices.push_back(Face2[0] - 1);
+			ObjVerticesIndices.push_back(Face3[0] - 1);
+			ObjUVsIndices.push_back(Face1[1] - 1);
+			ObjUVsIndices.push_back(Face2[1] - 1);
+			ObjUVsIndices.push_back(Face3[1] - 1);
+			ObjNormalsIndices.push_back(Face1[2] - 1);
+			ObjNormalsIndices.push_back(Face2[2] - 1);
+			ObjNormalsIndices.push_back(Face3[2] - 1);
+		}
+	}
+	/*
 	string LineOfObjFile;
 	while (getline(ObjFile, LineOfObjFile)) // for each line in the Obj file
 	{
-		std::vector<std::string> WordsInLine = split2(LineOfObjFile, ' ');
+		std::vector<std::string> WordsInLine = split(LineOfObjFile, ' ');
+
+		if (WordsInLine.size() == 0) continue;
 
 		if (WordsInLine[0] == "v")
 		{
@@ -96,9 +166,9 @@ void Mesh::LoadObj(std::string ObjFilePath)
 		}
 		else if (WordsInLine[0] == "f")
 		{
-			std::vector<std::string> ParamsOfVertex0 = split2(WordsInLine[1], '/');
-			std::vector<std::string> ParamsOfVertex1 = split2(WordsInLine[2], '/');
-			std::vector<std::string> ParamsOfVertex2 = split2(WordsInLine[3], '/');
+			std::vector<std::string> ParamsOfVertex0 = split(WordsInLine[1], '/');
+			std::vector<std::string> ParamsOfVertex1 = split(WordsInLine[2], '/');
+			std::vector<std::string> ParamsOfVertex2 = split(WordsInLine[3], '/');
 
 			unsigned int FaceVerticesIndices[3], FaceUVsIndices[3], FaceNormalsIndices[3];
 
@@ -127,6 +197,7 @@ void Mesh::LoadObj(std::string ObjFilePath)
 			ObjNormalsIndices.push_back(FaceNormalsIndices[2] - 1);
 		}
 	}
+	*/
 	std::list<unsigned int>* A = new std::list<unsigned int>[ObjVertices.size()];
 	// For each vertex of each triangle
 	for (unsigned int i = 0; i < (unsigned int)ObjVerticesIndices.size(); i++)

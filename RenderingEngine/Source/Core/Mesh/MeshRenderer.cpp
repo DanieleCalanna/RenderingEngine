@@ -10,6 +10,11 @@ void MeshRenderer::SetMesh(Mesh * InMesh)
 	MeshToRender = InMesh;
 }
 
+Mesh* MeshRenderer::GetMesh() const
+{
+	return MeshToRender;
+}
+
 void MeshRenderer::SetMaterial(Material * InMaterial)
 {
 	MaterialToRender = InMaterial;

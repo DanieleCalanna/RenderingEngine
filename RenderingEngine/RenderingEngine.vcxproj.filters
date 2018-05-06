@@ -115,6 +115,9 @@
     <Filter Include="Resource Files\Shaders\BRDFShader">
       <UniqueIdentifier>{1e624383-85c9-4f07-a6f4-bb2105cf816a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Shaders\BaseColorShader">
+      <UniqueIdentifier>{fd5d1b59-adde-4083-984a-648d4ea24684}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -302,6 +305,12 @@
     </None>
     <None Include="Resources\Shaders\BRDFShader\BRDFVertex.glsl">
       <Filter>Resource Files\Shaders\BRDFShader</Filter>
+    </None>
+    <None Include="Resources\Shaders\BaseColorShader\BaseColorFragment.glsl">
+      <Filter>Resource Files\Shaders\BaseColorShader</Filter>
+    </None>
+    <None Include="Resources\Shaders\BaseColorShader\BaseColorVertex.glsl">
+      <Filter>Resource Files\Shaders\BaseColorShader</Filter>
     </None>
   </ItemGroup>
 </Project>

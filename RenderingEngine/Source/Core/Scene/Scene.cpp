@@ -5,8 +5,8 @@ Scene* Scene::CurrentScene = nullptr;
 
 Scene::Scene() : Actor("Scene")
 {
-	SkyBox = AddComponent<SkyBoxComponent>("SkyBox");
-	SkyBox->SetEnabled(true);
+	//SkyBox = AddComponent<SkyBoxComponent>("SkyBox");
+	//SkyBox->SetEnabled(false);
 }
 
 Scene::~Scene()

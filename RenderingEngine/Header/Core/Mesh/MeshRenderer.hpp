@@ -27,4 +27,6 @@ public:
 	void Update();
 
 	void Clear();
+
+	Mesh* GetMesh() const;
 };

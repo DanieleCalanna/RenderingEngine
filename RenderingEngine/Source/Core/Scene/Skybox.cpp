@@ -84,10 +84,12 @@ void SkyBoxComponent::Construct()
 	glBindVertexArray(0);
 
 	//CubemapTexture = GetCubemapFromEquirectangular("Resources/Textures/HDR/Newport_Loft/Newport_Loft_8k.jpg", 4096);
-	//HdrTexture = GetCubemapFromEquirectangular("Resources/Textures/HDR/Newport_Loft/Newport_Loft_Ref.hdr", 4096);
+	//HdrTexture = GetCubemapFromEquirectangular("Resources/Textures/HDR/Newport_Loft/Newport_Loft_Ref.hdr", 2048);
 
-	CubemapTexture = GetCubemapFromEquirectangular("Resources/Textures/HDR/Malibu_Overlook/Malibu_Overlook_8k.jpg", 4096);
-	HdrTexture = GetCubemapFromEquirectangular("Resources/Textures/HDR/Malibu_Overlook/Malibu_Overlook_3k.hdr", 2048);
+	//CubemapTexture = GetCubemapFromEquirectangular("Resources/Textures/HDR/Malibu_Overlook/Malibu_Overlook_8k.jpg", 4096);
+	//HdrTexture = GetCubemapFromEquirectangular("Resources/Textures/HDR/Malibu_Overlook/Malibu_Overlook_3k.hdr", 2048);
+
+	CubemapTexture = HdrTexture = GetCubemapFromEquirectangular("Resources/Textures/HDR/venice_sunset_4k.hdr", 4096);
 
 	IrradianceCubemap = GetConvolutedCubemap(HdrTexture, 64);
 	PrefilteredCubemap = GetPrefilteredCubemap(HdrTexture, 32);

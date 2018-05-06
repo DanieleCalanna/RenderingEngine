@@ -2,6 +2,7 @@
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
+#include <glm/glm.hpp>
 #include <iostream>
 #include <iterator>
 #include <sstream>
@@ -12,16 +13,34 @@
 
 using namespace std;
 
-std::vector<std::string> split(const std::string& s, char delimiter) //TO-DO Move away
+void splitfill(std::string const& s, const char delimiter, unsigned int output[])
 {
-	std::vector<std::string> tokens;
-	std::string token;
-	std::istringstream tokenStream(s);
-	while (std::getline(tokenStream, token, delimiter))
+	size_t start = 0;
+	size_t end = s.find_first_of(delimiter);
+
+	std::string str;
+	int i = 0;
+
+	output[1] = 0;
+	output[2] = 0;
+
+	while (end <= std::string::npos)
 	{
-		tokens.push_back(token);
+		str = s.substr(start, end - start);
+
+		output[i++] = (str != "") ? stoi(str) : 0;
+
+		if (end == std::string::npos) break;
+
+		start = end + 1;
+		end = s.find_first_of(delimiter, start);
 	}
-	return tokens;
+}
+
+IndexedMesh::IndexedMesh(std::string ObjFilePath)
+{
+	LoadObj(ObjFilePath);
+	InitBuffers();
 }
 
 void IndexedMesh::InitBuffers()
@@ -31,116 +50,207 @@ void IndexedMesh::InitBuffers()
 
 	glGenBuffers(1, &elementbuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, Indices.size() * sizeof(unsigned int), &Indices[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	vertexBuffer = storeDataInAttributeListShared(0, 4, &Vertices[0], (int)Vertices.size());
-	cout<<"vertexBuffer created"<<endl;
-	normalsBuffer = storeDataInAttributeListShared(1, 4, &Normals[0], (int)Normals.size());
+	vertexBuffer = StoreDataInAttributeListShared(0, 4, &Vertices[0], (int)Vertices.size());
+	normalsBuffer = StoreDataInAttributeListShared(1, 4, &Normals[0], (int)Normals.size());
+	StoreDataInAttributeListShared(2, 2, &UVs[0], (int)UVs.size());
+	StoreDataInAttributeListShared(3, 3, &Tangents[0], (int)Tangents.size());
+	StoreDataInAttributeListShared(4, 3, &Bitangents[0], (int)Bitangents.size());
 	glBindVertexArray(0);
 }
 
-Mesh* IndexedMesh::FromOBJFile(std::string path)
+void IndexedMesh::LoadObj(std::string ObjFilePath)
 {
+	Clear();
 
-	IndexedMesh *indexedMesh = new IndexedMesh();
 	std::vector< unsigned int > vertexIndices, uvIndices, normalIndices;
-	std::vector< glm::vec4 > temp_vertices;
-	std::vector< glm::vec2 > temp_uvs;
-	std::vector< glm::vec4 > temp_normals;
 
-	ifstream file(path);
-	if (!file.is_open())
+	std::vector< glm::vec4 > ObjVertices;
+	std::vector< glm::vec2 > ObjUVs;
+	std::vector< glm::vec4 > ObjNormals;
+
+	ifstream ObjFile(ObjFilePath);
+	if (!ObjFile.is_open())
 	{
-		printf("Impossible to open the file !\n");
-		return indexedMesh;
+		std::cout << "Impossible to open the file !" << std::endl;
+		return;
 	}
-	string line;
-	while (getline(file, line))
+
+	std::stringstream ObjStringStream;
+	ObjStringStream << ObjFile.rdbuf();
+
+	std::string Keyword, a, b, c;
+
+	unsigned int Face1[3] { 0 }, Face2[3] { 0 }, Face3[3] { 0 };
+
+	while (ObjStringStream >> Keyword)
 	{
-
-		std::vector<std::string> words = split(line, ' ');
-
-		// else : parse lineHeader
-		if (words[0] == "v")
+		if (Keyword == "v")
 		{
-			glm::vec4 vertex;
-			vertex.x = stof(words[1]);
-			vertex.y = stof(words[2]);
-			vertex.z = stof(words[3]);
-			vertex.w = 0.0f;
-			indexedMesh->Vertices.push_back(vertex);
-			temp_vertices.push_back(vertex);
+			ObjStringStream >> a >> b >> c;
+			ObjVertices.push_back(glm::vec4(stof(a), stof(b), stof(c), 1.0f));
 		}
-		else if (words[0] == "vt")
+		else if (Keyword == "vn")
 		{
-			glm::vec2 uv;
-			uv.x = stof(words[1]);
-			uv.y = stof(words[2]);
-			temp_uvs.push_back(uv);
+			ObjStringStream >> a >> b >> c;
+			ObjNormals.push_back(glm::vec4(stof(a), stof(b), stof(c), 0.0f));
 		}
-		else if (words[0] == "vn")
+		else if (Keyword == "vt")
 		{
-			glm::vec4 normal;
-			normal.x = stof(words[1]);
-			normal.y = stof(words[2]);
-			normal.z = stof(words[3]);
-			normal.w = 0.0f;
-			temp_normals.push_back(normal);
+			ObjStringStream >> a >> b;
+			ObjUVs.push_back(glm::vec2(stof(a), stof(b)));
 		}
-		else if (words[0] == "f")
+		else if (Keyword == "f")
 		{
-			std::vector<std::string> ParamsOfVertex0 = split(words[1], '/');
-			std::vector<std::string> ParamsOfVertex1 = split(words[2], '/');
-			std::vector<std::string> ParamsOfVertex2 = split(words[3], '/');
+			ObjStringStream >> a >> b >> c;
 
-			unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
+			splitfill(a, '/', Face1);
+			splitfill(b, '/', Face2);
+			splitfill(c, '/', Face3);
 
-			vertexIndex[0] = stoi(ParamsOfVertex0[0]);
-			uvIndex[0] = stoi(ParamsOfVertex0[1]);
-			normalIndex[0] = stoi(ParamsOfVertex0[2]);
+			Indices.push_back(Face1[0] - 1);
+			Indices.push_back(Face2[0] - 1);
+			Indices.push_back(Face3[0] - 1);
 
-			vertexIndex[1] = stoi(ParamsOfVertex1[0]);
-			uvIndex[1] = stoi(ParamsOfVertex1[1]);
-			normalIndex[1] = stoi(ParamsOfVertex1[2]);
-
-			vertexIndex[2] = stoi(ParamsOfVertex2[0]);
-			uvIndex[2] = stoi(ParamsOfVertex2[1]);
-			normalIndex[2] = stoi(ParamsOfVertex2[2]);
-
-			indexedMesh->indices.push_back(vertexIndex[0] - 1);
-			indexedMesh->indices.push_back(vertexIndex[1] - 1);
-			indexedMesh->indices.push_back(vertexIndex[2] - 1);
-			vertexIndices.push_back(vertexIndex[0]);
-			vertexIndices.push_back(vertexIndex[1]);
-			vertexIndices.push_back(vertexIndex[2]);
-			uvIndices.push_back(uvIndex[0]);
-			uvIndices.push_back(uvIndex[1]);
-			uvIndices.push_back(uvIndex[2]);
-			normalIndices.push_back(normalIndex[0]);
-			normalIndices.push_back(normalIndex[1]);
-			normalIndices.push_back(normalIndex[2]);
+			vertexIndices.push_back(Face1[0]);
+			vertexIndices.push_back(Face2[0]);
+			vertexIndices.push_back(Face3[0]);
+			uvIndices.push_back(Face1[1]);
+			uvIndices.push_back(Face2[1]);
+			uvIndices.push_back(Face3[1]);
+			normalIndices.push_back(Face1[2]);
+			normalIndices.push_back(Face2[2]);
+			normalIndices.push_back(Face3[2]);
 		}
 	}
-	glm::vec4 *Normals = new glm::vec4[indexedMesh->Vertices.size()];
+	/*
+	string LineOfObjFile;
+	while (getline(ObjFile, LineOfObjFile))
+	{
+		std::vector<std::string> WordsInLine = split(LineOfObjFile, ' ');
+		if (WordsInLine.size() == 0) continue;
+
+		if (WordsInLine[0] == "v")
+		{
+			glm::vec4 Vertex;
+			Vertex.x = stof(WordsInLine[1]);
+			Vertex.y = stof(WordsInLine[2]);
+			Vertex.z = stof(WordsInLine[3]);
+			Vertex.w = 1.0f;
+			ObjVertices.push_back(Vertex);
+		}
+		else if (WordsInLine[0] == "vt")
+		{
+			glm::vec2 UV;
+			UV.x = stof(WordsInLine[1]);
+			UV.y = stof(WordsInLine[2]);
+			ObjUVs.push_back(UV);
+		}
+		else if (WordsInLine[0] == "vn")
+		{
+			glm::vec4 Normal;
+			Normal.x = stof(WordsInLine[1]);
+			Normal.y = stof(WordsInLine[2]);
+			Normal.z = stof(WordsInLine[3]);
+			Normal.w = 0.0f;
+			ObjNormals.push_back(glm::normalize(Normal));
+		}
+		else if (WordsInLine[0] == "f")
+		{
+			std::vector<std::string> ParamsOfVertex0 = split(WordsInLine[1], '/');
+			std::vector<std::string> ParamsOfVertex1 = split(WordsInLine[2], '/');
+			std::vector<std::string> ParamsOfVertex2 = split(WordsInLine[3], '/');
+
+			unsigned int FaceVerticesIndices[3], FaceUVsIndices[3], FaceNormalsIndices[3];
+
+			FaceVerticesIndices[0] = stoi(ParamsOfVertex0[0]);
+			FaceUVsIndices[0] = stoi(ParamsOfVertex0[1]);
+			FaceNormalsIndices[0] = stoi(ParamsOfVertex0[2]);
+
+			FaceVerticesIndices[1] = stoi(ParamsOfVertex1[0]);
+			FaceUVsIndices[1] = stoi(ParamsOfVertex1[1]);
+			FaceNormalsIndices[1] = stoi(ParamsOfVertex1[2]);
+
+			FaceVerticesIndices[2] = stoi(ParamsOfVertex2[0]);
+			FaceUVsIndices[2] = stoi(ParamsOfVertex2[1]);
+			FaceNormalsIndices[2] = stoi(ParamsOfVertex2[2]);
+
+			Indices.push_back(FaceVerticesIndices[0] - 1);
+			Indices.push_back(FaceVerticesIndices[1] - 1);
+			Indices.push_back(FaceVerticesIndices[2] - 1);
+
+			vertexIndices.push_back(FaceVerticesIndices[0]);
+			vertexIndices.push_back(FaceVerticesIndices[1]);
+			vertexIndices.push_back(FaceVerticesIndices[2]);
+			uvIndices.push_back(FaceUVsIndices[0]);
+			uvIndices.push_back(FaceUVsIndices[1]);
+			uvIndices.push_back(FaceUVsIndices[2]);
+			normalIndices.push_back(FaceNormalsIndices[0]);
+			normalIndices.push_back(FaceNormalsIndices[1]);
+			normalIndices.push_back(FaceNormalsIndices[2]);
+		}
+	}
+	*/
+	Vertices.resize(ObjVertices.size());
+	Normals.resize(ObjVertices.size());
+	UVs.resize(ObjVertices.size());
+	//Tangents.resize(ObjVertices.size());
+	//Bitangents.resize(ObjVertices.size());
+
 	// For each vertex of each triangle
-
 	for (unsigned int i = 0; i < vertexIndices.size(); i++)
 	{
-		unsigned int vertexIndex = vertexIndices[i] - 1;
-		unsigned int normalIndex = normalIndices[i] - 1;
-		Normals[vertexIndex] = temp_normals[normalIndex];
-	}
-	for (int i = 0; i < (int)indexedMesh->Vertices.size(); i++)
-	{
-		indexedMesh->Normals.push_back(Normals[i]);
-	}
+		unsigned int VertexIndex = vertexIndices[i] - 1;
+		unsigned int NormalIndex = normalIndices[i] - 1;
+		unsigned int UVIndex = uvIndices[i] - 1;
 
+		Vertices[VertexIndex] = ObjVertices[VertexIndex];
+		Normals[VertexIndex] = ObjNormals[NormalIndex];
+		UVs[VertexIndex] = ObjUVs[UVIndex];
+	}
+	
+	for (int i = 0; i < Indices.size(); i += 3)
+	{
+		// Shortcuts for vertices
+		glm::vec3 v0 = Vertices[Indices[i + 0]];
+		glm::vec3 v1 = Vertices[Indices[i + 1]];
+		glm::vec3 v2 = Vertices[Indices[i + 2]];
+
+		// Shortcuts for UVs
+		glm::vec2 & uv0 = UVs[Indices[i + 0]];
+		glm::vec2 & uv1 = UVs[Indices[i + 1]];
+		glm::vec2 & uv2 = UVs[Indices[i + 2]];
+
+		// Edges of the triangle : position delta
+		glm::vec3 deltaPos1 = v1 - v0;
+		glm::vec3 deltaPos2 = v2 - v0;
+
+		// UV delta
+		glm::vec2 deltaUV1 = uv1 - uv0;
+		glm::vec2 deltaUV2 = uv2 - uv0;
+
+		float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
+		glm::vec3 Tangent = glm::normalize((deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y)*r);
+		glm::vec3 Bitangent = glm::normalize((deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x)*r);
+
+		// Set the same tangent for all three vertices of the triangle.
+		Tangents.push_back(Tangent);
+		Tangents.push_back(Tangent);
+		Tangents.push_back(Tangent);
+
+		// Same thing for bitangents
+		Bitangents.push_back(Bitangent);
+		Bitangents.push_back(Bitangent);
+		Bitangents.push_back(Bitangent);
+	}
+	
 
 	// Init number of vertex
-	indexedMesh->nels = (int)indexedMesh->Vertices.size();
+	nels = (unsigned int)Vertices.size();
 	// Discover adjacents vertex for each vertex
-	std::vector< unsigned int >* adjacents = new std::vector< unsigned int >[indexedMesh->nels];
+	std::vector< unsigned int >* adjacents = new std::vector< unsigned int >[nels];
 
 	for (int i = 0; i < vertexIndices.size(); i += 3)
 	{
@@ -169,87 +279,84 @@ Mesh* IndexedMesh::FromOBJFile(std::string path)
 	}
 
 	int currentAdjIndex = 0;
-	indexedMesh->minAdjNum = (int)adjacents[0].size();
-	indexedMesh->maxAdjNum = 0;
+	minAdjNum = (unsigned int)adjacents[0].size();
+	maxAdjNum = 0;
 
-	for (unsigned int i = 0; i < indexedMesh->nels; i++)
+	for (unsigned int i = 0; i < nels; i++)
 	{
-
 		unsigned int currentAdjSize = (unsigned int)adjacents[i].size();
 
 		unsigned int* adjIndexPtr = new unsigned int[1];
 		*adjIndexPtr = ((unsigned int)currentAdjIndex) << 6;
 		*adjIndexPtr += (currentAdjSize << 26) >> 26;
 		float *f = (float*)adjIndexPtr;
-		indexedMesh->Vertices[i].w = *f;
+		Vertices[i].w = *f;
 
 		//printf("indexOfAdjs  ->  %d   vs   %d\n", (*adjIndexPtr)>>6, currentAdjIndex);
 		//printf("numOfAdjs  ->  %d   vs   %d\n", ((*adjIndexPtr)<<26)>>26, currentAdjSize);
 
 		// Min & max adjacent number 
-		if (currentAdjSize > indexedMesh->maxAdjNum) indexedMesh->maxAdjNum = currentAdjSize;
-		else if (currentAdjSize < indexedMesh->minAdjNum) indexedMesh->minAdjNum = currentAdjSize;
+		if (currentAdjSize > maxAdjNum) maxAdjNum = currentAdjSize;
+		else if (currentAdjSize < minAdjNum) minAdjNum = currentAdjSize;
 
 		currentAdjIndex += currentAdjSize;
 	}
-	indexedMesh->nadjs = currentAdjIndex;
+	nadjs = currentAdjIndex;
 
 	// Now, currentAdjIndex is the tolal adjacents numbers.
-	indexedMesh->adjArray = new unsigned int[currentAdjIndex];
+	adjArray = new unsigned int[currentAdjIndex];
 	int adjIndex = 0;
-	for (unsigned int i = 0; i < indexedMesh->nels; i++)
+	for (unsigned int i = 0; i < nels; i++)
 	{
 		for (unsigned int vertexIndex : adjacents[i])
-			indexedMesh->adjArray[adjIndex++] = vertexIndex;
+			adjArray[adjIndex++] = vertexIndex;
 	}
-
-
-
-
-
-
-
-
-
-
-	indexedMesh->InitBuffers();
-	return indexedMesh;
 }
 
 void IndexedMesh::Render()
 {
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
-
+	
 	glBindVertexArray(VertexArrayID);
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(3);
+	glEnableVertexAttribArray(4);
+
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-
-	glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, (void*)0);
-
+	
+	glDrawElements(GL_TRIANGLES, (GLsizei)Indices.size(), GL_UNSIGNED_INT, (void*)0);
+	
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
+	glDisableVertexAttribArray(3);
+	glDisableVertexAttribArray(4);
 	glBindVertexArray(0);
+
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 }
 
-GLuint IndexedMesh::storeDataInAttributeListShared(int attributeNumber, int coordinateSize, GLvoid * data, int size)
+GLuint IndexedMesh::StoreDataInAttributeListShared(unsigned int AttributeIndex, int CoordinateSize, GLvoid * Data, int NumberOfElements)
 {
-	GLuint vboID; 
-	glGenBuffers(1, &vboID);
-	glBindBuffer(GL_ARRAY_BUFFER_ARB, vboID);
-	glBufferData(GL_ARRAY_BUFFER_ARB, size * coordinateSize * sizeof(GLfloat), data, GL_STATIC_DRAW_ARB);
-	glVertexAttribPointer(attributeNumber, coordinateSize, GL_FLOAT, false, 0, 0);
+	GLuint VertexBufferID;
+	glGenBuffers(1, &VertexBufferID);
+	glBindBuffer(GL_ARRAY_BUFFER_ARB, VertexBufferID);
+	glBufferData(GL_ARRAY_BUFFER_ARB, NumberOfElements * CoordinateSize * sizeof(GLfloat), Data, GL_STATIC_DRAW_ARB);
+	glVertexAttribPointer(AttributeIndex, CoordinateSize, GL_FLOAT, false, 0, 0);
 	glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
-	return vboID;
+	return VertexBufferID;
 }
 
 
 void IndexedMesh::Clear()
 {
+	Mesh::Clear();
 	//TO-DO
 }

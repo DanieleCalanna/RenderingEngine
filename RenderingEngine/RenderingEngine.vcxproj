@@ -204,6 +204,8 @@ If Not Exist $(OutDir)glfw3.dll (xcopy /y $(ProjDir)External\Binaries\glfw3.dll 
     <Text Include="Resources\Shaders\StandardShader\StandardShaderVertex.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Shaders\BaseColorShader\BaseColorFragment.glsl" />
+    <None Include="Resources\Shaders\BaseColorShader\BaseColorVertex.glsl" />
     <None Include="Resources\Shaders\BRDFShader\BRDFFragment.glsl" />
     <None Include="Resources\Shaders\BRDFShader\BRDFVertex.glsl" />
     <None Include="Resources\Shaders\CubemapConvolutionShader\CubemapConvolutionFragment.glsl" />
