@@ -29,4 +29,4 @@ private:
 
 GLuint LoadTexture(std::string FilePath, GLint InternalFormat, GLenum PixelFormat, GLenum PixelType);
 GLuint LoadTexture2(std::string FilePath, GLint InternalFormat, GLenum PixelFormat, GLenum PixelType);
-
+GLuint LoadTextureFont(std::string FilePath, GLint InternalFormat, GLenum PixelFormat, GLenum PixelType);

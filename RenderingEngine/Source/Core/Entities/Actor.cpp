@@ -47,6 +47,17 @@ void Actor::DetachFromParent()
 	}
 }
 
+Component * Actor::AddComponent(Component * NewComponent)
+{
+	if (NewComponent)
+	{
+		NewComponent->SetOwner(this);
+		NewComponent->Construct();
+		Components.push_back(NewComponent);
+	}
+	return NewComponent;
+}
+
 
 void Actor::AddChildActor(Actor* ChildActor)
 {
@@ -60,7 +71,7 @@ void Actor::RemoveChildActor(Actor* ChildActor)
 {
 	if (ChildActor)
 	{
-		ChildrenActor.remove(ChildActor);
+		ChildrenActor.erase(std::find(ChildrenActor.begin(), ChildrenActor.end(), ChildActor));
 	}
 }
 /*

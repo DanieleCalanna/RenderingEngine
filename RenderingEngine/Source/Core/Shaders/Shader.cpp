@@ -139,6 +139,11 @@ void Shader::LoadFloat(std::string Location, GLfloat Value)
 	glUniform1f(glGetUniformLocation(ProgramID, Location.c_str()), Value);
 }
 
+void Shader::LoadFloat3(std::string Location, glm::vec3 Vec3)
+{
+	glUniform3f(glGetUniformLocation(ProgramID, Location.c_str()), Vec3.x, Vec3.y, Vec3.z);
+}
+
 void Shader::LoadMat4(std::string Location, glm::mat4x4 Matrix)
 {
 	glUniformMatrix4fv(glGetUniformLocation(ProgramID, Location.c_str()), 1, GL_FALSE, &Matrix[0][0]);

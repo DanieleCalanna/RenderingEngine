@@ -15,7 +15,6 @@ private:
 	float DeltaTime = 0.0f;
 	void UpdateDeltaTime();
 
-
 	GLFWwindow* GLFWWindow;
 
 	Window() {}

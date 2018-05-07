@@ -9,52 +9,53 @@
 #include "Core/Window.hpp"
 #include "Core/Texture/Texture.hpp"
 
-void SkyBoxComponent::Construct()
+
+float CubePoints[] = {
+	-1.0f,  1.0f, -1.0f,
+	-1.0f, -1.0f, -1.0f,
+	1.0f, -1.0f, -1.0f,
+	1.0f, -1.0f, -1.0f,
+	1.0f,  1.0f, -1.0f,
+	-1.0f,  1.0f, -1.0f,
+
+	-1.0f, -1.0f,  1.0f,
+	-1.0f, -1.0f, -1.0f,
+	-1.0f,  1.0f, -1.0f,
+	-1.0f,  1.0f, -1.0f,
+	-1.0f,  1.0f,  1.0f,
+	-1.0f, -1.0f,  1.0f,
+
+	1.0f, -1.0f, -1.0f,
+	1.0f, -1.0f,  1.0f,
+	1.0f,  1.0f,  1.0f,
+	1.0f,  1.0f,  1.0f,
+	1.0f,  1.0f, -1.0f,
+	1.0f, -1.0f, -1.0f,
+
+	-1.0f, -1.0f,  1.0f,
+	-1.0f,  1.0f,  1.0f,
+	1.0f,  1.0f,  1.0f,
+	1.0f,  1.0f,  1.0f,
+	1.0f, -1.0f,  1.0f,
+	-1.0f, -1.0f,  1.0f,
+
+	-1.0f,  1.0f, -1.0f,
+	1.0f,  1.0f, -1.0f,
+	1.0f,  1.0f,  1.0f,
+	1.0f,  1.0f,  1.0f,
+	-1.0f,  1.0f,  1.0f,
+	-1.0f,  1.0f, -1.0f,
+
+	-1.0f, -1.0f, -1.0f,
+	-1.0f, -1.0f,  1.0f,
+	1.0f, -1.0f, -1.0f,
+	1.0f, -1.0f, -1.0f,
+	-1.0f, -1.0f,  1.0f,
+	1.0f, -1.0f,  1.0f
+};
+
+SkyBoxComponent::SkyBoxComponent(std::string HdrMapPath, GLsizei HdrMapSize) : Component("SkyBoxComponent")
 {
-	float CubePoints[] = {
-		-1.0f,  1.0f, -1.0f,
-		-1.0f, -1.0f, -1.0f,
-		1.0f, -1.0f, -1.0f,
-		1.0f, -1.0f, -1.0f,
-		1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
-
-		-1.0f, -1.0f,  1.0f,
-		-1.0f, -1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f,  1.0f,
-		-1.0f, -1.0f,  1.0f,
-
-		1.0f, -1.0f, -1.0f,
-		1.0f, -1.0f,  1.0f,
-		1.0f,  1.0f,  1.0f,
-		1.0f,  1.0f,  1.0f,
-		1.0f,  1.0f, -1.0f,
-		1.0f, -1.0f, -1.0f,
-
-		-1.0f, -1.0f,  1.0f,
-		-1.0f,  1.0f,  1.0f,
-		1.0f,  1.0f,  1.0f,
-		1.0f,  1.0f,  1.0f,
-		1.0f, -1.0f,  1.0f,
-		-1.0f, -1.0f,  1.0f,
-
-		-1.0f,  1.0f, -1.0f,
-		1.0f,  1.0f, -1.0f,
-		1.0f,  1.0f,  1.0f,
-		1.0f,  1.0f,  1.0f,
-		-1.0f,  1.0f,  1.0f,
-		-1.0f,  1.0f, -1.0f,
-
-		-1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f,  1.0f,
-		1.0f, -1.0f, -1.0f,
-		1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f,  1.0f,
-		1.0f, -1.0f,  1.0f
-	};
-
 	glGenVertexArrays(1, &CubeVertexArray);
 	glBindVertexArray(CubeVertexArray);
 	glGenBuffers(1, &CubeVertexBuffer);
@@ -89,23 +90,29 @@ void SkyBoxComponent::Construct()
 	//CubemapTexture = GetCubemapFromEquirectangular("Resources/Textures/HDR/Malibu_Overlook/Malibu_Overlook_8k.jpg", 4096);
 	//HdrTexture = GetCubemapFromEquirectangular("Resources/Textures/HDR/Malibu_Overlook/Malibu_Overlook_3k.hdr", 2048);
 
-	CubemapTexture = HdrTexture = GetCubemapFromEquirectangular("Resources/Textures/HDR/venice_sunset_4k.hdr", 4096);
+	//CubemapTexture = HdrTexture = GetCubemapFromEquirectangular("Resources/Textures/HDR/venice_sunset_4k.hdr", 4096);
+	CubemapTexture = HdrTexture = GetCubemapFromEquirectangular(HdrMapPath, HdrMapSize);
 
 	IrradianceCubemap = GetConvolutedCubemap(HdrTexture, 64);
 	PrefilteredCubemap = GetPrefilteredCubemap(HdrTexture, 32);
 	BRDFTexture = GetBRDFTexture(512);
 	//CubemapTexture = PrefilteredCubemap;
 	//CubemapTexture = IrradianceCubemap;
-	
+
 	/*
 	CreateCubemap("Resources/Textures/CubeMap/NegZ.png",
-				  "Resources/Textures/CubeMap/PosZ.png",
-				  "Resources/Textures/CubeMap/PosY.png",
-				  "Resources/Textures/CubeMap/NegY.png",
-				  "Resources/Textures/CubeMap/NegX.png",
-				  "Resources/Textures/CubeMap/PosX.png"
+	"Resources/Textures/CubeMap/PosZ.png",
+	"Resources/Textures/CubeMap/PosY.png",
+	"Resources/Textures/CubeMap/NegY.png",
+	"Resources/Textures/CubeMap/NegX.png",
+	"Resources/Textures/CubeMap/PosX.png"
 	);
 	*/
+}
+
+void SkyBoxComponent::Construct()
+{
+
 }
 
 void SkyBoxComponent::Start() {}

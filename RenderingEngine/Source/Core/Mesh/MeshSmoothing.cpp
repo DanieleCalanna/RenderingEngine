@@ -110,11 +110,13 @@ cl_event normals_per_vertex(
 	return normals_per_vertex_evt;
 }
 
-MeshSmoothing::MeshSmoothing()
+MeshSmoothing::MeshSmoothing(IndexedMesh* Mesh) : Component("MeshSmoothingComponent")
 {
-	iterations = 1;
+	iterationsCounter = 0;
+	iterationsPerFrame = 1;
 	lambda = 0.5f;
 	mi = -0.500001f;
+	this->Mesh = Mesh;
 }
 
 
@@ -141,8 +143,8 @@ void MeshSmoothing::Start()
 	program = create_program(OCL_FILENAME, context, deviceID);
 	printf("============================\n");
 
-	MeshRenderer* OwnerMeshRenderer = (MeshRenderer*) GetOwner()->GetComponent<MeshRenderer>();
-	Mesh = (IndexedMesh*)OwnerMeshRenderer->GetMesh();
+	//MeshRenderer* OwnerMeshRenderer = (MeshRenderer*) GetOwner()->GetComponent<MeshRenderer>();
+	//Mesh = (IndexedMesh*)OwnerMeshRenderer->GetMesh();
 
 
 	Mesh->meanAdjNum = Mesh->nadjs/(float)Mesh->nels;
@@ -150,7 +152,7 @@ void MeshSmoothing::Start()
 	Mesh->adjmemsize = Mesh->nadjs*sizeof(unsigned int);
 		
 	printf("====== SMOOTHING INFO ======\n");
-	std::cout << " # Iterations: " << iterations << std::endl;
+	std::cout << " # Iterations: " << iterationsPerFrame << std::endl;
 	std::cout << " Lambda factor: " << lambda << std::endl;
 	std::cout << " Mi factor: " << mi << std::endl;
 	printf("============================\n");
@@ -229,7 +231,6 @@ void MeshSmoothing::Start()
 	err = clGetKernelWorkGroupInfo(normals_per_vertex_k, deviceID, CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE, sizeof(preferred_wg_normals_per_vertex), &preferred_wg_normals_per_vertex, NULL);
 	ocl_check(err, "clGetKernelWorkGroupInfo normals_per_vertex");
 
-
 }
 
 void MeshSmoothing::ApplySmooth(){
@@ -237,11 +238,11 @@ void MeshSmoothing::ApplySmooth(){
 	cl_mem buffersToAquire[] = {cl_vertex_buffer, cl_normals_buffer};
 	clEnqueueAcquireGLObjects(queue, 2, &cl_vertex_buffer, 0, NULL, &lock);
 
-	for(int i=0; i<iterations; i++) {
+	for(int i=0; i<iterationsPerFrame; i++) {
 		cl_event smooth_evt1 = smooth(queue, smooth_k, &lock, cl_vertex_buffer, cl_adjArray, cl_result, Mesh->nels, lambda);
 		lock = smooth(queue, smooth_k, &smooth_evt1, cl_result, cl_adjArray, cl_vertex_buffer, Mesh->nels, mi);
 	}
-
+	iterationsCounter += iterationsPerFrame;
 	cl_event normals_per_face_evt = normals_per_face(queue, normals_per_face_k, &lock, cl_vertex_buffer, cl_faceIndexes, cl_normals_per_face, ((cl_int)Mesh->Indices.size())/3);
 	cl_event normals_per_vertex_evt = normals_per_vertex(queue, normals_per_vertex_k, &normals_per_face_evt, cl_normals_per_face, cl_faces_info_array, cl_faceIndex_per_vertex, cl_normals_buffer, Mesh->nels);
 	clEnqueueReleaseGLObjects(queue, 2, buffersToAquire, 1, &normals_per_vertex_evt, &unlock);
@@ -249,9 +250,7 @@ void MeshSmoothing::ApplySmooth(){
 }
 
 
-void MeshSmoothing::Update(){
-	static int x = 0;
-	if(x++ % 1 == 0 && x>160){
-		ApplySmooth();
-	}
+void MeshSmoothing::Update()
+{
+	ApplySmooth();
 }

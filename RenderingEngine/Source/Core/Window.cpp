@@ -2,8 +2,10 @@
 
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
+#include "AntTweakBar.h"
 
 #include <iostream>
+
 
 void Window::UpdateDeltaTime()
 {
@@ -42,8 +44,8 @@ void Window::WindowInit()
 	glfwWindowHint(GLFW_BLUE_BITS, VideoMode->blueBits);
 	glfwWindowHint(GLFW_REFRESH_RATE, VideoMode->refreshRate);
 
-	Width = 720;
-	Height = 720;
+	Width = 800;
+	Height = 800;
 	//Width = VideoMode->width;
 	//Height = VideoMode->height;
 	//GLFWWindow = glfwCreateWindow(VideoMode->width, VideoMode->height, "Rendering Engine", Monitor, NULL);
@@ -66,10 +68,50 @@ void Window::WindowInit()
 
 	glfwMakeContextCurrent(GLFWWindow); // Initialize GLEW
 
-	glfwSwapInterval(1); // v-sync on
+	glfwSwapInterval(0); // v-sync on
 
 	// Make the window visible
 	glfwShowWindow(GLFWWindow);
+	glfwSetWindowUserPointer(GLFWWindow, this);
+
+
+	//glfwEnable(GLFW_MOUSE_CURSOR);
+	//glfwEnable(GLFW_KEY_REPEAT);
+	TwInit(TW_OPENGL, NULL);
+	TwWindowSize(Width, Height);
+
+	auto MouseButtonCallbackLambda = [](GLFWwindow* GLFWindow, int GLFWButton, int GLFWAction, int)
+	{
+		TwEventMouseButtonGLFW(GLFWButton, GLFWAction);
+	};
+	glfwSetMouseButtonCallback(GLFWWindow, (GLFWmousebuttonfun)MouseButtonCallbackLambda);
+
+	auto ScrollCallbackLambda = [](GLFWwindow* GLFWindow, double XOffset, double YOffset)
+	{
+		Window* WindowUserPointer = static_cast<Window*>(glfwGetWindowUserPointer(GLFWindow));
+		WindowUserPointer->ScrollCallback(XOffset, YOffset);
+		TwEventMouseWheelGLFW((int)WindowUserPointer->YWheelOffset);
+	};
+	glfwSetScrollCallback(GLFWWindow, ScrollCallbackLambda);
+	
+	auto KeyCallbackLambda = [](GLFWwindow* GLFWindow, int GLFWKey, int, int GLFWAction, int)
+	{
+		TwEventKeyGLFW(GLFWKey, GLFWAction);
+	};
+	glfwSetKeyCallback(GLFWWindow, (GLFWkeyfun)KeyCallbackLambda);
+
+	auto CharCallbackLambda = [](GLFWwindow* GLFWindow, unsigned int GLFWChar)
+	{
+		TwEventCharGLFW(GLFWChar, GLFW_PRESS);
+	};
+	glfwSetCharCallback(GLFWWindow, (GLFWcharfun)CharCallbackLambda);
+
+	auto WindowSizeCallbackLambda = [](GLFWwindow* GLFWindow, int Width, int Height)
+	{
+		Window* WindowUserPointer = static_cast<Window*>(glfwGetWindowUserPointer(GLFWindow));
+		WindowUserPointer->SetSize(Width, Height);
+	};
+	glfwSetWindowSizeCallback(GLFWWindow, (GLFWwindowsizefun)WindowSizeCallbackLambda);
 
 	glewExperimental=true; // Needed in core profile
 	if (glewInit() != GLEW_OK) {
@@ -77,7 +119,7 @@ void Window::WindowInit()
 		return;
 	}
 	std::cout<<glGetString(GL_VERSION)<<std::endl;
-
+	
 	glClearColor(33.0f/255.0f, 43.0f/255.0f, 53.0f/255.0f, 1.0f); // Set background color to black and opaque
 	glClearDepth(1.0f);                   // Set background depth to farthest
 	glEnable(GL_DEPTH_TEST);   // Enable depth testing for z-culling
@@ -88,19 +130,12 @@ void Window::WindowInit()
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);  // Nice perspective corrections
 	glViewport(0, 0, Width, Height);
-
-	glfwSetInputMode(GLFWWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	
+	glfwSetInputMode(GLFWWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL/*GLFW_CURSOR_DISABLED*/);
 
 	glfwGetCursorPos(GLFWWindow, &XPosition, &YPosition);
 	PreviousXPosition = XPosition;
 	PreviousYPosition = YPosition;
-
-	auto ScrollCallbackLambda = [](GLFWwindow* GLFWindow, double XOffset, double YOffset)
-	{
-		static_cast<Window*>(glfwGetWindowUserPointer(GLFWindow))->ScrollCallback(XOffset, YOffset);
-	};
-	glfwSetWindowUserPointer(GLFWWindow, this);
-	glfwSetScrollCallback(GLFWWindow, ScrollCallbackLambda);
 
 	if (InitFunction) { InitFunction(); }
 }
@@ -110,16 +145,19 @@ void Window::WindowLoop(){
 	do
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
-		if (LoopFunction) { LoopFunction(); } //Implemented by main.cpp
-
-		// Swap buffers
-		glfwSwapBuffers(GLFWWindow);
 
 		PreviousXPosition = XPosition;
 		PreviousYPosition = YPosition;
 
 		glfwGetCursorPos(GLFWWindow, &XPosition, &YPosition);
+
+		TwEventMousePosGLFW((int)XPosition, (int)YPosition);
+
+		if (LoopFunction) { LoopFunction(); } //Implemented by main.cpp
+		TwDraw();
+
+		// Swap buffers
+		glfwSwapBuffers(GLFWWindow);
 
 		UpdateDeltaTime();
 
@@ -139,6 +177,7 @@ void Window::Run()
 	WindowInit();
 	WindowLoop();
 	if (ClearFunction) { ClearFunction(); }
+	TwTerminate();
 	glfwDestroyWindow(GLFWWindow);
 	glfwTerminate();
 }
@@ -153,6 +192,8 @@ void Window::SetSize(const int & WindowWidth, const int & WindowHeight)
 {
 	Width = WindowWidth;
 	Height = WindowHeight;
+	TwWindowSize(Width, Height);
+	glViewport(0, 0, Width, Height);
 }
 
 void Window::SetInitFunction(void(*InitFunctionToCall) (void))

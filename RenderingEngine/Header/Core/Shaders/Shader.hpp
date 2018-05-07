@@ -37,5 +37,6 @@ public:
 
 	void LoadInt(std::string Location, GLint Value);
 	void LoadFloat(std::string Location, GLfloat Value);
+	void LoadFloat3(std::string Location, glm::vec3 Vec3);
 	void LoadMat4(std::string Location, glm::mat4x4 Matrix);
 };

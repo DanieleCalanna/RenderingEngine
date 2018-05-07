@@ -118,6 +118,15 @@
     <Filter Include="Resource Files\Shaders\BaseColorShader">
       <UniqueIdentifier>{fd5d1b59-adde-4083-984a-648d4ea24684}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Shaders\TextShader">
+      <UniqueIdentifier>{45677f0b-2a33-4f39-87af-9e0fad78e45e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\GUI">
+      <UniqueIdentifier>{d39b95ff-5747-46c3-b6b0-af65db35dcf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\GUI">
+      <UniqueIdentifier>{a103c779-f015-4894-ac4d-76ff3c89ebaf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -192,6 +201,9 @@
     <ClCompile Include="Source\Core\Shaders\Shader.cpp">
       <Filter>Source Files\Core\Shaders</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Core\GUI\GUI.cpp">
+      <Filter>Source Files\Core\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\Core\Transform.hpp">
@@ -260,11 +272,14 @@
     <ClInclude Include="Header\Core\Texture\Texture.hpp">
       <Filter>Header Files\Core\Texture</Filter>
     </ClInclude>
-    <ClInclude Include="Header\Utils\stb_image.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Header\Core\Shaders\Shader.hpp">
       <Filter>Header Files\Core\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Core\GUI\GUI.hpp">
+      <Filter>Header Files\Core\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Utils\stb_image.h">
+      <Filter>Header Files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -311,6 +326,12 @@
     </None>
     <None Include="Resources\Shaders\BaseColorShader\BaseColorVertex.glsl">
       <Filter>Resource Files\Shaders\BaseColorShader</Filter>
+    </None>
+    <None Include="Resources\Shaders\TextShader\TextFragment.glsl">
+      <Filter>Resource Files\Shaders\TextShader</Filter>
+    </None>
+    <None Include="Resources\Shaders\TextShader\TextVertex.glsl">
+      <Filter>Resource Files\Shaders\TextShader</Filter>
     </None>
   </ItemGroup>
 </Project>

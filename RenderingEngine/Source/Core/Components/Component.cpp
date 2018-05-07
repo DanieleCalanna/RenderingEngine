@@ -1,18 +1,16 @@
 #include "Core/Components/Component.hpp"
+#include "Core/Entities/Actor.hpp"
 
 void Component::SetOwner(Actor * const& NewOwner)
 {
+	if (Owner)
+	{
+		//Owner->RemoveComponent();
+	}
 	Owner = NewOwner;
 }
-/*
-Component::Component(Actor * Owner)
-{
-	this->Owner = Owner;
-	Construct();
-}
-*/
 
-Component::Component() {}
+Component::Component(std::string Name) { SetName(Name); }
 
 Component::~Component() {}
 

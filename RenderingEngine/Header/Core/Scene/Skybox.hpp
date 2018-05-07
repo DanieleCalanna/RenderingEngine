@@ -19,6 +19,9 @@ class SkyBoxComponent : public Component
 	GLuint BRDFTexture;
 
 public:
+
+	SkyBoxComponent(std::string HdrMapPath, GLsizei HdrMapSize);
+
 	virtual void Construct() override;
 	virtual void Start() override;
 	virtual void Update() override;

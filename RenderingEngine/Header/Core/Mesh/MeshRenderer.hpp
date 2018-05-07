@@ -19,6 +19,8 @@ private:
 
 public:
 
+	MeshRenderer() : Component("MeshRenderer") {}
+
 	void SetMesh(Mesh* InMesh);
 	void SetMaterial(Material* InMaterial);
 	

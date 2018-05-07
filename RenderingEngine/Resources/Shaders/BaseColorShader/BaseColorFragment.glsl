@@ -29,10 +29,10 @@ float DistributionGGX(vec3 N, vec3 H, float Roughness)
 	return Roughness2 / Denom;
 }
 
-
 float GeometrySchlickGGX(float NdotV, float Roughness)
 {
-	return NdotV / (NdotV * (1.0 - Roughness) + Roughness);
+	if (NdotV == 0.0) return 0.0;
+	return NdotV * (NdotV * (1.0 - Roughness) + Roughness);
 }
 
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float Roughness)
@@ -45,21 +45,22 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float Roughness)
 	return GGX1 * GGX2;
 }
 
-
-
 uniform mat4 TransformationMatrix;
 uniform mat4 ProjectionMatrix;
 uniform mat4 ViewMatrix;
+uniform samplerCube IrradianceMap;
 
 in vec3 FragPosition;
 in vec3 FragNormal;
 in vec3 CameraPosition;
 in vec3 ViewVector;
+in vec2 UVFrag;
 out vec4 FragColor;
 
-uniform vec3 LightColor = vec3(1.0, 1.0, 1.0)*9.3;
-uniform vec3 LightDirection= vec3(-4.5, -4.5, -4.5);
-uniform vec3 BaseColor = vec3(0.9, 0.0, 0.0);
+uniform vec3 LightColor = vec3(1.0, 1.0, 1.0);
+uniform vec3 LightDirection = vec3(-4.5, -4.5, -4.5);
+uniform float LightIntensity = 1.0;
+uniform vec3 BaseColor = vec3(1.0, 0.0, 0.0);
 uniform float Roughness = 0.1;
 uniform float Metalness = 1.0;
 
@@ -72,32 +73,30 @@ void main()
 	vec3 HalfwayVector = normalize(FragmentToCamera - NormalLightDirection);
 	
 	float NDF = DistributionGGX(SurfaceNormal, HalfwayVector, Roughness);
-	vec3 Shade = vec3(NDF, NDF, NDF);
 
 	float G = GeometrySmith(SurfaceNormal, FragmentToCamera, -NormalLightDirection, Roughness);
-	Shade = vec3(G, G, G);
 
 	vec3 F0 = mix(vec3(0.04), BaseColor, Metalness);
-	vec3 F = FresnelSchlick(max(0.0, dot(SurfaceNormal, FragmentToCamera)), F0);
-	F = FresnelSchlickRoughness(max(0.0, dot(SurfaceNormal, FragmentToCamera)), F0, Roughness);
-	Shade = F;
+	vec3 F = FresnelSchlick(max(0.0, dot(HalfwayVector, FragmentToCamera)), F0);
 
 	vec3 Numerator = NDF * G * F;
 	float Denominator = 4.0 * max(dot(SurfaceNormal, FragmentToCamera), 0.0) * max(dot(SurfaceNormal, -NormalLightDirection), 0.0);
-	vec3 Specular = Numerator / max(Denominator, 0.001);
-	Shade = Specular;
+	vec3 Specular = Numerator* (1.0 / max(Denominator, 0.001));
 
-	vec3 kS = F; //Specular factor
-	Shade = kS;
+	vec3 LightKS = F; //Specular factor
 
-	vec3 kD = vec3(1.0) - kS; //Diffuse factor
-	kD *= 1.0 - Metalness;
-	Shade = kD;
+	vec3 LightKD = vec3(1.0) - LightKS; //Diffuse factor
+	LightKD *= 1.0 - Metalness;
 	
-	vec3 Lo = (kD * BaseColor / PI + Specular)* LightColor * max(dot(SurfaceNormal, -NormalLightDirection), 0.0);
-	Shade = Lo;
+	vec3 Lo = (LightKD * BaseColor * (1.0f / PI) + Specular)* LightColor * LightIntensity * max(0.0, dot(SurfaceNormal, -NormalLightDirection));
 
-	Shade = F;
+	vec3 IrradianceKS = FresnelSchlickRoughness(max(0.0, dot(SurfaceNormal, FragmentToCamera)), F0, Roughness);
+	vec3 IrradianceKD = 1.0 - IrradianceKS;
+	vec3 Irradiance = texture(IrradianceMap, SurfaceNormal).rgb;
+	vec3 Diffuse = Irradiance * BaseColor;
+	vec3 Ambient = (IrradianceKD * Diffuse);
+
+	vec3 Shade = Lo/* + Ambient*/;
 
 	FragColor = vec4(Shade, 1.0);
 

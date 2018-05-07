@@ -119,3 +119,33 @@ GLuint LoadTexture2(std::string FilePath, GLint InternalFormat, GLenum PixelForm
 		}
 	}
 }
+
+
+GLuint LoadTextureFont(std::string FilePath, GLint InternalFormat, GLenum PixelFormat, GLenum PixelType) //TO-DO Refactoring
+{
+	// Load the Equirectangular environment map
+	stbi_set_flip_vertically_on_load(true);
+	int Width, Height, Components;
+	void *Data = stbi_load(FilePath.c_str(), &Width, &Height, &Components, 3);
+	GLuint TextureId;
+	if (Data)
+	{
+		glGenTextures(1, &TextureId);
+		glBindTexture(GL_TEXTURE_2D, TextureId);
+		glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, Width, Height, 0, PixelFormat, PixelType, Data); // note how we specify the texture's data value to be float
+
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		stbi_image_free(Data);
+		return TextureId;
+	}
+	else
+	{
+		return 0;
+	}
+
+}

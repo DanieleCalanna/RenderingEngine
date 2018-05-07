@@ -17,7 +17,8 @@ private:
 public:
 	IndexedMesh* Mesh;
 
-	int iterations;
+	int iterationsCounter;
+	int iterationsPerFrame;
 	float lambda;
 	float mi;
 
@@ -44,7 +45,7 @@ public:
 	cl_event lock, unlock;
 
 
-	MeshSmoothing();
+	MeshSmoothing(IndexedMesh*);
 
 	void Start();
 	

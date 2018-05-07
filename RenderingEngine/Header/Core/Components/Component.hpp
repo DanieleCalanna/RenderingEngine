@@ -17,8 +17,7 @@ private:
 	void SetOwner(Actor* const& NewOwner);
 
 protected:
-	/*Component(Actor* Owner);*/
-	Component();
+	Component(std::string Name);
 	~Component();
 
 public:

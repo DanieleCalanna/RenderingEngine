@@ -106,7 +106,7 @@ void main()
 	vec3 SpecularColor = texture(SpecularMap, UVFrag).rgb;
 	//SpecularColor.r = 0.4;
 	vec3 RoughnessColor = texture(RoughnessMap, UVFrag).rgb;
-	//RoughnessColor = pow(pow(RoughnessColor, vec3(Gamma)), vec3(1.4));
+	RoughnessColor = pow(pow(RoughnessColor, vec3(Gamma)), vec3(1.4));
 	//RoughnessColor.r = 0.1;
 	vec3 AOColor = texture(AOMap, UVFrag).rgb;
 	//AOColor.r = 1.0;

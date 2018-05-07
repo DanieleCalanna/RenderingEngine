@@ -1,6 +1,6 @@
 #pragma once
 
-#include <list>
+#include <vector>
 
 class Transform;
 class Component;
@@ -16,6 +16,33 @@ public:
 
 	virtual void AttachToActor(Actor* ActorTarget);
 	virtual void DetachFromParent();
+
+	#define AddComponentM(CompClass, ...){CompClass* NewComponent = new CompClass(##__VA_ARGS__); Components.push_back((Component*)NewComponent);}
+
+	Component* AddComponent(Component* NewComponent);
+	template <class ChildComponent> Component* RemoveComponent(bool bDelete = false)
+	{
+		for (int Index = Components.size()-1; Index >= 0; Index--)
+		{
+			Component* CurrentComponent = Components[Index];
+			if (!CurrentComponent)
+			{
+				Components.erase(Components.begin() + Index);
+				continue;
+			}
+			if (typeid(*CurrentComponent) == typeid(ChildComponent))
+			{
+				Components.erase(Components.begin() + Index);
+				if (bDelete)
+				{
+					delete CurrentComponent;
+					return nullptr;
+				}
+				return CurrentComponent;
+			}
+		}
+		return nullptr;
+	}
 
 	template <class ChildComponent> ChildComponent* AddComponent(std::string Name)
 	{
@@ -58,8 +85,8 @@ private:
 	Transform * RelativeTransform = nullptr;
 
 	Actor* Parent = nullptr;
-	std::list<Actor*> ChildrenActor;
-	std::list<Component*> Components;
+	std::vector<Actor*> ChildrenActor;
+	std::vector<Component*> Components;
 
 	void AddChildActor(Actor* ChildToAdd);
 	void RemoveChildActor(Actor* ChildToRemove);
