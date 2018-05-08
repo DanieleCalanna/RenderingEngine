@@ -152,8 +152,8 @@ void Init()
 {
 	MainScene = new Scene();
 	MainScene->SetAsCurrentScene();
-	SceneSkyBox = new SkyBoxComponent("Resources/Textures/HDR/venice_sunset_4k.hdr", 4096);
-	SceneSkyBox->SetEnabled(false);
+	//SceneSkyBox = new SkyBoxComponent("Resources/Textures/HDR/venice_sunset_4k.hdr", 4096);
+	//SceneSkyBox->SetEnabled(false);
 	MainScene->AddComponent(SceneSkyBox);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
@@ -167,13 +167,13 @@ void Init()
 	MainCamera->SetWorldTransform(CameraTransform);
 	/*-- Camera End --*/
 
-	MeshTest = new IndexedMesh("Resources/3DObj/Sphere.3Dobj");
+	//MeshTest = new IndexedMesh("Resources/3DObj/Sphere.3Dobj");
 	//MeshTest = new IndexedMesh("Resources/3DObj/Gun.3Dobj");
-	/*
-	MeshTest = new IndexedMesh("Resources/3DObj/wrestlers.obj");
-	Scale = 0.15f;
-	MeshTransform.Location = glm::vec3(0.0f, -0.5f, 0.0f);
-	*/
+	
+	MeshTest = new IndexedMesh("Resources/3DObj/Bunny.obj");
+	//Scale = 0.15f;
+	//MeshTransform.Location = glm::vec3(0.0f, -0.5f, 0.0f);
+	
 
 	ShaderTest = new Shader("Resources/Shaders/BaseColorShader/BaseColorVertex.glsl", "Resources/Shaders/BaseColorShader/BaseColorFragment.glsl");
 	ShaderTest->Refresh();
@@ -198,11 +198,15 @@ void Init()
 	TwAddVarRW(RenderingBar, "Metalness", TW_TYPE_FLOAT, &Metalness, " label='Metalness' min=0 max=1 step=0.01 keyIncr=m keyDecr=M help='Metalness' ");
 
 	TwBar* ObjectBar = TwNewBar("ObjectBar");
-	TwDefine(" ObjectBar label='Object' position='300 16' size='220 135' help='Use this bar to edit the Object' ");
+	TwDefine(" ObjectBar label='Object' position='300 16' size='220 250' help='Use this bar to edit the Object' ");
 
 	TwAddVarRW(ObjectBar, "ObjRotation", TW_TYPE_QUAT4F, &MeshTransform.Rotation[0], " label='Object rotation' opened=true help='Change the object orientation' ");
-	TwAddVarRW(ObjectBar, "ObjScale", TW_TYPE_FLOAT, &Scale, " label='Object Scale' min=0 step=0.005 help='Change the object Scale' ");
-	TwAddVarRW(ObjectBar, "ObjPan", TW_TYPE_DIR3F, &MeshTransform.Location[0], " label='Object Pan'  help='Change the object position' ");
+	TwAddVarRW(ObjectBar, "ObjScale", TW_TYPE_FLOAT, &Scale, " label='Object Scale' min=0 step=0.01 keyIncr=+ keyDecr=- help='Change the object Scale' ");
+	//TwAddVarRW(ObjectBar, "ObjPan", TW_TYPE_DIR3F, &MeshTransform.Location[0], " label='Object Pan'  help='Change the object position' ");
+	TwAddVarRW(ObjectBar, "ObjPanX", TW_TYPE_FLOAT, &MeshTransform.Location[0], " label='Pan x' step=0.01 keyIncr=d keyDecr=a help='Pan x' ");
+	TwAddVarRW(ObjectBar, "ObjPanY", TW_TYPE_FLOAT, &MeshTransform.Location[1], " label='Pan y' step=0.01 keyIncr=w keyDecr=s help='Pan y' ");
+	TwAddVarRW(ObjectBar, "ObjPanZ", TW_TYPE_FLOAT, &MeshTransform.Location[2], " label='Pan z' step=0.01 keyIncr=e keyDecr=q help='Pan z' ");
+
 
 	TwBar* SmoothingBar = TwNewBar("SmoothingBar");
 	TwDefine(" SmoothingBar label='Smoothing' position='16 370' help='Use this bar to edit the Smoothing' refresh=0.0 ");
@@ -242,8 +246,13 @@ void Loop()
 	ShaderTest->LoadFloat3("BaseColor", BaseColor);
 	ShaderTest->LoadFloat("Roughness", Roughness);
 	ShaderTest->LoadFloat("Metalness", Metalness);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, SceneSkyBox->GetIrradianceMapTextureId());
+	
+	if(SceneSkyBox)
+	{
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, SceneSkyBox->GetIrradianceMapTextureId());
+	}
+
 	MeshTest->Render();
 	ShaderTest->Stop();
 	
