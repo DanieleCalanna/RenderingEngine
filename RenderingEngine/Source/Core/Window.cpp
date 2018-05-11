@@ -61,14 +61,14 @@ void Window::WindowInit()
 	// Center our window
 	glfwSetWindowPos(
 		GLFWWindow,
-		0/*(VideoMode->width - Width) / 2*/,
-		0/*(VideoMode->height - Height) / 2*/
+		(VideoMode->width - Width) / 2,
+		(VideoMode->height - Height) / 2
 		
 	);
 
 	glfwMakeContextCurrent(GLFWWindow); // Initialize GLEW
 
-	glfwSwapInterval(0); // v-sync on
+	glfwSwapInterval(1); // v-sync on
 
 	// Make the window visible
 	glfwShowWindow(GLFWWindow);
@@ -131,7 +131,8 @@ void Window::WindowInit()
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);  // Nice perspective corrections
 	glViewport(0, 0, Width, Height);
 	
-	glfwSetInputMode(GLFWWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL/*GLFW_CURSOR_DISABLED*/);
+	//glfwSetInputMode(GLFWWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(GLFWWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 	glfwGetCursorPos(GLFWWindow, &XPosition, &YPosition);
 	PreviousXPosition = XPosition;

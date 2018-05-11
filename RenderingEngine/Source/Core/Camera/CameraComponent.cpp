@@ -12,6 +12,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/quaternion.hpp"
 
+CameraComponent::CameraComponent():Component("CameraComponent") {}
+
 const glm::mat4x4 CameraComponent::GetProjectionMatrix() const
 {
 	glm::mat4x4 ProjectionMatrix(0.0f);

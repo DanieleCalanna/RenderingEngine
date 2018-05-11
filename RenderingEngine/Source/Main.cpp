@@ -26,6 +26,7 @@
 
 Scene* MainScene;
 SkyBoxComponent* SceneSkyBox;
+Actor* CameraContainer;
 Camera* MainCamera;
 Actor* ActorMeshTest;
 Shader* ShaderTest;
@@ -39,8 +40,8 @@ glm::vec3 LightDirection = glm::vec3(-4.5f, -4.5f, -4.5f);
 float LightIntensity = 1.0f;
 
 glm::vec3 BaseColor = glm::vec3(1.0f, 1.0f, 1.0f);
-float Roughness = 0.1f;
-float Metalness = 0.1f;
+float Roughness = 0.04f;
+float Metalness = 0.3f;
 
 MeshSmoothing* MeshSmoothingTest;
 bool SmoothingEnabled = false;
@@ -51,7 +52,7 @@ void Init()
 {
 	MainScene = new Scene();
 	MainScene->SetAsCurrentScene();
-	//MainScene->AddComponent(new SkyBoxComponent("Resources/Textures/HDR/venice_sunset_4k.hdr", 4096));
+	MainScene->AddComponent(new SkyBoxComponent("Resources/Textures/HDR/venice_sunset_4k.hdr", 4096));
 
 	/*-- Camera Start --*/
 	MainCamera = new Camera("Camera");
@@ -67,16 +68,8 @@ void Init()
 	//DirectionalLight::GetSingletonInstance().SetWorldTransform(Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::quat(glm::vec3(4.3f, 0.5f, -0.5f)), glm::vec3(1.0f, 1.0f, 1.0f)));
 	DirectionalLight::GetSingletonInstance().SetWorldTransform(Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::quat(glm::normalize(glm::vec3(-4.5f, -4.5f, -4.5f))), glm::vec3(1.0f, 1.0f, 1.0f)));
 
-	MeshTest = new Mesh("Resources/3DObj/Sphere.3Dobj");
-	
-	ShaderTest = new Shader("Resources/Shaders/BaseColorShader/BaseColorVertex.glsl", "Resources/Shaders/BaseColorShader/BaseColorFragment.glsl");
-	ShaderTest->Refresh();
-	ShaderTest->Start();
-	ShaderTest->LoadFloat3("BaseColor", BaseColor);
-	ShaderTest->Stop();
 
-	//MeshTest = new IndexedMesh("Resources/3DObj/Drone.3Dobj");
-	/*
+	
 	MeshTest = new Mesh("Resources/3DObj/Gun.3Dobj");
 	Material* MaterialTest = new Material(
 	"Resources/Textures/Gun/Cerberus_A.tga",
@@ -85,7 +78,7 @@ void Init()
 	"Resources/Textures/Gun/Cerberus_N.tga",
 	"Resources/Textures/Gun/Cerberus_AO.tga");
 	ActorMeshTest = new Actor("Gun");
-	*/
+	
 
 	/*
 	MeshTest = new Mesh("Resources/3DObj/Drone.3Dobj");
@@ -96,6 +89,7 @@ void Init()
 	"Resources/Textures/Drone/Drone_normal.jpg",
 	"Resources/Textures/Drone/Drone_ao.jpg");
 	ActorMeshTest = new Actor("Drone");
+	*/
 	
 	Transform ActorMeshTestTransform;
 	ActorMeshTestTransform.Location = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -106,7 +100,7 @@ void Init()
 	MeshTestRenderer->SetMaterial(MaterialTest);
 	//ActorMeshTest->AddComponent<MeshSmoothing>("GunMeshSmoothing");
 	ActorMeshTest->AttachToActor(MainScene);
-	*/
+	
 
 	MainScene->Start();
 }
@@ -122,18 +116,7 @@ void Loop()
 	if (Window::GetSingletonWindow().GetKeyDown(GLFW_KEY_R))
 	{
 		StandardShader::GetInstance().Refresh();
-		ShaderTest->Refresh();
 	}
-
-	ShaderTest->Start();
-	ShaderTest->LoadMat4("TransformationMatrix", MainScene->GetWorldTransform().GetTransformationMatrix());
-	ShaderTest->LoadMat4("ProjectionMatrix", MainCamera->GetProjectionMatrix());
-	ShaderTest->LoadMat4("ViewMatrix", MainCamera->GetViewMatrix());
-	//ShaderTest->LoadFloat3("LightDirection", DirectionalLight::GetSingletonInstance().GetWorldTransform().GetForwardVector());
-	ShaderTest->LoadFloat("Roughness", Roughness);
-	ShaderTest->LoadFloat("Metalness", Metalness);
-	MeshTest->Render();
-	ShaderTest->Stop();
 	
 	//std::cout << "Framerate : " << 1.0f/Window::GetSingletonWindow().GetDeltaTime() << std::endl;
 
@@ -143,35 +126,36 @@ void Loop()
 
 	MainScene->Update();
 	GUI::GetInstance().RenderText(std::to_string(int(1.0f / Window::GetSingletonWindow().GetDeltaTime())), 20.0f, 20.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
-	GUI::GetInstance().RenderText("Roughness: " + std::to_string(Roughness), 20.0f, Window::GetSingletonWindow().GetHeight() - 25.0f, 0.4f, glm::vec3(0.5, 0.8f, 0.2f));
-	GUI::GetInstance().RenderText("Metalness: " + std::to_string(Metalness), 20.0f, Window::GetSingletonWindow().GetHeight() - 50.0f, 0.4f, glm::vec3(0.5, 0.8f, 0.2f));
 }
-#endif
+#else
 
 void Init()
 {
 	MainScene = new Scene();
 	MainScene->SetAsCurrentScene();
-	//SceneSkyBox = new SkyBoxComponent("Resources/Textures/HDR/venice_sunset_4k.hdr", 4096);
-	//SceneSkyBox->SetEnabled(false);
+	SceneSkyBox = new SkyBoxComponent("Resources/Textures/HDR/venice_sunset_4k.hdr", 4096);
+	SceneSkyBox->SetEnabled(true);
 	MainScene->AddComponent(SceneSkyBox);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
 	/*-- Camera Start --*/
+	CameraContainer = new Actor("CameraContainer");
+	CameraContainer->AttachToActor(MainScene);
+	CameraContainer->SetWorldTransform(Transform());
 	MainCamera = new Camera("Camera");
-	MainCamera->AttachToActor(MainScene);
+	MainCamera->AttachToActor(CameraContainer);
 	MainCamera->SetActive();
 	Transform CameraTransform;
 	CameraTransform.Location = glm::vec3(0.0f, 0.0f, 3.0f);
-	MainCamera->SetWorldTransform(CameraTransform);
+	MainCamera->SetWorldTransform(Transform(glm::vec3(0.0f, 0.0f, 3.0f), glm::quat(), glm::vec3(1.0f, 1.0f, 1.0f)));
 	/*-- Camera End --*/
 
-	//MeshTest = new IndexedMesh("Resources/3DObj/Sphere.3Dobj");
-	//MeshTest = new IndexedMesh("Resources/3DObj/Gun.3Dobj");
+	//MeshTest = new Mesh("Resources/3DObj/Sphere.3Dobj");
+	//MeshTest = new Mesh("Resources/3DObj/Bunny.3Dobj");
+	Scale = 0.65f;
 	
-	MeshTest = new IndexedMesh("Resources/3DObj/Bunny.obj");
-	//Scale = 0.15f;
+	MeshTest = new IndexedMesh("Resources/3DObj/Bunny.3Dobj");
 	//MeshTransform.Location = glm::vec3(0.0f, -0.5f, 0.0f);
 	
 
@@ -179,6 +163,8 @@ void Init()
 	ShaderTest->Refresh();
 	ShaderTest->Start();
 	ShaderTest->LoadInt("IrradianceMap", 0);
+	ShaderTest->LoadInt("PrefilterMap", 1);
+	ShaderTest->LoadInt("BRDFLUT", 2);
 	ShaderTest->Stop();
 
 	ActorMeshTest = new Actor("ActorTest");
@@ -208,33 +194,39 @@ void Init()
 	TwAddVarRW(ObjectBar, "ObjPanZ", TW_TYPE_FLOAT, &MeshTransform.Location[2], " label='Pan z' step=0.01 keyIncr=e keyDecr=q help='Pan z' ");
 
 
-	TwBar* SmoothingBar = TwNewBar("SmoothingBar");
-	TwDefine(" SmoothingBar label='Smoothing' position='16 370' help='Use this bar to edit the Smoothing' refresh=0.0 ");
-	TwAddVarRW(SmoothingBar, "Lambda", TW_TYPE_FLOAT, &MeshSmoothingTest->lambda, " label='Lambda' min=-1.0 max=1.0 step=0.01 keyIncr=r keyDecr=R help='Roughness' ");
-	TwAddVarRW(SmoothingBar, "Mu", TW_TYPE_FLOAT, &MeshSmoothingTest->mi, " label='Mu' min=-1.0 max=1.0 step=0.01 keyIncr=m keyDecr=M help='Metalness' ");
-	TwAddVarRW(SmoothingBar, "IterationsPerFrame", TW_TYPE_INT32, &MeshSmoothingTest->iterationsPerFrame, " label='Iterations/Frame' min=1 max=1000 step=1 help='Iterations per frame' ");
-	TwAddVarRO(SmoothingBar, "Iterations", TW_TYPE_INT32, &MeshSmoothingTest->iterationsCounter, " label='Iterations' help='Iterations' ");
+	if (MeshSmoothingTest)
+	{
+		TwBar* SmoothingBar = TwNewBar("SmoothingBar");
+		TwDefine(" SmoothingBar label='Smoothing' position='16 370' help='Use this bar to edit the Smoothing' refresh=0.0 ");
+		TwAddVarRW(SmoothingBar, "Lambda", TW_TYPE_FLOAT, &MeshSmoothingTest->lambda, " label='Lambda' min=-1.0 max=1.0 step=0.01 keyIncr=r keyDecr=R help='Roughness' ");
+		TwAddVarRW(SmoothingBar, "Mu", TW_TYPE_FLOAT, &MeshSmoothingTest->mi, " label='Mu' min=-1.0 max=1.0 step=0.01 keyIncr=m keyDecr=M help='Metalness' ");
+		TwAddVarRW(SmoothingBar, "IterationsPerFrame", TW_TYPE_INT32, &MeshSmoothingTest->iterationsPerFrame, " label='Iterations/Frame' min=1 max=1000 step=1 help='Iterations per frame' ");
+		TwAddVarRO(SmoothingBar, "Iterations", TW_TYPE_INT32, &MeshSmoothingTest->iterationsCounter, " label='Iterations' help='Iterations' ");
 
-	TwAddVarRW(SmoothingBar, "SmoothingEnabled", TW_TYPE_BOOL32, &SmoothingEnabled, " label='Smoothing' true='Enabled' false='Disabled' key='' help='Enable/Disable Smoothing' ");
+		TwAddVarRW(SmoothingBar, "SmoothingEnabled", TW_TYPE_BOOL32, &SmoothingEnabled, " label='Smoothing' true='Enabled' false='Disabled' key='' help='Enable/Disable Smoothing' ");
+	}
 
 	MainScene->Start();
 }
 
 void Loop()
 {
-	/*
+	
 	if (Window::GetSingletonWindow().GetKeyDown(GLFW_KEY_R))
 	{
 		ShaderTest->Refresh();
+		ShaderTest->Start();
+		ShaderTest->LoadInt("IrradianceMap", 0);
+		ShaderTest->LoadInt("PrefilterMap", 1);
+		ShaderTest->LoadInt("BRDFLUT", 2);
+		ShaderTest->Stop();
 	}
-	*/
-	Transform CameraTransform;
-	
-	CameraTransform.Location = /*MeshTransform.GetForwardVector()*3.0f*/glm::vec3(0.0f, 0.0f, 3.0f);
-	//CameraTransform.Rotation = glm::lookAt(CameraTransform.Location, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	MainCamera->SetWorldTransform(CameraTransform);
-	MeshSmoothingTest->SetEnabled(SmoothingEnabled);
+	//CameraContainer->SetWorldTransform(Transform(glm::vec3(0.0f, 0.0f, 0.0f), MeshTransform.Rotation, glm::vec3(1.0f, 1.0f, 1.0f)));
+	if (MeshSmoothingTest)
+	{
+		MeshSmoothingTest->SetEnabled(SmoothingEnabled);
+	}
 	MeshTransform.Scale = glm::vec3(Scale, Scale, Scale);
 	ShaderTest->Start();
 	ShaderTest->LoadMat4("TransformationMatrix", MeshTransform.GetTransformationMatrix());
@@ -251,6 +243,10 @@ void Loop()
 	{
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, SceneSkyBox->GetIrradianceMapTextureId());
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, SceneSkyBox->GetPrefilteredCubemapTextureId());
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, SceneSkyBox->GetBRDFTextureId());
 	}
 
 	MeshTest->Render();
@@ -263,12 +259,12 @@ void Loop()
 	MainScene->Update();
 	//GUI::GetInstance().RenderText(std::to_string(int(1.0f / Window::GetSingletonWindow().GetDeltaTime())), 20.0f, 20.0f, 0.6f, glm::vec3(0.5, 0.8f, 0.2f));
 }
+#endif
 
 void Clear()
 {
 	MainScene->Clear();
 }
-
 int main(int argc, char* argv[])
 {
 	Window::GetSingletonWindow().SetInitFunction(Init);

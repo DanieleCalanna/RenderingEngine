@@ -52,7 +52,7 @@ float Map(float Value, float InMin, float InMax, float OutMin, float OutMax)
 */
 vec3 FresnelSchlick(float CosTheta, vec3 F0)
 {
-    return F0 + (1.0 - F0) * pow(1.0 - CosTheta, 5.0);
+	return F0 + (1.0 - F0) * pow(1.0 - CosTheta, 5.0);
 }
 
 vec3 FresnelSchlickRoughness(float CosTheta, vec3 F0, float Roughness)
@@ -60,38 +60,32 @@ vec3 FresnelSchlickRoughness(float CosTheta, vec3 F0, float Roughness)
 	return F0 + (max(vec3(1.0 - Roughness), F0) - F0) * pow(1.0 - CosTheta, 5.0);
 }
 
-/*
-vec3 Lambert(vec3 Albedo)
+float DistributionGGX(vec3 N, vec3 H, float Roughness)
 {
-	return Albedo/PI;
-}
-*/
+	float Roughness2 = Roughness * Roughness;
+	float NdotH = max(dot(N, H), 0.0);
+	float NdotH2 = NdotH * NdotH;
 
-float DistributionGGX(vec3 N, vec3 H, float a)
-{
-    float a2     = a*a;
-    float NdotH  = max(dot(N, H), 0.0);
-    float NdotH2 = NdotH*NdotH;
-	
-    float Denom  = (NdotH2 * (a2 - 1.0) + 1.0);
-    Denom        = PI * Denom * Denom;
-	
-    return a2 / Denom;
+	float Denom = (NdotH2 * (Roughness2 - 1.0) + 1.0);
+	Denom = PI * Denom * Denom;
+
+	return Roughness2 / Denom;
 }
 
 float GeometrySchlickGGX(float NdotV, float Roughness)
 {
-    return NdotV / (NdotV * (1.0 - Roughness) + Roughness);
+	if (NdotV == 0.0) return 0.0;
+	return NdotV * (NdotV * (1.0 - Roughness) + Roughness);
 }
-  
+
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float Roughness)
 {
-    float NdotV = max(dot(N, V), 0.0);
-    float NdotL = max(dot(N, L), 0.0);
-    float GGX1 = GeometrySchlickGGX(NdotV, Roughness);
-    float GGX2 = GeometrySchlickGGX(NdotL, Roughness);
-	
-    return GGX1 * GGX2;
+	float NdotV = max(dot(N, V), 0.0);
+	float NdotL = max(dot(N, L), 0.0);
+	float GGX1 = GeometrySchlickGGX(NdotV, Roughness);
+	float GGX2 = GeometrySchlickGGX(NdotL, Roughness);
+
+	return GGX1 * GGX2;
 }
 
 void main()
@@ -135,11 +129,11 @@ void main()
 
 		float D = DistributionGGX(Normal_TS, HalfwayVector, RoughnessColor.r);
 		float G = GeometrySmith(Normal_TS, FragmentToCamera_TS, -LightDirection_TS, RoughnessColor.r);
-		vec3 F = FresnelSchlickRoughness(max(dot(HalfwayVector, FragmentToCamera_TS), 0.0), F0, RoughnessColor.r);
+		vec3 F = FresnelSchlick(max(0.0, dot(HalfwayVector, FragmentToCamera_TS)), F0);
 
 		vec3 Numerator    = D * G * F;
-		float Denominator = 4.0 * max(dot(Normal_TS, FragmentToCamera_TS), 0.0) * max(dot(Normal_TS, -LightDirection_TS), 0.0) +0.001;
-		vec3 Specular     = Numerator / Denominator;  
+		float Denominator = 4.0 * max(dot(Normal_TS, FragmentToCamera_TS), 0.0) * max(dot(Normal_TS, -LightDirection_TS), 0.0);
+		vec3 Specular     = Numerator * (1.0 / max(Denominator, 0.001));
 
 		vec3 kS = F;
 		vec3 kD = vec3(1.0) - kS;
@@ -174,9 +168,7 @@ void main()
     OutColor = vec4(Color, 1.0);
 	
 	OutColor.rgb = pow(OutColor.rgb, vec3(1.0 / Gamma));
-
-	//OutColor = vec4(Specular, 0.0);r
-	//OutColor = vec4(EnvBDRF, 0.0, 1.0);
+	
 	//OutColor = vec4(PrefilteredColor, 1.0);
 	//OutColor = vec4(Irradiance, 1.0);
 	//OutColor = vec4(AlbedoColor, 1.0);

@@ -6,7 +6,7 @@
 class CameraComponent : public Component
 {
 public:
-	CameraComponent() :Component("CameraComponent") {}
+	CameraComponent();
 	const glm::mat4x4 GetProjectionMatrix() const;
 	const glm::mat4x4 GetViewMatrix() const;
 

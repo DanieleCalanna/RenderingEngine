@@ -93,7 +93,7 @@ SkyBoxComponent::SkyBoxComponent(std::string HdrMapPath, GLsizei HdrMapSize) : C
 	//CubemapTexture = HdrTexture = GetCubemapFromEquirectangular("Resources/Textures/HDR/venice_sunset_4k.hdr", 4096);
 	CubemapTexture = HdrTexture = GetCubemapFromEquirectangular(HdrMapPath, HdrMapSize);
 
-	IrradianceCubemap = GetConvolutedCubemap(HdrTexture, 64);
+	IrradianceCubemap = GetConvolutedCubemap(HdrTexture, 32);
 	PrefilteredCubemap = GetPrefilteredCubemap(HdrTexture, 32);
 	BRDFTexture = GetBRDFTexture(512);
 	//CubemapTexture = PrefilteredCubemap;

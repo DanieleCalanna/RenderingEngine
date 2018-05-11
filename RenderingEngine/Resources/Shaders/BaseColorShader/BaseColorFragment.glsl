@@ -48,7 +48,10 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float Roughness)
 uniform mat4 TransformationMatrix;
 uniform mat4 ProjectionMatrix;
 uniform mat4 ViewMatrix;
+
 uniform samplerCube IrradianceMap;
+uniform samplerCube PrefilterMap;
+uniform sampler2D BRDFLUT;
 
 in vec3 FragPosition;
 in vec3 FragNormal;
@@ -71,6 +74,8 @@ void main()
 
 	vec3 FragmentToCamera = normalize(CameraPosition - FragPosition);
 	vec3 HalfwayVector = normalize(FragmentToCamera - NormalLightDirection);
+
+	vec3 ReflectionVector = normalize(reflect(-FragmentToCamera, SurfaceNormal));
 	
 	float NDF = DistributionGGX(SurfaceNormal, HalfwayVector, Roughness);
 
@@ -84,7 +89,6 @@ void main()
 	vec3 Specular = Numerator* (1.0 / max(Denominator, 0.001));
 
 	vec3 LightKS = F; //Specular factor
-
 	vec3 LightKD = vec3(1.0) - LightKS; //Diffuse factor
 	LightKD *= 1.0 - Metalness;
 	
@@ -94,10 +98,15 @@ void main()
 	vec3 IrradianceKD = 1.0 - IrradianceKS;
 	vec3 Irradiance = texture(IrradianceMap, SurfaceNormal).rgb;
 	vec3 Diffuse = Irradiance * BaseColor;
-	vec3 Ambient = (IrradianceKD * Diffuse);
 
-	vec3 Shade = Lo/* + Ambient*/;
+	const float MAX_REFLECTION_LOD = 4.0;
+	vec3 PrefilteredColor = textureLod(PrefilterMap, ReflectionVector, Roughness * MAX_REFLECTION_LOD).rgb;
+	vec2 EnvBDRF = texture(BRDFLUT, vec2(max(dot(SurfaceNormal, FragmentToCamera), 0.0), Roughness)).rg;
+	vec3 PrefilteredSpecular = PrefilteredColor * (IrradianceKS * EnvBDRF.x + EnvBDRF.y);
 
+	vec3 Ambient = (IrradianceKD * Diffuse * 1.0 + PrefilteredSpecular);
+
+	vec3 Shade = Lo + Ambient;
 	FragColor = vec4(Shade, 1.0);
 
 	FragColor.xyz = FragColor.xyz / (FragColor.xyz + vec3(1.0));

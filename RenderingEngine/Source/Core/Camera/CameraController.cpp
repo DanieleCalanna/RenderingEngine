@@ -13,7 +13,9 @@
 #include "glm/vec3.hpp"
 #include "Core/Camera/Camera.hpp"
 
-void CameraController::Start() 
+CameraController::CameraController():Component("CameraController") {}
+
+void CameraController::Start()
 {
 
 }

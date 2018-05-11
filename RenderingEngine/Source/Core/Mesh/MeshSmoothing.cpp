@@ -241,9 +241,8 @@ void MeshSmoothing::ApplySmooth(){
 	int cl_event_count = 2 * iterationsPerFrame;
 	cl_event * cl_event_array = new cl_event[cl_event_count];
 
-	cl_event smooth_evt;
 	for(int i=0; i<iterationsPerFrame; i++) {
-		smooth_evt = smooth(queue, smooth_k, &lock, cl_vertex_buffer, cl_adjArray, cl_result, Mesh->nels, lambda);
+		cl_event smooth_evt = smooth(queue, smooth_k, &lock, cl_vertex_buffer, cl_adjArray, cl_result, Mesh->nels, lambda);
 		lock = smooth(queue, smooth_k, &smooth_evt, cl_result, cl_adjArray, cl_vertex_buffer, Mesh->nels, mi);
 		cl_event_array[i*2] = smooth_evt;
 		cl_event_array[i*2+1] = lock;
@@ -253,9 +252,14 @@ void MeshSmoothing::ApplySmooth(){
 	cl_event normals_per_vertex_evt = normals_per_vertex(queue, normals_per_vertex_k, &normals_per_face_evt, cl_normals_per_face, cl_faces_info_array, cl_faceIndex_per_vertex, cl_normals_buffer, Mesh->nels);
 	clEnqueueReleaseGLObjects(queue, 2, buffersToAquire, 1, &normals_per_vertex_evt, &unlock);
 	clWaitForEvents(1, &unlock);
-	clReleaseEvent(lock);
+
+	clReleaseEvent(normals_per_face_evt);
+	clReleaseEvent(normals_per_vertex_evt);
 	clReleaseEvent(unlock);
-	for (int i = 0; i < cl_event_count; i++) clReleaseEvent(cl_event_array[i]);
+	for (int i = 0; i < cl_event_count; i++)
+	{
+		clReleaseEvent(cl_event_array[i]);
+	}
 	delete[] cl_event_array;
 }
 
