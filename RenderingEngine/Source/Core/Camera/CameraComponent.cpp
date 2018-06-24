@@ -16,8 +16,10 @@ CameraComponent::CameraComponent():Component("CameraComponent") {}
 
 const glm::mat4x4 CameraComponent::GetProjectionMatrix() const
 {
-	glm::mat4x4 ProjectionMatrix(0.0f);
+	
 	float AspectRatio = (float)Window::GetSingletonWindow().GetWidth() / (float)Window::GetSingletonWindow().GetHeight();
+#if 0
+	glm::mat4x4 ProjectionMatrix(0.0f);
 	float YScale = (float)((1.0f / tan((FieldOfView / 2.0f) * M_PI / 180.0f)));
 	float XScale = YScale / AspectRatio;
 	float FrustumLength = FarPlane - NearPlane;
@@ -28,6 +30,10 @@ const glm::mat4x4 CameraComponent::GetProjectionMatrix() const
 	ProjectionMatrix[3][2] = -((2 * NearPlane * FarPlane) / FrustumLength);
 	ProjectionMatrix[3][3] = 0.0f;
 	return ProjectionMatrix;
+#else
+	//return glm::ortho(0.0f, (float)(float)Window::GetSingletonWindow().GetWidth(), (float)(float)Window::GetSingletonWindow().GetHeight(), 0.0f, NearPlane, FarPlane);
+	return glm::perspective<float>(glm::radians(FieldOfView), AspectRatio, NearPlane, FarPlane);
+#endif
 }
 
 const glm::mat4x4 CameraComponent::GetViewMatrix() const 

@@ -7,6 +7,7 @@
 #include "Core/Entities/Actor.hpp"
 #include "Core/Components/Component.hpp"
 #include "Core/Camera/Camera.hpp"
+#include "Core/Camera/CameraController.hpp"
 #include "Core/Camera/CameraComponent.hpp"
 #include "Core/Mesh/MeshRenderer.hpp"
 #include "Core/Mesh/MeshSmoothing.hpp"
@@ -41,26 +42,38 @@ float LightIntensity = 1.0f;
 
 glm::vec3 BaseColor = glm::vec3(1.0f, 1.0f, 1.0f);
 float Roughness = 0.04f;
+float Specular = 0.5f;
 float Metalness = 0.3f;
 
 MeshSmoothing* MeshSmoothingTest;
 bool SmoothingEnabled = false;
 
+void Screenshot();
 
 #if 0
 void Init()
 {
+	Window::GetSingletonWindow().SetMouseEnabled(false);
 	MainScene = new Scene();
 	MainScene->SetAsCurrentScene();
-	MainScene->AddComponent(new SkyBoxComponent("Resources/Textures/HDR/venice_sunset_4k.hdr", 4096));
+	//SceneSkyBox = new SkyBoxComponent("Resources/HDR/venice_sunset_4k.hdr", 4096);
+	//SceneSkyBox = new SkyBoxComponent("Resources/HDR/Newport_Loft/Newport_Loft_Blur_8K.png", 4096, "Resources/HDR/Newport_Loft/Newport_Loft_Ref.hdr", 2048);
+	SceneSkyBox = new SkyBoxComponent("Resources/HDR/Autumn_Hockey/autumn_hockey_blur_8k.png", 4096, "Resources/HDR/Autumn_Hockey/autumn_hockey_8k.hdr", 4096);
+	//SceneSkyBox = new SkyBoxComponent("Resources/HDR/Shanghai_Bund/shanghai_bund_blur_8k.png", 4096, "Resources/HDR/Shanghai_Bund/shanghai_bund_8k.hdr", 4096);
+	//SceneSkyBox = new SkyBoxComponent("Resources/HDR/Malibu_Overlook/Malibu_Overlook_8k.jpg", 4096, "Resources/HDR/Malibu_Overlook/Malibu_Overlook_3k.hdr", 2048);
+	//SceneSkyBox = new SkyBoxComponent("Resources/HDR/veranda_4k.hdr", 4096);
+	SceneSkyBox->SetEnabled(false);
+	MainScene->AddComponent(SceneSkyBox);
 
 	/*-- Camera Start --*/
 	MainCamera = new Camera("Camera");
+	MainCamera->AddComponent<CameraController>("CameraController");
 	MainCamera->AttachToActor(MainScene);
 	MainCamera->SetActive();
 	Transform CameraTransform;
-	CameraTransform.Location = glm::vec3(0.0f, 0.0f, 3.0f);
+	CameraTransform.Location = glm::vec3(0.0f, 0.0f, 0.0f);
 	//CameraTransform.Location = glm::vec3(15.0f, 2.0f, 9.0f);
+	CameraTransform.Rotation = glm::angleAxis(0.0f, glm::vec3(1, 0, 0))* glm::angleAxis(180.0f, glm::vec3(0, 1, 0))* glm::angleAxis(0.0f, glm::vec3(0, 0, 1));
 	MainCamera->SetWorldTransform(CameraTransform);
 	/*-- Camera End --*/
 
@@ -69,7 +82,7 @@ void Init()
 	DirectionalLight::GetSingletonInstance().SetWorldTransform(Transform(glm::vec3(0.0f, 0.0f, 0.0f), glm::quat(glm::normalize(glm::vec3(-4.5f, -4.5f, -4.5f))), glm::vec3(1.0f, 1.0f, 1.0f)));
 
 
-	
+	/*
 	MeshTest = new Mesh("Resources/3DObj/Gun.3Dobj");
 	Material* MaterialTest = new Material(
 	"Resources/Textures/Gun/Cerberus_A.tga",
@@ -78,6 +91,19 @@ void Init()
 	"Resources/Textures/Gun/Cerberus_N.tga",
 	"Resources/Textures/Gun/Cerberus_AO.tga");
 	ActorMeshTest = new Actor("Gun");
+	*/
+		
+	MeshTest = new Mesh("Resources/3DObj/DrakefirePistol.3Dobj");
+	Material* MaterialTest = new Material(
+		"Resources/Textures/DrakefirePistol/base_albedo.jpg",
+		"Resources/Textures/DrakefirePistol/base_metallic.jpg",
+		"Resources/Textures/DrakefirePistol/base_roughness.jpg",
+		"Resources/Textures/DrakefirePistol/base_normal.jpg",
+		"Resources/Textures/DrakefirePistol/base_AO.jpg");
+	ActorMeshTest = new Actor("Gun");
+	CameraTransform.Location = glm::vec3(0.0f, 0.0f, 0.0f);
+	CameraTransform.Rotation = glm::angleAxis(0.0f, glm::vec3(1, 0, 0))* glm::angleAxis(180.0f, glm::vec3(0, 1, 0))* glm::angleAxis(0.0f, glm::vec3(0, 0, 1));
+	MainCamera->SetWorldTransform(CameraTransform);
 	
 
 	/*
@@ -93,6 +119,7 @@ void Init()
 	
 	Transform ActorMeshTestTransform;
 	ActorMeshTestTransform.Location = glm::vec3(0.0f, 0.0f, 0.0f);
+	ActorMeshTestTransform.Rotation = glm::angleAxis(0.0f, glm::vec3(1, 0, 0))* glm::angleAxis(0.0f, glm::vec3(0, 1, 0))* glm::angleAxis(0.0f, glm::vec3(0, 0, 1));
 	ActorMeshTestTransform.Scale = glm::vec3(20.0f, 20.0f, 20.0f);
 	ActorMeshTest->SetWorldTransform(ActorMeshTestTransform);
 	MeshRenderer* MeshTestRenderer = ActorMeshTest->AddComponent<MeshRenderer>("GunMeshRenderer");
@@ -117,7 +144,6 @@ void Loop()
 	{
 		StandardShader::GetInstance().Refresh();
 	}
-	
 	//std::cout << "Framerate : " << 1.0f/Window::GetSingletonWindow().GetDeltaTime() << std::endl;
 
 	//Axes::LoadCameraMatrix();
@@ -125,7 +151,11 @@ void Loop()
 	//Axes::DrawAxes();
 
 	MainScene->Update();
-	GUI::GetInstance().RenderText(std::to_string(int(1.0f / Window::GetSingletonWindow().GetDeltaTime())), 20.0f, 20.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
+	if (Window::GetSingletonWindow().GetKeyDown(GLFW_KEY_P))
+	{
+		Screenshot();
+	}
+	//GUI::GetInstance().RenderText(std::to_string(int(1.0f / Window::GetSingletonWindow().GetDeltaTime())), 20.0f, 20.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
 }
 #else
 
@@ -133,7 +163,11 @@ void Init()
 {
 	MainScene = new Scene();
 	MainScene->SetAsCurrentScene();
-	SceneSkyBox = new SkyBoxComponent("Resources/Textures/HDR/venice_sunset_4k.hdr", 4096);
+	SceneSkyBox = new SkyBoxComponent("Resources/HDR/venice_sunset_4k.hdr", 4096);
+	//SceneSkyBox = new SkyBoxComponent("Resources/HDR/Newport_Loft/Newport_Loft_Blur_8K.png", 4096, "Resources/HDR/Newport_Loft/Newport_Loft_Ref.hdr", 2048);
+	//SceneSkyBox = new SkyBoxComponent("Resources/HDR/Malibu_Overlook/Malibu_Overlook_8k.jpg", 4096, "Resources/HDR/Malibu_Overlook/Malibu_Overlook_3k.hdr", 2048);
+	//SceneSkyBox = new SkyBoxComponent("Resources/HDR/veranda_4k.hdr", 4096);
+
 	SceneSkyBox->SetEnabled(true);
 	MainScene->AddComponent(SceneSkyBox);
 	glEnable(GL_CULL_FACE);
@@ -153,9 +187,14 @@ void Init()
 
 	//MeshTest = new Mesh("Resources/3DObj/Sphere.3Dobj");
 	//MeshTest = new Mesh("Resources/3DObj/Bunny.3Dobj");
-	Scale = 0.65f;
-	
+	Scale = 1.0f; 
+	//MeshTransform.Location.x = 0.09f;
+	//MeshTransform.Rotation = glm::normalize(glm::quat(0.9f, 0.0f, 0.45f, 0.0f));
 	MeshTest = new IndexedMesh("Resources/3DObj/Bunny.3Dobj");
+	//MeshTest = new IndexedMesh("Resources/3DObj/AsianDragon.obj");
+	//MeshTest = new IndexedMesh("Resources/3DObj/ThaiStatue.obj");
+	
+	
 	//MeshTransform.Location = glm::vec3(0.0f, -0.5f, 0.0f);
 	
 
@@ -180,7 +219,9 @@ void Init()
 	TwAddVarRW(RenderingBar, "LightIntensity", TW_TYPE_FLOAT, &LightIntensity, " label='Light intensity' min=0 step=0.01 keyIncr=l keyDecr=L help='Light intensity' ");
 
 	TwAddVarRW(RenderingBar, "BaseColor", TW_TYPE_COLOR3F, &BaseColor[0], " label='Base color' ");
-	TwAddVarRW(RenderingBar, "Roughness", TW_TYPE_FLOAT, &Roughness, " label='Roughness' min=0 max=1 step=0.01 keyIncr=r keyDecr=R help='Roughness' ");
+	//TwAddVarRW(RenderingBar, "Roughness", TW_TYPE_FLOAT, &Roughness, " label='Roughness' min=0 max=1 step=0.01 keyIncr=r keyDecr=R help='Roughness' ");
+	TwAddVarRW(RenderingBar, "Roughness", TW_TYPE_FLOAT, &Roughness, " label='Roughness' min=0 max=1 step=0.01 help='Roughness' ");
+	//TwAddVarRW(RenderingBar, "Specular", TW_TYPE_FLOAT, &Specular, " label='Specular' min=0 max=1 step=0.01 keyIncr=l keyDecr=L help='Specular' ");
 	TwAddVarRW(RenderingBar, "Metalness", TW_TYPE_FLOAT, &Metalness, " label='Metalness' min=0 max=1 step=0.01 keyIncr=m keyDecr=M help='Metalness' ");
 
 	TwBar* ObjectBar = TwNewBar("ObjectBar");
@@ -237,6 +278,7 @@ void Loop()
 	ShaderTest->LoadFloat("LightIntensity", LightIntensity);
 	ShaderTest->LoadFloat3("BaseColor", BaseColor);
 	ShaderTest->LoadFloat("Roughness", Roughness);
+	ShaderTest->LoadFloat("Specular", Specular);
 	ShaderTest->LoadFloat("Metalness", Metalness);
 	
 	if(SceneSkyBox)
@@ -251,10 +293,15 @@ void Loop()
 
 	MeshTest->Render();
 	ShaderTest->Stop();
-	
+	if (Window::GetSingletonWindow().GetKeyDown(GLFW_KEY_P))
+	{
+		Screenshot();
+	}
+	/*
 	Axes::LoadCameraMatrix();
 	Axes::DrawGrid();
 	Axes::DrawAxes();
+	*/
 
 	MainScene->Update();
 	//GUI::GetInstance().RenderText(std::to_string(int(1.0f / Window::GetSingletonWindow().GetDeltaTime())), 20.0f, 20.0f, 0.6f, glm::vec3(0.5, 0.8f, 0.2f));
@@ -267,6 +314,8 @@ void Clear()
 }
 int main(int argc, char* argv[])
 {
+	Window::GetSingletonWindow().SetSize(1024, 1024);
+	//Window::GetSingletonWindow().SetScreenMode(FullScreen);
 	Window::GetSingletonWindow().SetInitFunction(Init);
 	Window::GetSingletonWindow().SetLoopFunction(Loop);
 	Window::GetSingletonWindow().SetClearFunction(Clear);
@@ -275,3 +324,25 @@ int main(int argc, char* argv[])
 }
 
 
+
+
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "Utils/stb_image_write.h"
+
+void Screenshot()
+{	
+	GLubyte* OpenGLimage = new GLubyte[Window::GetSingletonWindow().GetWidth() * Window::GetSingletonWindow().GetHeight()*3];
+	glReadPixels(0, 0, Window::GetSingletonWindow().GetWidth(), Window::GetSingletonWindow().GetHeight(), GL_RGB, GL_UNSIGNED_BYTE, OpenGLimage);
+	GLubyte* OpenGLimageReverse = new GLubyte[Window::GetSingletonWindow().GetWidth() * Window::GetSingletonWindow().GetHeight() * 3];
+	for (int Row = 0; Row < Window::GetSingletonWindow().GetHeight(); Row++)
+	{
+		for (int PixelIndex = 0; PixelIndex < Window::GetSingletonWindow().GetWidth(); PixelIndex++)
+		{
+			OpenGLimageReverse[(Row*Window::GetSingletonWindow().GetWidth() + PixelIndex) * 3] = OpenGLimage[((Window::GetSingletonWindow().GetHeight() - 1 - Row)*Window::GetSingletonWindow().GetWidth() + PixelIndex) * 3];
+			OpenGLimageReverse[(Row*Window::GetSingletonWindow().GetWidth() + PixelIndex) * 3 + 1] = OpenGLimage[((Window::GetSingletonWindow().GetHeight() - 1 - Row)*Window::GetSingletonWindow().GetWidth() + PixelIndex) * 3 + 1];
+			OpenGLimageReverse[(Row*Window::GetSingletonWindow().GetWidth() + PixelIndex) * 3 + 2] = OpenGLimage[((Window::GetSingletonWindow().GetHeight() - 1 - Row)*Window::GetSingletonWindow().GetWidth() + PixelIndex) * 3 + 2];
+		}
+	}
+	stbi_write_png("Screenshot.png", Window::GetSingletonWindow().GetWidth(), Window::GetSingletonWindow().GetHeight(), 3, OpenGLimageReverse, Window::GetSingletonWindow().GetWidth()*3*sizeof(GLubyte));
+}

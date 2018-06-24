@@ -10,110 +10,38 @@
 #include "Core/Texture/Texture.hpp"
 
 
-float CubePoints[] = {
-	-1.0f,  1.0f, -1.0f,
-	-1.0f, -1.0f, -1.0f,
-	1.0f, -1.0f, -1.0f,
-	1.0f, -1.0f, -1.0f,
-	1.0f,  1.0f, -1.0f,
-	-1.0f,  1.0f, -1.0f,
 
-	-1.0f, -1.0f,  1.0f,
-	-1.0f, -1.0f, -1.0f,
-	-1.0f,  1.0f, -1.0f,
-	-1.0f,  1.0f, -1.0f,
-	-1.0f,  1.0f,  1.0f,
-	-1.0f, -1.0f,  1.0f,
 
-	1.0f, -1.0f, -1.0f,
-	1.0f, -1.0f,  1.0f,
-	1.0f,  1.0f,  1.0f,
-	1.0f,  1.0f,  1.0f,
-	1.0f,  1.0f, -1.0f,
-	1.0f, -1.0f, -1.0f,
-
-	-1.0f, -1.0f,  1.0f,
-	-1.0f,  1.0f,  1.0f,
-	1.0f,  1.0f,  1.0f,
-	1.0f,  1.0f,  1.0f,
-	1.0f, -1.0f,  1.0f,
-	-1.0f, -1.0f,  1.0f,
-
-	-1.0f,  1.0f, -1.0f,
-	1.0f,  1.0f, -1.0f,
-	1.0f,  1.0f,  1.0f,
-	1.0f,  1.0f,  1.0f,
-	-1.0f,  1.0f,  1.0f,
-	-1.0f,  1.0f, -1.0f,
-
-	-1.0f, -1.0f, -1.0f,
-	-1.0f, -1.0f,  1.0f,
-	1.0f, -1.0f, -1.0f,
-	1.0f, -1.0f, -1.0f,
-	-1.0f, -1.0f,  1.0f,
-	1.0f, -1.0f,  1.0f
-};
-
-SkyBoxComponent::SkyBoxComponent(std::string HdrMapPath, GLsizei HdrMapSize) : Component("SkyBoxComponent")
+SkyBoxComponent::SkyBoxComponent(std::string SkyMapPath, GLsizei SkyMapSize, std::string HdrMapPath, GLsizei HdrMapSize) : Component("SkyBoxComponent")
 {
-	glGenVertexArrays(1, &CubeVertexArray);
-	glBindVertexArray(CubeVertexArray);
-	glGenBuffers(1, &CubeVertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, CubeVertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, 3 * 36 * sizeof(float), &CubePoints, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
-	float QuadPoints[] = {
-		-1.0f, -1.0f, 0.0f,
-		1.0f, -1.0f, 0.0f,
-		-1.0f,  1.0f, 0.0f,
-
-		-1.0f,  1.0f, 0.0f,
-		1.0f, -1.0f, 0.0f,
-		1.0f, 1.0f, 0.0f
-	};
-
-	glGenVertexArrays(1, &QuadVertexArray);
-	glBindVertexArray(QuadVertexArray);
-	glGenBuffers(1, &QuadVertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, QuadVertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, 3 * 6 * sizeof(float), &QuadPoints, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
-	//CubemapTexture = GetCubemapFromEquirectangular("Resources/Textures/HDR/Newport_Loft/Newport_Loft_8k.jpg", 4096);
-	//HdrTexture = GetCubemapFromEquirectangular("Resources/Textures/HDR/Newport_Loft/Newport_Loft_Ref.hdr", 2048);
-
-	//CubemapTexture = GetCubemapFromEquirectangular("Resources/Textures/HDR/Malibu_Overlook/Malibu_Overlook_8k.jpg", 4096);
-	//HdrTexture = GetCubemapFromEquirectangular("Resources/Textures/HDR/Malibu_Overlook/Malibu_Overlook_3k.hdr", 2048);
-
-	//CubemapTexture = HdrTexture = GetCubemapFromEquirectangular("Resources/Textures/HDR/venice_sunset_4k.hdr", 4096);
-	CubemapTexture = HdrTexture = GetCubemapFromEquirectangular(HdrMapPath, HdrMapSize);
+	GenerateCube();
+	GenerateQuad();
+	
+	CubemapTexture = GetCubemapFromEquirectangular(SkyMapPath, SkyMapSize);
+	HdrTexture = GetCubemapFromEquirectangular(HdrMapPath, HdrMapSize);
 
 	IrradianceCubemap = GetConvolutedCubemap(HdrTexture, 32);
-	PrefilteredCubemap = GetPrefilteredCubemap(HdrTexture, 32);
+	PrefilteredCubemap = GetPrefilteredCubemap(HdrTexture, 256);
 	BRDFTexture = GetBRDFTexture(512);
 	//CubemapTexture = PrefilteredCubemap;
 	//CubemapTexture = IrradianceCubemap;
-
-	/*
-	CreateCubemap("Resources/Textures/CubeMap/NegZ.png",
-	"Resources/Textures/CubeMap/PosZ.png",
-	"Resources/Textures/CubeMap/PosY.png",
-	"Resources/Textures/CubeMap/NegY.png",
-	"Resources/Textures/CubeMap/NegX.png",
-	"Resources/Textures/CubeMap/PosX.png"
-	);
-	*/
 }
 
-void SkyBoxComponent::Construct()
+SkyBoxComponent::SkyBoxComponent(std::string SkyMapPath, GLsizei SkyMapSize) : Component("SkyBoxComponent")
 {
+	GenerateCube();
+	GenerateQuad();
 
+	CubemapTexture = HdrTexture = GetCubemapFromEquirectangular(SkyMapPath, SkyMapSize);
+
+	IrradianceCubemap = GetConvolutedCubemap(HdrTexture, 32);
+	PrefilteredCubemap = GetPrefilteredCubemap(HdrTexture, 256);
+	BRDFTexture = GetBRDFTexture(512);
+	//CubemapTexture = PrefilteredCubemap;
+	//CubemapTexture = IrradianceCubemap;
 }
+
+void SkyBoxComponent::Construct() {}
 
 void SkyBoxComponent::Start() {}
 
@@ -167,6 +95,83 @@ bool SkyBoxComponent::LoadCubemapSide(GLenum SideTarget, const std::string Textu
 	return true;
 }
 
+void SkyBoxComponent::GenerateCube()
+{
+	float CubePoints[] = {
+		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
+		1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		-1.0f,  1.0f, -1.0f,
+		1.0f,  1.0f, -1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		1.0f, -1.0f,  1.0f
+	};
+	glGenVertexArrays(1, &CubeVertexArray);
+	glBindVertexArray(CubeVertexArray);
+	glGenBuffers(1, &CubeVertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, CubeVertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, 3 * 36 * sizeof(float), &CubePoints, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
+void SkyBoxComponent::GenerateQuad()
+{
+	float QuadPoints[] = {
+		-1.0f, -1.0f, 0.0f,
+		1.0f, -1.0f, 0.0f,
+		-1.0f,  1.0f, 0.0f,
+
+		-1.0f,  1.0f, 0.0f,
+		1.0f, -1.0f, 0.0f,
+		1.0f, 1.0f, 0.0f
+	};
+
+	glGenVertexArrays(1, &QuadVertexArray);
+	glBindVertexArray(QuadVertexArray);
+	glGenBuffers(1, &QuadVertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, QuadVertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, 3 * 6 * sizeof(float), &QuadPoints, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
 void SkyBoxComponent::Update()
 {
 	const Camera* ActiveCamera = Camera::GetActiveCamera();
@@ -206,7 +211,6 @@ GLuint SkyBoxComponent::GetBRDFTextureId() const { return BRDFTexture; };
 
 GLuint SkyBoxComponent::GetCubemapFromEquirectangular(std::string EquirectangularPath, GLsizei Size) const //TO-DO Refactoring
 {
-	// Setup framebuffer
 	GLuint CaptureFBO;
 	GLuint CaptureRBO;
 	glGenFramebuffers(1, &CaptureFBO);
@@ -219,7 +223,6 @@ GLuint SkyBoxComponent::GetCubemapFromEquirectangular(std::string Equirectangula
 
 	GLuint EquirectangularTextureId = LoadTexture(EquirectangularPath, GL_RGB16F, GL_RGB, GL_FLOAT);
 
-	// Setup cubemap to render to and attach to framebuffer
 	GLuint EnvCubemap;
 	glGenTextures(1, &EnvCubemap);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, EnvCubemap);
@@ -233,7 +236,6 @@ GLuint SkyBoxComponent::GetCubemapFromEquirectangular(std::string Equirectangula
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	// Set up projection and view matrices for capturing data onto the 6 cubemap face directions
 	glm::mat4 CaptureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
 	glm::mat4 CaptureViews[] =
 	{
@@ -245,7 +247,6 @@ GLuint SkyBoxComponent::GetCubemapFromEquirectangular(std::string Equirectangula
 		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
 	};
 
-	// Convert Equirectangular environment map to cubemap equivalent
 	Shader EquirectangularToCubemapShader("Resources/Shaders/EquirectangularToCubemapShader/EquirectangularToCubemapVertex.glsl", "Resources/Shaders/EquirectangularToCubemapShader/EquirectangularToCubemapFragment.glsl");
 	EquirectangularToCubemapShader.Refresh();
 	EquirectangularToCubemapShader.Start();
@@ -254,7 +255,7 @@ GLuint SkyBoxComponent::GetCubemapFromEquirectangular(std::string Equirectangula
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, EquirectangularTextureId);
 
-	glViewport(0, 0, Size, Size); // don't forget to configure the viewport to the capture dimensions.
+	glViewport(0, 0, Size, Size);
 	glBindFramebuffer(GL_FRAMEBUFFER, CaptureFBO);
 	for (unsigned int i = 0; i < 6; ++i)
 	{
@@ -276,12 +277,8 @@ GLuint SkyBoxComponent::GetCubemapFromEquirectangular(std::string Equirectangula
 	return EnvCubemap;
 }
 
-
-
-
 GLuint SkyBoxComponent::GetConvolutedCubemap(GLuint Cubemap, GLsizei Size) const //TO-DO Refactoring
 {
-	// Setup framebuffer
 	GLuint CaptureFBO;
 	GLuint CaptureRBO;
 	glGenFramebuffers(1, &CaptureFBO);
@@ -306,8 +303,6 @@ GLuint SkyBoxComponent::GetConvolutedCubemap(GLuint Cubemap, GLsizei Size) const
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-
-	// Set up projection and view matrices for capturing data onto the 6 cubemap face directions
 	glm::mat4 CaptureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
 	glm::mat4 CaptureViews[] =
 	{
@@ -319,7 +314,6 @@ GLuint SkyBoxComponent::GetConvolutedCubemap(GLuint Cubemap, GLsizei Size) const
 		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
 	};
 
-	// Convert Equirectangular environment map to cubemap equivalent
 	Shader CubemapConvolutionShader("Resources/Shaders/CubemapConvolutionShader/CubemapConvolutionVertex.glsl", "Resources/Shaders/CubemapConvolutionShader/CubemapConvolutionFragment.glsl");
 	CubemapConvolutionShader.Refresh();
 	CubemapConvolutionShader.Start();
@@ -330,7 +324,7 @@ GLuint SkyBoxComponent::GetConvolutedCubemap(GLuint Cubemap, GLsizei Size) const
 	glBindTexture(GL_TEXTURE_CUBE_MAP, Cubemap);
 
 
-	glViewport(0, 0, Size, Size); // don't forget to configure the viewport to the capture dimensions.
+	glViewport(0, 0, Size, Size);
 	glBindFramebuffer(GL_FRAMEBUFFER, CaptureFBO);
 	for (unsigned int i = 0; i < 6; ++i)
 	{
@@ -351,11 +345,8 @@ GLuint SkyBoxComponent::GetConvolutedCubemap(GLuint Cubemap, GLsizei Size) const
 	return IrradianceMap;
 }
 
-
-
 GLuint SkyBoxComponent::GetPrefilteredCubemap(GLuint Cubemap, GLsizei Size) const //TO-DO Refactoring
 {
-	// Setup framebuffer
 	GLuint CaptureFBO;
 	GLuint CaptureRBO;
 	glGenFramebuffers(1, &CaptureFBO);
@@ -380,7 +371,6 @@ GLuint SkyBoxComponent::GetPrefilteredCubemap(GLuint Cubemap, GLsizei Size) cons
 
 	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
-	// Set up projection and view matrices for capturing data onto the 6 cubemap face directions
 	glm::mat4 CaptureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
 	glm::mat4 CaptureViews[] =
 	{
@@ -392,7 +382,6 @@ GLuint SkyBoxComponent::GetPrefilteredCubemap(GLuint Cubemap, GLsizei Size) cons
 		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
 	};
 
-	// Convert Equirectangular environment map to cubemap equivalent
 	Shader PrefilterCubemapShader("Resources/Shaders/PrefilterCubemapShader/PrefilterCubemapVertex.glsl", "Resources/Shaders/PrefilterCubemapShader/PrefilterCubemapFragment.glsl");
 	PrefilterCubemapShader.Refresh();
 	PrefilterCubemapShader.Start();
@@ -406,7 +395,6 @@ GLuint SkyBoxComponent::GetPrefilteredCubemap(GLuint Cubemap, GLsizei Size) cons
 	unsigned int maxMipLevels = 5;
 	for (unsigned int mip = 0; mip < maxMipLevels; ++mip)
 	{
-		// reisze framebuffer according to mip-level size.
 		unsigned int mipWidth = (unsigned int) (Size * std::pow(0.5, mip));
 		unsigned int mipHeight = (unsigned int)(Size * std::pow(0.5, mip));
 		glBindRenderbuffer(GL_RENDERBUFFER, CaptureRBO);
@@ -441,7 +429,6 @@ GLuint SkyBoxComponent::GetBRDFTexture(GLsizei Size) const //TO-DO Refactoring
 	GLuint BRDFLUTTextureId;
 	glGenTextures(1, &BRDFLUTTextureId);
 
-	// pre-allocate enough memory for the LUT texture.
 	glBindTexture(GL_TEXTURE_2D, BRDFLUTTextureId);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, Size, Size, 0, GL_RG, GL_FLOAT, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -481,4 +468,3 @@ GLuint SkyBoxComponent::GetBRDFTexture(GLsizei Size) const //TO-DO Refactoring
 	glViewport(0, 0, Window::GetSingletonWindow().GetWidth(), Window::GetSingletonWindow().GetHeight());
 	return BRDFLUTTextureId;
 }
-

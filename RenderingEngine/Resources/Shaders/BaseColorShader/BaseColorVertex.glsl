@@ -19,7 +19,6 @@ void main()
 	UVFrag = UV;
 	CameraPosition = (inverse(ViewMatrix)*vec4(0.0, 0.0, 0.0, 1.0)).xyz;
 	ViewVector = normalize((inverse(ViewMatrix)*vec4(0.0, 0.0, -1.0, 0.0)).xyz);
-
 	FragNormal = normalize( (TransformationMatrix * vec4(Normal.xyz, 0.0)).xyz );
 	FragPosition = (TransformationMatrix * vec4(Position.xyz, 1.0)).xyz;
 

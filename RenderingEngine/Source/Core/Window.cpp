@@ -14,9 +14,6 @@ void Window::UpdateDeltaTime()
 	WorldTime = CurrentTime;
 }
 
-/*
-*  Initialize GLFW. Most GLFW functions will not work before doing this.
-*/
 void Window::WindowInit()
 {
 	if( !glfwInit() )
@@ -32,7 +29,8 @@ void Window::WindowInit()
 	glfwWindowHint(GLFW_STENCIL_BITS, 1024); //antialiasing
 	glfwWindowHint(GLFW_SAMPLES, 1024); //antialiasing
 
-	glfwWindowHint(GLFW_SAMPLES, 8); // 8x antialiasing 	
+	glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing 	
+	glEnable(GL_MULTISAMPLE);
 
 	// Open a window and create its OpenGL context
 
@@ -44,26 +42,33 @@ void Window::WindowInit()
 	glfwWindowHint(GLFW_BLUE_BITS, VideoMode->blueBits);
 	glfwWindowHint(GLFW_REFRESH_RATE, VideoMode->refreshRate);
 
-	Width = 800;
-	Height = 800;
-	//Width = VideoMode->width;
-	//Height = VideoMode->height;
-	//GLFWWindow = glfwCreateWindow(VideoMode->width, VideoMode->height, "Rendering Engine", Monitor, NULL);
-	GLFWWindow = glfwCreateWindow(Width, Height, "Rendering Engine", NULL, NULL);
+	switch (ScreenMode)
+	{
+	case FullScreen:
+		Width = VideoMode->width;
+		Height = VideoMode->height;
+		GLFWWindow = glfwCreateWindow(VideoMode->width, VideoMode->height, "Rendering Engine", Monitor, NULL);
+		break;
+	case Windowed:
+		GLFWWindow = glfwCreateWindow(Width, Height, "Rendering Engine", NULL, NULL);
+		break;
+	}
 	if( GLFWWindow == NULL )
 	{
 	    std::cerr<<"Failed to open GLFW window.\n"<<std::endl;
 	    glfwTerminate();
 	    return;
 	}
-
-	// Get the resolution of the primary monitor
-	// Center our window
+	/*
 	glfwSetWindowPos(
 		GLFWWindow,
 		(VideoMode->width - Width) / 2,
 		(VideoMode->height - Height) / 2
-		
+	);
+	*/
+	glfwSetWindowPos(
+		GLFWWindow,
+		10, 40
 	);
 
 	glfwMakeContextCurrent(GLFWWindow); // Initialize GLEW
@@ -120,7 +125,8 @@ void Window::WindowInit()
 	}
 	std::cout<<glGetString(GL_VERSION)<<std::endl;
 	
-	glClearColor(33.0f/255.0f, 43.0f/255.0f, 53.0f/255.0f, 1.0f); // Set background color to black and opaque
+	//glClearColor(33.0f/255.0f, 43.0f/255.0f, 53.0f/255.0f, 1.0f); // Set background color to black and opaque
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClearDepth(1.0f);                   // Set background depth to farthest
 	glEnable(GL_DEPTH_TEST);   // Enable depth testing for z-culling
 	//glEnable(GL_CULL_FACE);
@@ -131,7 +137,6 @@ void Window::WindowInit()
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);  // Nice perspective corrections
 	glViewport(0, 0, Width, Height);
 	
-	//glfwSetInputMode(GLFWWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetInputMode(GLFWWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 	glfwGetCursorPos(GLFWWindow, &XPosition, &YPosition);
@@ -171,6 +176,19 @@ void Window::WindowLoop(){
 void Window::ScrollCallback(double XOffset, double YOffset)
 {
 	YWheelOffset += YOffset;
+}
+
+void Window::SetMouseEnabled(bool Enabled)
+{
+	MouseEnabled = Enabled;
+	if (MouseEnabled)
+	{
+		glfwSetInputMode(GLFWWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
+	else
+	{
+		glfwSetInputMode(GLFWWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	}
 }
 
 void Window::Run()
@@ -221,16 +239,7 @@ float Window::GetWorldTime() const { return WorldTime; }
 
 float Window::GetDeltaTime() const { return DeltaTime; }
 
-
-/* Handler for window re-size event. Called back when the window first appears and
-   whenever the window is re-sized with its new width and height */
-/*
-void reshape(GLsizei width, GLsizei height) {  // GLsizei for non-negative integer
-	// Compute aspect ratio of the new window
-	if (height == 0) height = 1;                // To prevent divide by 0
-	GLfloat aspect = (GLfloat)width / (GLfloat)height;
-
-	glViewport(0, 0, width, height);
-
-	Window::GetWindow().SetSize(width, height);
-}*/
+void Window::SetScreenMode(const EScreenMode & ScreenMode)
+{
+	this->ScreenMode = ScreenMode;
+}

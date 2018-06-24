@@ -20,7 +20,8 @@ class SkyBoxComponent : public Component
 
 public:
 
-	SkyBoxComponent(std::string HdrMapPath, GLsizei HdrMapSize);
+	SkyBoxComponent(std::string SkyMapPath, GLsizei SkyMapSize, std::string HdrMapPath, GLsizei HdrMapSize);
+	SkyBoxComponent(std::string SkyMapPath, GLsizei SkyMapSize);
 
 	virtual void Construct() override;
 	virtual void Start() override;
@@ -47,6 +48,9 @@ private:
 		const std::string Right);
 
 	bool LoadCubemapSide(GLenum side_target, const std::string TexturePath);
+
+	void GenerateCube();
+	void GenerateQuad();
 
 };
 

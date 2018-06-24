@@ -1,5 +1,6 @@
 #version 400
 
+#define Gamma 2.2
 #define PI 3.1415926
 
 /*
@@ -22,26 +23,25 @@ float DistributionGGX(vec3 N, vec3 H, float Roughness)
 	float Roughness2 = Roughness * Roughness;
 	float NdotH = max(dot(N, H), 0.0);
 	float NdotH2 = NdotH * NdotH;
-
 	float Denom = (NdotH2 * (Roughness2 - 1.0) + 1.0);
 	Denom = PI * Denom * Denom;
-
 	return Roughness2 / Denom;
 }
 
-float GeometrySchlickGGX(float NdotV, float Roughness)
+float GeometrySchlickGGX(float NdotV, float K)
 {
 	if (NdotV == 0.0) return 0.0;
-	return NdotV * (NdotV * (1.0 - Roughness) + Roughness);
+	return NdotV * (1.0/ (NdotV * (1.0 - K) + K));
 }
 
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float Roughness)
 {
+	float RoughnessAdd1 = Roughness + 1;
+	float K = (RoughnessAdd1*RoughnessAdd1) / 8.0;
 	float NdotV = max(dot(N, V), 0.0);
 	float NdotL = max(dot(N, L), 0.0);
-	float GGX1 = GeometrySchlickGGX(NdotV, Roughness);
-	float GGX2 = GeometrySchlickGGX(NdotL, Roughness);
-
+	float GGX1 = GeometrySchlickGGX(NdotV, K);
+	float GGX2 = GeometrySchlickGGX(NdotL, K);
 	return GGX1 * GGX2;
 }
 
@@ -69,6 +69,7 @@ uniform float Metalness = 1.0;
 
 void main()
 {
+	vec3 BaseColorSRGB = pow(BaseColor, vec3(Gamma));
 	vec3 NormalLightDirection = normalize(LightDirection);
 	vec3 SurfaceNormal = normalize(FragNormal);
 
@@ -81,34 +82,35 @@ void main()
 
 	float G = GeometrySmith(SurfaceNormal, FragmentToCamera, -NormalLightDirection, Roughness);
 
-	vec3 F0 = mix(vec3(0.04), BaseColor, Metalness);
+	vec3 F0 = mix(vec3(0.04), BaseColorSRGB, Metalness);
 	vec3 F = FresnelSchlick(max(0.0, dot(HalfwayVector, FragmentToCamera)), F0);
 
 	vec3 Numerator = NDF * G * F;
 	float Denominator = 4.0 * max(dot(SurfaceNormal, FragmentToCamera), 0.0) * max(dot(SurfaceNormal, -NormalLightDirection), 0.0);
-	vec3 Specular = Numerator* (1.0 / max(Denominator, 0.001));
+	vec3 SpecularBRDF = Numerator* (1.0 / max(Denominator, 0.001));
 
 	vec3 LightKS = F; //Specular factor
 	vec3 LightKD = vec3(1.0) - LightKS; //Diffuse factor
 	LightKD *= 1.0 - Metalness;
 	
-	vec3 Lo = (LightKD * BaseColor * (1.0f / PI) + Specular)* LightColor * LightIntensity * max(0.0, dot(SurfaceNormal, -NormalLightDirection));
+	vec3 Lo = (LightKD * BaseColorSRGB * (1.0f / PI) + SpecularBRDF)* LightColor * LightIntensity * max(0.0, dot(SurfaceNormal, -NormalLightDirection));
 
 	vec3 IrradianceKS = FresnelSchlickRoughness(max(0.0, dot(SurfaceNormal, FragmentToCamera)), F0, Roughness);
 	vec3 IrradianceKD = 1.0 - IrradianceKS;
 	vec3 Irradiance = texture(IrradianceMap, SurfaceNormal).rgb;
-	vec3 Diffuse = Irradiance * BaseColor;
+	vec3 Diffuse = Irradiance * BaseColorSRGB;
 
 	const float MAX_REFLECTION_LOD = 4.0;
 	vec3 PrefilteredColor = textureLod(PrefilterMap, ReflectionVector, Roughness * MAX_REFLECTION_LOD).rgb;
 	vec2 EnvBDRF = texture(BRDFLUT, vec2(max(dot(SurfaceNormal, FragmentToCamera), 0.0), Roughness)).rg;
 	vec3 PrefilteredSpecular = PrefilteredColor * (IrradianceKS * EnvBDRF.x + EnvBDRF.y);
 
-	vec3 Ambient = (IrradianceKD * Diffuse * 1.0 + PrefilteredSpecular);
+	vec3 Ambient = (IrradianceKD * Diffuse + PrefilteredSpecular);
 
 	vec3 Shade = Lo + Ambient;
+
 	FragColor = vec4(Shade, 1.0);
 
 	FragColor.xyz = FragColor.xyz / (FragColor.xyz + vec3(1.0));
-	FragColor.xyz = pow(FragColor.xyz, vec3(1.0 / 2.2));
+	FragColor.xyz = pow(FragColor.xyz, vec3(1.0 / Gamma));
 }

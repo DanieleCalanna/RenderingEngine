@@ -17,7 +17,7 @@ void StandardShader::Refresh()
 
 	Shader::Start();
 	LoadInt("AlbedoMap", 0);
-	LoadInt("SpecularMap", 1);
+	LoadInt("MetallicMap", 1);
 	LoadInt("RoughnessMap", 2);
 	LoadInt("NormalMap", 3);
 	LoadInt("AOMap", 4);

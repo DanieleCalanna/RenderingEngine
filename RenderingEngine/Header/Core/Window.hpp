@@ -2,15 +2,21 @@
 
 struct GLFWwindow;
 
+enum EScreenMode { FullScreen, Windowed };
+
 class Window
 {
 private:
 
-	int Width, Height;
-	double XPosition, YPosition;
-	double PreviousXPosition, PreviousYPosition;
-	double YWheelOffset;
-
+	EScreenMode ScreenMode = Windowed;
+	int Width = 800, Height = 600;
+	double XPosition = 0.0;
+	double YPosition = 0.0;
+	double PreviousXPosition = 0.0;
+	double PreviousYPosition = 0.0;
+	double YWheelOffset = 0.0;
+	bool MouseEnabled = true;
+	
 	float WorldTime = 0.0f;
 	float DeltaTime = 0.0f;
 	void UpdateDeltaTime();
@@ -49,7 +55,11 @@ public:
 	float GetWorldTime() const;
 	float GetDeltaTime() const;
 
+	void SetScreenMode(const EScreenMode& ScreenMode);
+
 	void ScrollCallback(double XOffset, double YOffset);
+
+	void SetMouseEnabled(bool Enabled);
 
 	static Window & GetSingletonWindow()
 	{

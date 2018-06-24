@@ -203,6 +203,7 @@ If Not Exist $(OutDir)AntTweakBar64.dll (xcopy /y $(ProjDir)External\Binaries\An
     <ClInclude Include="Header\Utils\Axes.hpp" />
     <ClInclude Include="Header\Utils\Png\lodepng.h" />
     <ClInclude Include="Header\Utils\stb_image.h" />
+    <ClInclude Include="Header\Utils\stb_image_write.h" />
     <ClInclude Include="Header\Utils\Tga.h" />
   </ItemGroup>
   <ItemGroup>
